@@ -79,8 +79,13 @@ static void print_token(Parser::symbol_type token)
             cout << "," << value;
             break;
         }
-
         case Parser::token::TYPE_IDENTIFIER:
+        {
+            string id = token.value.as<string>();
+            cout << "," << id;
+            break;
+        }
+        case Parser::token::OBJECT_IDENTIFIER:
         {
             string id = token.value.as<string>();
             cout << "," << id;
