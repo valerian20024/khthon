@@ -68,6 +68,7 @@
 ;
 
 // For some symbols, need to store a value
+%token <std::string> TYPE_IDENTIFIER "type-identifier"
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
 %nterm <int> exp
@@ -81,6 +82,7 @@
 
 %start unit;
 unit: CLASS assignments exp {driver.result = $3; }
+    | TYPE_IDENTIFIER assignments exp {driver.result = $3; }
     | assignments exp  { driver.result = $2; }
 
 assignments:

@@ -214,6 +214,7 @@ namespace VSOP {
         value.YY_MOVE_OR_COPY< int > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_IDENTIFIER: // "identifier"
         value.YY_MOVE_OR_COPY< std::string > (YY_MOVE (that.value));
         break;
@@ -238,6 +239,7 @@ namespace VSOP {
         value.move< int > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_IDENTIFIER: // "identifier"
         value.move< std::string > (YY_MOVE (that.value));
         break;
@@ -262,6 +264,7 @@ namespace VSOP {
         value.copy< int > (that.value);
         break;
 
+      case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_IDENTIFIER: // "identifier"
         value.copy< std::string > (that.value);
         break;
@@ -285,6 +288,7 @@ namespace VSOP {
         value.move< int > (that.value);
         break;
 
+      case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_IDENTIFIER: // "identifier"
         value.move< std::string > (that.value);
         break;
@@ -553,6 +557,7 @@ namespace VSOP {
         yylhs.value.emplace< int > ();
         break;
 
+      case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_IDENTIFIER: // "identifier"
         yylhs.value.emplace< std::string > ();
         break;
@@ -578,43 +583,49 @@ namespace VSOP {
           switch (yyn)
             {
   case 2: // unit: "class" assignments exp
-#line 83 "parser.y"
-                            {driver.result = yystack_[0].value.as < int > (); }
-#line 584 "parser.cpp"
-    break;
-
-  case 3: // unit: assignments exp
 #line 84 "parser.y"
+                            {driver.result = yystack_[0].value.as < int > (); }
+#line 589 "parser.cpp"
+    break;
+
+  case 3: // unit: "type-identifier" assignments exp
+#line 85 "parser.y"
+                                      {driver.result = yystack_[0].value.as < int > (); }
+#line 595 "parser.cpp"
+    break;
+
+  case 4: // unit: assignments exp
+#line 86 "parser.y"
                        { driver.result = yystack_[0].value.as < int > (); }
-#line 590 "parser.cpp"
+#line 601 "parser.cpp"
     break;
 
-  case 4: // assignments: %empty
-#line 87 "parser.y"
+  case 5: // assignments: %empty
+#line 89 "parser.y"
                                 {}
-#line 596 "parser.cpp"
+#line 607 "parser.cpp"
     break;
 
-  case 5: // assignments: assignments assignment
-#line 88 "parser.y"
+  case 6: // assignments: assignments assignment
+#line 90 "parser.y"
                                 {}
-#line 602 "parser.cpp"
+#line 613 "parser.cpp"
     break;
 
-  case 6: // assignment: "identifier" ":=" exp
-#line 91 "parser.y"
+  case 7: // assignment: "identifier" ":=" exp
+#line 93 "parser.y"
                           { driver.add_variable(yystack_[2].value.as < std::string > (), yystack_[0].value.as < int > ()); }
-#line 608 "parser.cpp"
+#line 619 "parser.cpp"
     break;
 
-  case 7: // exp: "number"
-#line 94 "parser.y"
+  case 8: // exp: "number"
+#line 96 "parser.y"
     { yylhs.value.as < int > () = yystack_[0].value.as < int > (); }
-#line 614 "parser.cpp"
+#line 625 "parser.cpp"
     break;
 
-  case 8: // exp: "identifier"
-#line 95 "parser.y"
+  case 9: // exp: "identifier"
+#line 97 "parser.y"
                     {
                         if (!driver.has_variable(yystack_[0].value.as < std::string > ()))
                         {
@@ -623,41 +634,41 @@ namespace VSOP {
                         }
                         yylhs.value.as < int > () = driver.get_variable(yystack_[0].value.as < std::string > ());
                     }
-#line 627 "parser.cpp"
+#line 638 "parser.cpp"
     break;
 
-  case 9: // exp: exp "+" exp
-#line 103 "parser.y"
-                    { yylhs.value.as < int > () = yystack_[2].value.as < int > () + yystack_[0].value.as < int > (); }
-#line 633 "parser.cpp"
-    break;
-
-  case 10: // exp: exp "-" exp
-#line 104 "parser.y"
-                    { yylhs.value.as < int > () = yystack_[2].value.as < int > () - yystack_[0].value.as < int > (); }
-#line 639 "parser.cpp"
-    break;
-
-  case 11: // exp: exp "*" exp
+  case 10: // exp: exp "+" exp
 #line 105 "parser.y"
-                    { yylhs.value.as < int > () = yystack_[2].value.as < int > () * yystack_[0].value.as < int > (); }
-#line 645 "parser.cpp"
+                    { yylhs.value.as < int > () = yystack_[2].value.as < int > () + yystack_[0].value.as < int > (); }
+#line 644 "parser.cpp"
     break;
 
-  case 12: // exp: exp "/" exp
+  case 11: // exp: exp "-" exp
 #line 106 "parser.y"
-                    { yylhs.value.as < int > () = yystack_[2].value.as < int > () / yystack_[0].value.as < int > (); }
-#line 651 "parser.cpp"
+                    { yylhs.value.as < int > () = yystack_[2].value.as < int > () - yystack_[0].value.as < int > (); }
+#line 650 "parser.cpp"
     break;
 
-  case 13: // exp: "(" exp ")"
+  case 12: // exp: exp "*" exp
 #line 107 "parser.y"
+                    { yylhs.value.as < int > () = yystack_[2].value.as < int > () * yystack_[0].value.as < int > (); }
+#line 656 "parser.cpp"
+    break;
+
+  case 13: // exp: exp "/" exp
+#line 108 "parser.y"
+                    { yylhs.value.as < int > () = yystack_[2].value.as < int > () / yystack_[0].value.as < int > (); }
+#line 662 "parser.cpp"
+    break;
+
+  case 14: // exp: "(" exp ")"
+#line 109 "parser.y"
                     { yylhs.value.as < int > () = yystack_[1].value.as < int > (); }
-#line 657 "parser.cpp"
+#line 668 "parser.cpp"
     break;
 
 
-#line 661 "parser.cpp"
+#line 672 "parser.cpp"
 
             default:
               break;
@@ -850,74 +861,76 @@ namespace VSOP {
 
 
 
-  const signed char Parser::yypact_ninf_ = -10;
+  const signed char Parser::yypact_ninf_ = -6;
 
   const signed char Parser::yytable_ninf_ = -1;
 
   const signed char
   Parser::yypact_[] =
   {
-      -9,   -10,    16,     7,     7,   -10,     9,     4,   -10,   -10,
-      18,    18,   -10,    -1,     9,     9,     9,     9,     9,   -10,
-      18,    20,    20,   -10,   -10
+      19,    -6,    -6,     2,     9,     9,     9,    -6,    11,     5,
+      -6,    -6,    21,    21,    21,    -6,     0,    11,    11,    11,
+      11,    11,    -6,    21,     4,     4,    -6,    -6
   };
 
   const signed char
   Parser::yydefact_[] =
   {
-       4,     4,     0,     0,     0,     1,     0,     8,     7,     5,
-       3,     2,     8,     0,     0,     0,     0,     0,     0,    13,
-       6,    10,     9,    11,    12
+       5,     5,     5,     0,     0,     0,     0,     1,     0,     9,
+       8,     6,     4,     2,     3,     9,     0,     0,     0,     0,
+       0,     0,    14,     7,    11,    10,    12,    13
   };
 
   const signed char
   Parser::yypgoto_[] =
   {
-     -10,   -10,     8,   -10,    -4
+      -6,    -6,    30,    -6,    -5
   };
 
   const signed char
   Parser::yydefgoto_[] =
   {
-       0,     2,     3,     9,    10
+       0,     3,     4,    11,    12
   };
 
   const signed char
   Parser::yytable_[] =
   {
-      11,     1,    13,    15,    16,    17,    18,    14,    19,     4,
-      20,    21,    22,    23,    24,     6,     5,     6,     7,     8,
-      12,     8,    15,    16,    17,    18,    17,    18
+      13,    14,     7,    16,    18,    19,    20,    21,    17,    22,
+      20,    21,    23,    24,    25,    26,    27,     8,     0,     8,
+       0,     9,    10,    15,    10,    18,    19,    20,    21,     1,
+       2,     5,     6
   };
 
   const signed char
   Parser::yycheck_[] =
   {
-       4,    10,     6,     4,     5,     6,     7,     3,     9,     1,
-      14,    15,    16,    17,    18,     8,     0,     8,    11,    12,
-      11,    12,     4,     5,     6,     7,     6,     7
+       5,     6,     0,     8,     4,     5,     6,     7,     3,     9,
+       6,     7,    17,    18,    19,    20,    21,     8,    -1,     8,
+      -1,    12,    13,    12,    13,     4,     5,     6,     7,    10,
+      11,     1,     2
   };
 
   const signed char
   Parser::yystos_[] =
   {
-       0,    10,    14,    15,    15,     0,     8,    11,    12,    16,
-      17,    17,    11,    17,     3,     4,     5,     6,     7,     9,
-      17,    17,    17,    17,    17
+       0,    10,    11,    15,    16,    16,    16,     0,     8,    12,
+      13,    17,    18,    18,    18,    12,    18,     3,     4,     5,
+       6,     7,     9,    18,    18,    18,    18,    18
   };
 
   const signed char
   Parser::yyr1_[] =
   {
-       0,    13,    14,    14,    15,    15,    16,    17,    17,    17,
-      17,    17,    17,    17
+       0,    14,    15,    15,    15,    16,    16,    17,    18,    18,
+      18,    18,    18,    18,    18
   };
 
   const signed char
   Parser::yyr2_[] =
   {
-       0,     2,     3,     2,     0,     2,     3,     1,     1,     3,
-       3,     3,     3,     3
+       0,     2,     3,     3,     2,     0,     2,     3,     1,     1,
+       3,     3,     3,     3,     3
   };
 
 
@@ -929,8 +942,8 @@ namespace VSOP {
   {
   "\"end of file\"", "error", "\"invalid token\"", "\":=\"", "\"-\"",
   "\"+\"", "\"*\"", "\"/\"", "\"(\"", "\")\"", "\"class\"",
-  "\"identifier\"", "\"number\"", "$accept", "unit", "assignments",
-  "assignment", "exp", YY_NULLPTR
+  "\"type-identifier\"", "\"identifier\"", "\"number\"", "$accept", "unit",
+  "assignments", "assignment", "exp", YY_NULLPTR
   };
 #endif
 
@@ -939,8 +952,8 @@ namespace VSOP {
   const signed char
   Parser::yyrline_[] =
   {
-       0,    83,    83,    84,    87,    88,    91,    94,    95,   103,
-     104,   105,   106,   107
+       0,    84,    84,    85,    86,    89,    90,    93,    96,    97,
+     105,   106,   107,   108,   109
   };
 
   void
@@ -973,9 +986,9 @@ namespace VSOP {
 
 #line 19 "parser.y"
 } // VSOP
-#line 977 "parser.cpp"
+#line 990 "parser.cpp"
 
-#line 109 "parser.y"
+#line 111 "parser.y"
 
 // User code
 void VSOP::Parser::error(const location_type& l, const std::string& m)

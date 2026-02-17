@@ -130,6 +130,8 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     /*! testing class*/
 "class"     return Parser::make_CLASS(loc);
 
+{TYPE_IDENTIFIER}   return Parser::make_TYPE_IDENTIFIER(yytext, loc);     
+
     /* Numbers and identifiers */
 {int}       return make_NUMBER(yytext, loc);
 {id}        return Parser::make_IDENTIFIER(yytext, loc);

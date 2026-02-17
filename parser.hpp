@@ -418,6 +418,7 @@ namespace VSOP {
       // exp
       char dummy1[sizeof (int)];
 
+      // "type-identifier"
       // "identifier"
       char dummy2[sizeof (std::string)];
     };
@@ -480,8 +481,9 @@ namespace VSOP {
     LPAREN = 8,                    // "("
     RPAREN = 9,                    // ")"
     CLASS = 10,                    // "class"
-    IDENTIFIER = 11,               // "identifier"
-    NUMBER = 12                    // "number"
+    TYPE_IDENTIFIER = 11,          // "type-identifier"
+    IDENTIFIER = 12,               // "identifier"
+    NUMBER = 13                    // "number"
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -498,7 +500,7 @@ namespace VSOP {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 13, ///< Number of tokens.
+        YYNTOKENS = 14, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -511,13 +513,14 @@ namespace VSOP {
         S_LPAREN = 8,                            // "("
         S_RPAREN = 9,                            // ")"
         S_CLASS = 10,                            // "class"
-        S_IDENTIFIER = 11,                       // "identifier"
-        S_NUMBER = 12,                           // "number"
-        S_YYACCEPT = 13,                         // $accept
-        S_unit = 14,                             // unit
-        S_assignments = 15,                      // assignments
-        S_assignment = 16,                       // assignment
-        S_exp = 17                               // exp
+        S_TYPE_IDENTIFIER = 11,                  // "type-identifier"
+        S_IDENTIFIER = 12,                       // "identifier"
+        S_NUMBER = 13,                           // "number"
+        S_YYACCEPT = 14,                         // $accept
+        S_unit = 15,                             // unit
+        S_assignments = 16,                      // assignments
+        S_assignment = 17,                       // assignment
+        S_exp = 18                               // exp
       };
     };
 
@@ -559,6 +562,7 @@ namespace VSOP {
         value.move< int > (std::move (that.value));
         break;
 
+      case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_IDENTIFIER: // "identifier"
         value.move< std::string > (std::move (that.value));
         break;
@@ -643,6 +647,7 @@ switch (yykind)
         value.template destroy< int > ();
         break;
 
+      case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_IDENTIFIER: // "identifier"
         value.template destroy< std::string > ();
         break;
@@ -772,7 +777,7 @@ switch (yykind)
 #endif
       {
 #if !defined _MSC_VER || defined __clang__
-        YY_ASSERT (tok == token::IDENTIFIER);
+        YY_ASSERT ((token::TYPE_IDENTIFIER <= tok && tok <= token::IDENTIFIER));
 #endif
       }
     };
@@ -989,6 +994,21 @@ switch (yykind)
       make_CLASS (const location_type& l)
       {
         return symbol_type (token::CLASS, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_TYPE_IDENTIFIER (std::string v, location_type l)
+      {
+        return symbol_type (token::TYPE_IDENTIFIER, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_TYPE_IDENTIFIER (const std::string& v, const location_type& l)
+      {
+        return symbol_type (token::TYPE_IDENTIFIER, v, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -1325,9 +1345,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 27,     ///< Last index in yytable_.
+      yylast_ = 32,     ///< Last index in yytable_.
       yynnts_ = 5,  ///< Number of nonterminal symbols.
-      yyfinal_ = 5 ///< Termination state number.
+      yyfinal_ = 7 ///< Termination state number.
     };
 
 
@@ -1357,6 +1377,7 @@ switch (yykind)
         value.copy< int > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_IDENTIFIER: // "identifier"
         value.copy< std::string > (YY_MOVE (that.value));
         break;
@@ -1397,6 +1418,7 @@ switch (yykind)
         value.move< int > (YY_MOVE (s.value));
         break;
 
+      case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_IDENTIFIER: // "identifier"
         value.move< std::string > (YY_MOVE (s.value));
         break;
@@ -1468,7 +1490,7 @@ switch (yykind)
 
 #line 19 "parser.y"
 } // VSOP
-#line 1472 "parser.hpp"
+#line 1494 "parser.hpp"
 
 
 
