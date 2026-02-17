@@ -67,7 +67,27 @@ COMMENT_SL                      "//".*  /*todo check this*/
 INTEGER_LITERAL_DECIMAL         {DECIMAL_DIGIT}+
 INTEGER_LITERAL_HEXADECIMAL     0x{HEXADECIMAL_DIGIT}+
 
-KEYWORD                         and|bool|class|do|else|extends|false|if|in|int32|isnull|let|new|not|self|string|then|true|unit|while
+    /* Keywords */
+AND                             "and"
+BOOL                            "bool"
+CLASS                           "class"
+DO                              "do"
+ELSE                            "else"
+EXTENDS                         "extends"
+FALSE                           "false"
+IF                              "if"
+IN                              "in"
+INT32                           "int32"
+ISNULL                          "isnull"
+LET                             "let"
+NEW                             "new"
+NOT                             "not"
+SELF                            "self"
+STRING                          "string"
+THEN                            "then"
+TRUE                            "true"
+UNIT                            "unit"
+WHILE                           "while"
 
 TYPE_IDENTIFIER                 {UPPERCASE_LETTER}({LETTER}|{DECIMAL_DIGIT}|_)*
 
@@ -84,19 +104,19 @@ ESCAPED_R                       \\r
 ESCAPED_QUOTES                  \\\"
 ESCAPED_BACKSLASH               \\\\
 
-
-LBRACE                          "{"
-RBRACE                          "}"
-LPAR                            "("
-RPAR                            ")"
+    /* Operators */
+LEFT_BRACE                      "{"
+RIGHT_BRACE                     "}"
+LEFT_PARANTHESIS                "("
+RIGHT_PARANTHESIS               ")"
 COLON                           ":"
 SEMICOLON                       ";"
 COMMA                           ","
 PLUS                            "+"
 MINUS                           "-"
 TIMES                           "*"
-DIV                             "/"
-POW                             "^"
+DIVIDE                          "/"
+POWER                           "^"
 DOT                             "."
 EQUAL                           "="
 LOWER                           "<"
