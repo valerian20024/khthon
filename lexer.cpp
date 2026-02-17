@@ -1038,7 +1038,7 @@ YY_RULE_SETUP
 #line 182 "lexer.lex"
 return Parser::make_ASSIGN(loc);
 	YY_BREAK
-/*todo think about out of range error and the likes*/
+/*todo think about out range errors and the likes*/
 case 40:
 YY_RULE_SETUP
 #line 187 "lexer.lex"
@@ -2053,16 +2053,6 @@ void yyfree (void * ptr )
 
 #line 210 "lexer.lex"
 
-
-/*
-Parser::symbol_type make_NUMBER(const string &s,
-                                const location& loc)
-{
-    int n = stoi(s);
-
-    return Parser::make_NUMBER(n, loc);
-}
-*/
 
 static void print_error(const position &pos, const string &m)
 {

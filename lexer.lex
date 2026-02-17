@@ -181,7 +181,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 {ASSIGN}                    return Parser::make_ASSIGN(loc);
 
 
-    /*todo think about out of range error and the likes*/
+    /*todo think about out range errors and the likes*/
 
 {INTEGER_LITERAL_DECIMAL}  {
     int val = stoi(yytext, nullptr, 10);
@@ -207,16 +207,6 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     /* End of file */
 <<EOF>>     return Parser::make_YYEOF(loc);
 %%
-
-/*
-Parser::symbol_type make_NUMBER(const string &s,
-                                const location& loc)
-{
-    int n = stoi(s);
-
-    return Parser::make_NUMBER(n, loc);
-}
-*/
 
 static void print_error(const position &pos, const string &m)
 {
