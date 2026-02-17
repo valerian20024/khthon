@@ -31,6 +31,7 @@ static const map<Parser::token_type, string> type_to_string = {
     {Parser::token::RPAREN, "rparen"},
     {Parser::token::IDENTIFIER, "identifier"},
     {Parser::token::NUMBER, "number"},
+    {Parser::token::CLASS, "class"},
 };
 
 /**
