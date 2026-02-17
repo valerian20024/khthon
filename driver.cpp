@@ -83,6 +83,7 @@ int Driver::lex()
         if ((Parser::token_type)token.type_get() == Parser::token::YYEOF)
             break;
 
+        // Push back the new token with the others, or error
         if ((Parser::token_type)token.type_get() != Parser::token::YYerror)
             tokens.push_back(token);
 

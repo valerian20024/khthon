@@ -87,7 +87,7 @@ namespace VSOP
         int parse();
 
         /**
-         * @brief Print all the tokens.
+         * @brief Print all the tokens, that is the output of the lexical analysis
          */
         void print_tokens();
 

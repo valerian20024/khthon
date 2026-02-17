@@ -479,8 +479,9 @@ namespace VSOP {
     SLASH = 7,                     // "/"
     LPAREN = 8,                    // "("
     RPAREN = 9,                    // ")"
-    IDENTIFIER = 10,               // "identifier"
-    NUMBER = 11                    // "number"
+    CLASS = 10,                    // "class"
+    IDENTIFIER = 11,               // "identifier"
+    NUMBER = 12                    // "number"
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -497,7 +498,7 @@ namespace VSOP {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 12, ///< Number of tokens.
+        YYNTOKENS = 13, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -509,13 +510,14 @@ namespace VSOP {
         S_SLASH = 7,                             // "/"
         S_LPAREN = 8,                            // "("
         S_RPAREN = 9,                            // ")"
-        S_IDENTIFIER = 10,                       // "identifier"
-        S_NUMBER = 11,                           // "number"
-        S_YYACCEPT = 12,                         // $accept
-        S_unit = 13,                             // unit
-        S_assignments = 14,                      // assignments
-        S_assignment = 15,                       // assignment
-        S_exp = 16                               // exp
+        S_CLASS = 10,                            // "class"
+        S_IDENTIFIER = 11,                       // "identifier"
+        S_NUMBER = 12,                           // "number"
+        S_YYACCEPT = 13,                         // $accept
+        S_unit = 14,                             // unit
+        S_assignments = 15,                      // assignments
+        S_assignment = 16,                       // assignment
+        S_exp = 17                               // exp
       };
     };
 
@@ -746,7 +748,7 @@ switch (yykind)
       {
 #if !defined _MSC_VER || defined __clang__
         YY_ASSERT (tok == token::YYEOF
-                   || (token::YYerror <= tok && tok <= token::RPAREN));
+                   || (token::YYerror <= tok && tok <= token::CLASS));
 #endif
       }
 #if 201103L <= YY_CPLUSPLUS
@@ -972,6 +974,21 @@ switch (yykind)
       make_RPAREN (const location_type& l)
       {
         return symbol_type (token::RPAREN, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_CLASS (location_type l)
+      {
+        return symbol_type (token::CLASS, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_CLASS (const location_type& l)
+      {
+        return symbol_type (token::CLASS, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -1308,9 +1325,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 26,     ///< Last index in yytable_.
+      yylast_ = 27,     ///< Last index in yytable_.
       yynnts_ = 5,  ///< Number of nonterminal symbols.
-      yyfinal_ = 3 ///< Termination state number.
+      yyfinal_ = 5 ///< Termination state number.
     };
 
 
@@ -1451,7 +1468,7 @@ switch (yykind)
 
 #line 19 "parser.y"
 } // VSOP
-#line 1455 "parser.hpp"
+#line 1472 "parser.hpp"
 
 
 

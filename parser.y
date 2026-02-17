@@ -64,6 +64,7 @@
     SLASH   "/"
     LPAREN  "("
     RPAREN  ")"
+    CLASS   "class"
 ;
 
 // For some symbols, need to store a value
@@ -79,7 +80,8 @@
 // Grammar rules
 
 %start unit;
-unit: assignments exp  { driver.result = $2; };
+unit: CLASS assignments exp {driver.result = $3; }
+    | assignments exp  { driver.result = $2; }
 
 assignments:
     %empty                      {}

@@ -49,12 +49,70 @@ id    [a-zA-Z][a-zA-Z_0-9]*
 int   [0-9]+
 blank [ \t\r]
 
+LOWERCASE_LETTER                [a-z]
+UPPERCASE_LETTER                [A-Z]
+LETTER                          [a-zA-Z]
+
+BINARY_DIGIT                    [01]
+DECIMAL_DIGIT                   [0-9]
+HEXADECIMAL_DIGIT               [0-9a-fA-F]
+
+WHITESPACE                      [ \t\n\f\r]
+WHITESPACE_NO_LF                [ \t\f\r]
+
+COMMENT_START                   "(*"
+COMMENT_END                     "*)"
+COMMENT_SL                      "//".*  /*todo check this*/
+
+INTEGER_LITERAL_DECIMAL         {DECIMAL_DIGIT}+
+INTEGER_LITERAL_HEXADECIMAL     0x{HEXADECIMAL_DIGIT}+
+
+KEYWORD                         and|bool|class|do|else|extends|false|if|in|int32|isnull|let|new|not|self|string|then|true|unit|while
+
+TYPE_IDENTIFIER                 {UPPERCASE_LETTER}({LETTER}|{DECIMAL_DIGIT}|_)*
+
+OBJECT_IDENTIFIER               {LOWERCASE_LETTER}({LETTER}|{DECIMAL_DIGIT}|_)*
+
+STRING_START                    "\""
+STRING_END                      "\""
+STRING_BREAK                    \\\n({WHITESPACE_NO_LF})*
+ESCAPED_HEX                     \\x{HEXADECIMAL_DIGIT}{HEXADECIMAL_DIGIT}
+ESCAPED_N                       \\n
+ESCAPED_T                       \\t
+ESCAPED_B                       \\b
+ESCAPED_R                       \\r
+ESCAPED_QUOTES                  \\\"
+ESCAPED_BACKSLASH               \\\\
+
+
+LBRACE                          "{"
+RBRACE                          "}"
+LPAR                            "("
+RPAR                            ")"
+COLON                           ":"
+SEMICOLON                       ";"
+COMMA                           ","
+PLUS                            "+"
+MINUS                           "-"
+TIMES                           "*"
+DIV                             "/"
+POW                             "^"
+DOT                             "."
+EQUAL                           "="
+LOWER                           "<"
+LOWER_EQUAL                     "<="
+ASSIGN                          "<-"
+
+/*todo understand Loup's error catcher*/
+OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
+
+
 %%
 %{
     // Code run each time yylex is called.
+    // Prepare location for new token
     loc.step();
 %}
-    /* Rules */
 
     /* White spaces */
 {blank}+    loc.step();
@@ -69,6 +127,9 @@ blank [ \t\r]
 ")"         return Parser::make_RPAREN(loc);
 ":="        return Parser::make_ASSIGN(loc);
 
+    /*! testing class*/
+"class"     return Parser::make_CLASS(loc);
+
     /* Numbers and identifiers */
 {int}       return make_NUMBER(yytext, loc);
 {id}        return Parser::make_IDENTIFIER(yytext, loc);
@@ -82,8 +143,6 @@ blank [ \t\r]
     /* End of file */
 <<EOF>>     return Parser::make_YYEOF(loc);
 %%
-
-    /* User code */
 
 Parser::symbol_type make_NUMBER(const string &s,
                                 const location& loc)
@@ -107,6 +166,7 @@ void Driver::scan_begin()
 {
     loc.initialize(&source_file);
 
+    // When no file is provided, defaults to stdin
     if (source_file.empty() || source_file == "-")
         yyin = stdin;
     else if (!(yyin = fopen(source_file.c_str(), "r")))
