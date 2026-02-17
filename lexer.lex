@@ -138,23 +138,11 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 {blank}+    loc.step();
 \n+         loc.lines(yyleng); loc.step();
 
-    /* Operators */
-"-"         return Parser::make_MINUS(loc);
-"+"         return Parser::make_PLUS(loc);
-"*"         return Parser::make_STAR(loc);
-"/"         return Parser::make_SLASH(loc);
-"("         return Parser::make_LPAREN(loc);
-")"         return Parser::make_RPAREN(loc);
-":="        return Parser::make_ASSIGN(loc);
 
     /*! testing class*/
 "class"     return Parser::make_CLASS(loc);
 
 {TYPE_IDENTIFIER}   return Parser::make_TYPE_IDENTIFIER(yytext, loc);     
-
-    /* Numbers and identifiers */
-{int}       return make_NUMBER(yytext, loc);
-{id}        return Parser::make_IDENTIFIER(yytext, loc);
 
     /* Invalid characters */
 .           {
@@ -166,6 +154,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 <<EOF>>     return Parser::make_YYEOF(loc);
 %%
 
+/*
 Parser::symbol_type make_NUMBER(const string &s,
                                 const location& loc)
 {
@@ -173,6 +162,7 @@ Parser::symbol_type make_NUMBER(const string &s,
 
     return Parser::make_NUMBER(n, loc);
 }
+*/
 
 static void print_error(const position &pos, const string &m)
 {

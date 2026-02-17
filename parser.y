@@ -57,23 +57,50 @@
 
 // Token and symbols definitions
 %token
-    ASSIGN  ":="
-    MINUS   "-"
-    PLUS    "+"
-    STAR    "*"
-    SLASH   "/"
-    LPAREN  "("
-    RPAREN  ")"
-    CLASS   "class"
+    
+    AND                             "and"
+    BOOL                            "bool"
+    CLASS                           "class"
+    DO                              "do"
+    ELSE                            "else"
+    EXTENDS                         "extends"
+    FALSE                           "false"
+    IF                              "if"
+    IN                              "in"
+    INT32                           "int32"
+    ISNULL                          "isnull"
+    LET                             "let"
+    NEW                             "new"
+    NOT                             "not"
+    SELF                            "self"
+    STRING                          "string"
+    THEN                            "then"
+    TRUE                            "true"
+    UNIT                            "unit"
+    WHILE                           "while"
+
+    LEFT_BRACE                      "{"
+    RIGHT_BRACE                     "}"
+    LEFT_PARANTHESIS                "("
+    RIGHT_PARANTHESIS               ")"
+    COLON                           ":"
+    SEMICOLON                       ";"
+    COMMA                           ","
+    PLUS                            "+"
+    MINUS                           "-"
+    TIMES                           "*"
+    DIVIDE                          "/"
+    POWER                           "^"
+    DOT                             "."
+    EQUAL                           "="
+    LOWER                           "<"
+    LOWER_EQUAL                     "<="
+    ASSIGN                          "<-"
 ;
 
 // For some symbols, need to store a value
 %token <std::string> TYPE_IDENTIFIER "type-identifier"
 
-/*! will have to remove*/
-%token <std::string> IDENTIFIER "identifier"  
-%token <int> NUMBER "number"
-%nterm <int> exp
 
 // Precedence
 %left "+" "-"; // Could also do: %left PLUS MINUS
@@ -83,12 +110,13 @@
 // Grammar rules
 
 %start unit;
-unit: CLASS assignments exp {driver.result = $3; }
-    | TYPE_IDENTIFIER assignments exp {driver.result = $3; }
-    | assignments exp  { driver.result = $2; }
+unit: CLASS assignments { }
+    | assignments  { }
 
 assignments:
     %empty                      {}
+
+/*
     | assignments assignment    {};
 
 assignment:
@@ -109,7 +137,7 @@ exp:
     | exp "*" exp   { $$ = $1 * $3; }
     | exp "/" exp   { $$ = $1 / $3; }
     | "(" exp ")"   { $$ = $2; }
-
+*/
 %%
 // User code
 void VSOP::Parser::error(const location_type& l, const std::string& m)

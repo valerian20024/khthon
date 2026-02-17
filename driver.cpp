@@ -22,16 +22,45 @@ using namespace VSOP;
  * @brief Map a token type to a string (pretty-print token types).
  */
 static const map<Parser::token_type, string> type_to_string = {
-    {Parser::token::ASSIGN, "assign"},
-    {Parser::token::MINUS, "minus"},
-    {Parser::token::PLUS, "plus"},
-    {Parser::token::STAR, "star"},
-    {Parser::token::SLASH, "slash"},
-    {Parser::token::LPAREN, "lparen"},
-    {Parser::token::RPAREN, "rparen"},
-    {Parser::token::IDENTIFIER, "identifier"},
-    {Parser::token::NUMBER, "number"},
+    {Parser::token::AND, "and"},
+    {Parser::token::BOOL, "bool"},
     {Parser::token::CLASS, "class"},
+    {Parser::token::DO, "do"},
+    {Parser::token::ELSE, "else"},
+    {Parser::token::EXTENDS, "extends"},
+    {Parser::token::FALSE, "false"},
+    {Parser::token::IF, "if"},
+    {Parser::token::IN, "in"},
+    {Parser::token::INT32, "int32"},
+    {Parser::token::ISNULL, "isnull"},
+    {Parser::token::LET, "let"},
+    {Parser::token::NEW, "new"},
+    {Parser::token::NOT, "not"},
+    {Parser::token::SELF, "self"},
+    {Parser::token::STRING, "string"},
+    {Parser::token::THEN, "then"},
+    {Parser::token::TRUE, "true"},
+    {Parser::token::UNIT, "unit"},
+    {Parser::token::WHILE, "while"},
+
+    {Parser::token::LEFT_BRACE, "lbrace"},
+    {Parser::token::RIGHT_BRACE, "rbrace"},
+    {Parser::token::LEFT_PARANTHESIS, "lpar"},
+    {Parser::token::RIGHT_PARANTHESIS, "rpar"},
+    {Parser::token::COLON, "colon"},
+    {Parser::token::SEMICOLON, "semicolon"},
+    {Parser::token::COMMA, "comma"},
+    {Parser::token::PLUS, "plus"},
+    {Parser::token::MINUS, "minus"},
+    {Parser::token::TIMES, "times"},
+    {Parser::token::DIVIDE, "div"},
+    {Parser::token::POWER, "pow"},
+    {Parser::token::DOT, "dot"},
+    {Parser::token::EQUAL, "equal"},
+    {Parser::token::LOWER, "lower"},
+    {Parser::token::LOWER_EQUAL, "lower-equal"},
+    {Parser::token::ASSIGN, "assign"},
+
     {Parser::token::TYPE_IDENTIFIER, "type-identifier"},
 };
 
@@ -51,22 +80,23 @@ static void print_token(Parser::symbol_type token)
 
     switch (type)
     {
-    case Parser::token::NUMBER:
-    {
-        int value = token.value.as<int>();
-        cout << ":" << value;
-        break;
-    }
+/*        
+        case Parser::token::NUMBER:
+        {
+            int value = token.value.as<int>();
+            cout << ":" << value;
+            break;
+        }
 
-    case Parser::token::IDENTIFIER:
-    {
-        string id = token.value.as<string>();
-        cout << ":" << id;
-        break;
-    }
-
-    default:
-        break;
+        case Parser::token::IDENTIFIER:
+        {
+            string id = token.value.as<string>();
+            cout << ":" << id;
+            break;
+        }
+*/
+        default:
+            break;
     }
 
     cout << endl;
