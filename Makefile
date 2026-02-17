@@ -4,7 +4,7 @@ CXXFLAGS 		= -Wall -Wextra
 
 BISONFLAGS 		= -d
 
-EXEC			= calc
+EXEC			= vsopc
 
 SRC				= main.cpp \
 				  driver.cpp \

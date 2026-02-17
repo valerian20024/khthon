@@ -490,8 +490,8 @@ namespace VSOP {
     WHILE = 22,                    // "while"
     LEFT_BRACE = 23,               // "{"
     RIGHT_BRACE = 24,              // "}"
-    LEFT_PARANTHESIS = 25,         // "("
-    RIGHT_PARANTHESIS = 26,        // ")"
+    LEFT_PARENTHESIS = 25,         // "("
+    RIGHT_PARENTHESIS = 26,        // ")"
     COLON = 27,                    // ":"
     SEMICOLON = 28,                // ";"
     COMMA = 29,                    // ","
@@ -549,8 +549,8 @@ namespace VSOP {
         S_WHILE = 22,                            // "while"
         S_LEFT_BRACE = 23,                       // "{"
         S_RIGHT_BRACE = 24,                      // "}"
-        S_LEFT_PARANTHESIS = 25,                 // "("
-        S_RIGHT_PARANTHESIS = 26,                // ")"
+        S_LEFT_PARENTHESIS = 25,                 // "("
+        S_RIGHT_PARENTHESIS = 26,                // ")"
         S_COLON = 27,                            // ":"
         S_SEMICOLON = 28,                        // ";"
         S_COMMA = 29,                            // ","
@@ -1218,31 +1218,31 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_LEFT_PARANTHESIS (location_type l)
+      make_LEFT_PARENTHESIS (location_type l)
       {
-        return symbol_type (token::LEFT_PARANTHESIS, std::move (l));
+        return symbol_type (token::LEFT_PARENTHESIS, std::move (l));
       }
 #else
       static
       symbol_type
-      make_LEFT_PARANTHESIS (const location_type& l)
+      make_LEFT_PARENTHESIS (const location_type& l)
       {
-        return symbol_type (token::LEFT_PARANTHESIS, l);
+        return symbol_type (token::LEFT_PARENTHESIS, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_RIGHT_PARANTHESIS (location_type l)
+      make_RIGHT_PARENTHESIS (location_type l)
       {
-        return symbol_type (token::RIGHT_PARANTHESIS, std::move (l));
+        return symbol_type (token::RIGHT_PARENTHESIS, std::move (l));
       }
 #else
       static
       symbol_type
-      make_RIGHT_PARANTHESIS (const location_type& l)
+      make_RIGHT_PARENTHESIS (const location_type& l)
       {
-        return symbol_type (token::RIGHT_PARANTHESIS, l);
+        return symbol_type (token::RIGHT_PARENTHESIS, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS

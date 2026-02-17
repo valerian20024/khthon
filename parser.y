@@ -81,8 +81,8 @@
 
     LEFT_BRACE                      "{"
     RIGHT_BRACE                     "}"
-    LEFT_PARANTHESIS                "("
-    RIGHT_PARANTHESIS               ")"
+    LEFT_PARENTHESIS                "("
+    RIGHT_PARENTHESIS               ")"
     COLON                           ":"
     SEMICOLON                       ";"
     COMMA                           ","
