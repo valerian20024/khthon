@@ -52,6 +52,7 @@ static const map<Parser::token_type, string> type_to_string = {
     {Parser::token::ASSIGN, "assign"},
 
     {Parser::token::INTEGER_LITERAL, "integer-literal"},
+    {Parser::token::OBJECT_IDENTIFIER, "object-identifier"},
     {Parser::token::TYPE_IDENTIFIER, "type-identifier"},
 };
 

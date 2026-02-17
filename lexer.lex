@@ -181,20 +181,22 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 {ASSIGN}                    return Parser::make_ASSIGN(loc);
 
 
+    /*todo think about out of range error and the likes*/
+
 {INTEGER_LITERAL_DECIMAL}  {
-    cout << "debug dec " << yytext << endl;
     int val = stoi(yytext, nullptr, 10);
     return Parser::make_INTEGER_LITERAL(val, loc);
 }
 
 {INTEGER_LITERAL_HEXADECIMAL}  {
-    cout << "debug hex " << yytext << endl;
     int val = stoi(yytext, nullptr, 16);
     return Parser::make_INTEGER_LITERAL(val, loc);
 }
 
 
-{TYPE_IDENTIFIER}   return Parser::make_TYPE_IDENTIFIER(yytext, loc);     
+{TYPE_IDENTIFIER}       return Parser::make_TYPE_IDENTIFIER(yytext, loc);     
+
+{OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
 
     /* Invalid characters */
 .           {
