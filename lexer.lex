@@ -182,12 +182,14 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
 
 {INTEGER_LITERAL_DECIMAL}  {
-    int val = atoi(yytext);
+    cout << "debug dec " << yytext << endl;
+    int val = stoi(yytext, nullptr, 10);
     return Parser::make_INTEGER_LITERAL(val, loc);
 }
 
 {INTEGER_LITERAL_HEXADECIMAL}  {
-    int val = atoi(yytext);
+    cout << "debug hex " << yytext << endl;
+    int val = stoi(yytext, nullptr, 16);
     return Parser::make_INTEGER_LITERAL(val, loc);
 }
 

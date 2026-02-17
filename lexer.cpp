@@ -1040,27 +1040,29 @@ case 40:
 YY_RULE_SETUP
 #line 185 "lexer.lex"
 {
-    int val = atoi(yytext);
+    cout << "debug dec " << yytext << endl;
+    int val = stoi(yytext, nullptr, 10);
     return Parser::make_INTEGER_LITERAL(val, loc);
 }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 190 "lexer.lex"
+#line 191 "lexer.lex"
 {
-    int val = atoi(yytext);
+    cout << "debug hex " << yytext << endl;
+    int val = stoi(yytext, nullptr, 16);
     return Parser::make_INTEGER_LITERAL(val, loc);
 }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 196 "lexer.lex"
+#line 198 "lexer.lex"
 return Parser::make_TYPE_IDENTIFIER(yytext, loc);     
 	YY_BREAK
 /* Invalid characters */
 case 43:
 YY_RULE_SETUP
-#line 199 "lexer.lex"
+#line 201 "lexer.lex"
 {
                 print_error(loc.begin, "invalid character: " + string(yytext));
                 return Parser::make_YYerror(loc);
@@ -1068,15 +1070,15 @@ YY_RULE_SETUP
 	YY_BREAK
 /* End of file */
 case YY_STATE_EOF(INITIAL):
-#line 205 "lexer.lex"
+#line 207 "lexer.lex"
 return Parser::make_YYEOF(loc);
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 206 "lexer.lex"
+#line 208 "lexer.lex"
 ECHO;
 	YY_BREAK
-#line 1079 "lexer.cpp"
+#line 1081 "lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2043,7 +2045,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 206 "lexer.lex"
+#line 208 "lexer.lex"
 
 
 /*
