@@ -51,6 +51,7 @@ static const map<Parser::token_type, string> type_to_string = {
     {Parser::token::LOWER_EQUAL, "lower-equal"},
     {Parser::token::ASSIGN, "assign"},
 
+    {Parser::token::INTEGER_LITERAL, "integer-literal"},
     {Parser::token::TYPE_IDENTIFIER, "type-identifier"},
 };
 
@@ -64,27 +65,26 @@ static void print_token(Parser::symbol_type token)
     position pos = token.location.begin;
     Parser::token_type type = (Parser::token_type)token.type_get();
 
-    cout << pos.line << ":"
-         << pos.column << ":"
+    cout << pos.line << ","
+         << pos.column << ","
          << type_to_string.at(type);
 
+    // When token has a value, print it based on its type
     switch (type)
     {
-/*        
-        case Parser::token::NUMBER:
+        case Parser::token::INTEGER_LITERAL:
         {
             int value = token.value.as<int>();
-            cout << ":" << value;
+            cout << "," << value;
             break;
         }
 
-        case Parser::token::IDENTIFIER:
+        case Parser::token::TYPE_IDENTIFIER:
         {
             string id = token.value.as<string>();
-            cout << ":" << id;
+            cout << "," << id;
             break;
         }
-*/
         default:
             break;
     }

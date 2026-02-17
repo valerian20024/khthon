@@ -159,7 +159,8 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 {THEN}                      return Parser::make_THEN(loc);
 {TRUE}                      return Parser::make_TRUE(loc);
 {UNIT}                      return Parser::make_UNIT(loc);
-{WHILE}                      return Parser::make_WHILE(loc);
+{WHILE}                     return Parser::make_WHILE(loc);
+
     /* Operators */
 {LEFT_BRACE}                return Parser::make_LEFT_BRACE(loc);
 {RIGHT_BRACE}               return Parser::make_RIGHT_BRACE(loc);
@@ -179,6 +180,16 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 {LOWER_EQUAL}               return Parser::make_LOWER_EQUAL(loc);
 {ASSIGN}                    return Parser::make_ASSIGN(loc);
 
+
+{INTEGER_LITERAL_DECIMAL}  {
+    int val = atoi(yytext);
+    return Parser::make_INTEGER_LITERAL(val, loc);
+}
+
+{INTEGER_LITERAL_HEXADECIMAL}  {
+    int val = atoi(yytext);
+    return Parser::make_INTEGER_LITERAL(val, loc);
+}
 
 
 {TYPE_IDENTIFIER}   return Parser::make_TYPE_IDENTIFIER(yytext, loc);     

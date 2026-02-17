@@ -414,8 +414,11 @@ namespace VSOP {
     /// An auxiliary type to compute the largest semantic type.
     union union_type
     {
+      // "integer-literal"
+      char dummy1[sizeof (int)];
+
       // "type-identifier"
-      char dummy1[sizeof (std::string)];
+      char dummy2[sizeof (std::string)];
     };
 
     /// The size of the largest semantic type.
@@ -505,7 +508,8 @@ namespace VSOP {
     LOWER = 37,                    // "<"
     LOWER_EQUAL = 38,              // "<="
     ASSIGN = 39,                   // "<-"
-    TYPE_IDENTIFIER = 40           // "type-identifier"
+    TYPE_IDENTIFIER = 40,          // "type-identifier"
+    INTEGER_LITERAL = 41           // "integer-literal"
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -522,7 +526,7 @@ namespace VSOP {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 41, ///< Number of tokens.
+        YYNTOKENS = 42, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -565,9 +569,10 @@ namespace VSOP {
         S_LOWER_EQUAL = 38,                      // "<="
         S_ASSIGN = 39,                           // "<-"
         S_TYPE_IDENTIFIER = 40,                  // "type-identifier"
-        S_YYACCEPT = 41,                         // $accept
-        S_unit = 42,                             // unit
-        S_assignments = 43                       // assignments
+        S_INTEGER_LITERAL = 41,                  // "integer-literal"
+        S_YYACCEPT = 42,                         // $accept
+        S_unit = 43,                             // unit
+        S_assignments = 44                       // assignments
       };
     };
 
@@ -604,6 +609,10 @@ namespace VSOP {
       {
         switch (this->kind ())
     {
+      case symbol_kind::S_INTEGER_LITERAL: // "integer-literal"
+        value.move< int > (std::move (that.value));
+        break;
+
       case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
         value.move< std::string > (std::move (that.value));
         break;
@@ -627,6 +636,20 @@ namespace VSOP {
 #else
       basic_symbol (typename Base::kind_type t, const location_type& l)
         : Base (t)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, int&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const int& v, const location_type& l)
+        : Base (t)
+        , value (v)
         , location (l)
       {}
 #endif
@@ -669,6 +692,10 @@ namespace VSOP {
         // Value type destructor.
 switch (yykind)
     {
+      case symbol_kind::S_INTEGER_LITERAL: // "integer-literal"
+        value.template destroy< int > ();
+        break;
+
       case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
         value.template destroy< std::string > ();
         break;
@@ -775,6 +802,18 @@ switch (yykind)
 #if !defined _MSC_VER || defined __clang__
         YY_ASSERT (tok == token::YYEOF
                    || (token::YYerror <= tok && tok <= token::ASSIGN));
+#endif
+      }
+#if 201103L <= YY_CPLUSPLUS
+      symbol_type (int tok, int v, location_type l)
+        : super_type (token_kind_type (tok), std::move (v), std::move (l))
+#else
+      symbol_type (int tok, const int& v, const location_type& l)
+        : super_type (token_kind_type (tok), v, l)
+#endif
+      {
+#if !defined _MSC_VER || defined __clang__
+        YY_ASSERT (tok == token::INTEGER_LITERAL);
 #endif
       }
 #if 201103L <= YY_CPLUSPLUS
@@ -1455,6 +1494,21 @@ switch (yykind)
         return symbol_type (token::TYPE_IDENTIFIER, v, l);
       }
 #endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_INTEGER_LITERAL (int v, location_type l)
+      {
+        return symbol_type (token::INTEGER_LITERAL, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_INTEGER_LITERAL (const int& v, const location_type& l)
+      {
+        return symbol_type (token::INTEGER_LITERAL, v, l);
+      }
+#endif
 
 
   private:
@@ -1786,6 +1840,10 @@ switch (yykind)
   {
     switch (this->kind ())
     {
+      case symbol_kind::S_INTEGER_LITERAL: // "integer-literal"
+        value.copy< int > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
         value.copy< std::string > (YY_MOVE (that.value));
         break;
@@ -1821,6 +1879,10 @@ switch (yykind)
     super_type::move (s);
     switch (this->kind ())
     {
+      case symbol_kind::S_INTEGER_LITERAL: // "integer-literal"
+        value.move< int > (YY_MOVE (s.value));
+        break;
+
       case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
         value.move< std::string > (YY_MOVE (s.value));
         break;
@@ -1892,7 +1954,7 @@ switch (yykind)
 
 #line 19 "parser.y"
 } // VSOP
-#line 1896 "parser.hpp"
+#line 1958 "parser.hpp"
 
 
 
