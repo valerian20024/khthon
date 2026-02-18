@@ -42,6 +42,8 @@
 
     // Global variable used to maintain the current location.
     location loc;
+
+    int nested_comments_counter = 0;
 %}
 
 %x COMMENT
@@ -212,6 +214,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     {COMMENT_START} {
         cout << "begin of comment" << endl;
+        nested_comments_counter++;
         BEGIN(COMMENT);
     }
 
@@ -230,7 +233,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     }
 
     .   {
-        cout << "im in string" << endl;
+        cout << yytext << endl;
     }
     
     <<EOF>>     return Parser::make_YYEOF(loc);
@@ -239,12 +242,22 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
 <COMMENT>{
     .   {
-        cout << "im in comment" << endl;
+        cout << "matched: " << yytext << endl;
+    }
+
+    {COMMENT_START} {
+        nested_comments_counter++;
+        cout << "nested comments: "
+             << nested_comments_counter 
+             << endl;
     }
 
     {COMMENT_END} {
-        cout << "end of comment" << endl;
-        BEGIN(INITIAL);
+        nested_comments_counter--;
+        cout << "nested comments: "
+             << nested_comments_counter 
+             << endl;
+        //BEGIN(INITIAL);
     }
 
     <<EOF>>     return Parser::make_YYEOF(loc);
