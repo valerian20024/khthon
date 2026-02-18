@@ -205,6 +205,16 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     {OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
 
+    {STRING_START} {
+        cout << "begin of string" << endl;
+        BEGIN(STRING);
+    }
+
+    {COMMENT_START} {
+        cout << "begin of comment" << endl;
+        BEGIN(COMMENT);
+    }
+
     /* Invalid characters */
     .           {
                     print_error(loc.begin, "invalid character: " + string(yytext));
@@ -213,8 +223,14 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 }
 
 <STRING>{
+
+    {STRING_END} {
+        cout << "end of string" << endl;
+        BEGIN(INITIAL);
+    }
+
     .   {
-        cout << "im in string";
+        cout << "im in string" << endl;
     }
     
     <<EOF>>     return Parser::make_YYEOF(loc);
@@ -223,7 +239,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
 <COMMENT>{
     .   {
-        cout << "im in comment";
+        cout << "im in comment" << endl;
+    }
+
+    {COMMENT_END} {
+        cout << "end of comment" << endl;
+        BEGIN(INITIAL);
     }
 
     <<EOF>>     return Parser::make_YYEOF(loc);
