@@ -44,6 +44,9 @@
     location loc;
 %}
 
+%x COMMENT
+%x STRING
+
     /* Definitions */
 id    [a-zA-Z][a-zA-Z_0-9]*
 int   [0-9]+
@@ -134,78 +137,84 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     loc.step();
 %}
 
+    /** === Rules === */
+
+<INITIAL>{
     /* White spaces */
-{blank}+    loc.step();
-\n+         loc.lines(yyleng); loc.step();
+    {blank}+    loc.step();
+    \n+         loc.lines(yyleng); loc.step();
+}
 
 
     /* Keywords */
-{AND}                       return Parser::make_AND(loc);
-{BOOL}                      return Parser::make_BOOL(loc);
-{CLASS}                     return Parser::make_CLASS(loc);
-{DO}                        return Parser::make_DO(loc);
-{ELSE}                      return Parser::make_ELSE(loc);
-{EXTENDS}                   return Parser::make_EXTENDS(loc);
-{FALSE}                     return Parser::make_FALSE(loc);
-{IF}                        return Parser::make_IF(loc);
-{IN}                        return Parser::make_IN(loc);
-{INT32}                     return Parser::make_INT32(loc);
-{ISNULL}                    return Parser::make_ISNULL(loc);
-{LET}                       return Parser::make_LET(loc);
-{NEW}                       return Parser::make_NEW(loc);
-{NOT}                       return Parser::make_NOT(loc);
-{SELF}                      return Parser::make_SELF(loc);
-{STRING}                    return Parser::make_STRING(loc);
-{THEN}                      return Parser::make_THEN(loc);
-{TRUE}                      return Parser::make_TRUE(loc);
-{UNIT}                      return Parser::make_UNIT(loc);
-{WHILE}                     return Parser::make_WHILE(loc);
+    {AND}                       return Parser::make_AND(loc);
+    {BOOL}                      return Parser::make_BOOL(loc);
+    {CLASS}                     return Parser::make_CLASS(loc);
+    {DO}                        return Parser::make_DO(loc);
+    {ELSE}                      return Parser::make_ELSE(loc);
+    {EXTENDS}                   return Parser::make_EXTENDS(loc);
+    {FALSE}                     return Parser::make_FALSE(loc);
+    {IF}                        return Parser::make_IF(loc);
+    {IN}                        return Parser::make_IN(loc);
+    {INT32}                     return Parser::make_INT32(loc);
+    {ISNULL}                    return Parser::make_ISNULL(loc);
+    {LET}                       return Parser::make_LET(loc);
+    {NEW}                       return Parser::make_NEW(loc);
+    {NOT}                       return Parser::make_NOT(loc);
+    {SELF}                      return Parser::make_SELF(loc);
+    {STRING}                    return Parser::make_STRING(loc);
+    {THEN}                      return Parser::make_THEN(loc);
+    {TRUE}                      return Parser::make_TRUE(loc);
+    {UNIT}                      return Parser::make_UNIT(loc);
+    {WHILE}                     return Parser::make_WHILE(loc);
 
-    /* Operators */
-{LEFT_BRACE}                return Parser::make_LEFT_BRACE(loc);
-{RIGHT_BRACE}               return Parser::make_RIGHT_BRACE(loc);
-{LEFT_PARENTHESIS}          return Parser::make_LEFT_PARENTHESIS(loc);
-{RIGHT_PARENTHESIS}         return Parser::make_RIGHT_PARENTHESIS(loc);
-{COLON}                     return Parser::make_COLON(loc);
-{SEMICOLON}                 return Parser::make_SEMICOLON(loc);
-{COMMA}                     return Parser::make_COMMA(loc);
-{PLUS}                      return Parser::make_PLUS(loc);
-{MINUS}                     return Parser::make_MINUS(loc);
-{TIMES}                     return Parser::make_TIMES(loc);
-{DIVIDE}                    return Parser::make_DIVIDE(loc);
-{POWER}                     return Parser::make_POWER(loc);
-{DOT}                       return Parser::make_DOT(loc);
-{EQUAL}                     return Parser::make_EQUAL(loc);
-{LOWER}                     return Parser::make_LOWER(loc);
-{LOWER_EQUAL}               return Parser::make_LOWER_EQUAL(loc);
-{ASSIGN}                    return Parser::make_ASSIGN(loc);
+        /* Operators */
+    {LEFT_BRACE}                return Parser::make_LEFT_BRACE(loc);
+    {RIGHT_BRACE}               return Parser::make_RIGHT_BRACE(loc);
+    {LEFT_PARENTHESIS}          return Parser::make_LEFT_PARENTHESIS(loc);
+    {RIGHT_PARENTHESIS}         return Parser::make_RIGHT_PARENTHESIS(loc);
+    {COLON}                     return Parser::make_COLON(loc);
+    {SEMICOLON}                 return Parser::make_SEMICOLON(loc);
+    {COMMA}                     return Parser::make_COMMA(loc);
+    {PLUS}                      return Parser::make_PLUS(loc);
+    {MINUS}                     return Parser::make_MINUS(loc);
+    {TIMES}                     return Parser::make_TIMES(loc);
+    {DIVIDE}                    return Parser::make_DIVIDE(loc);
+    {POWER}                     return Parser::make_POWER(loc);
+    {DOT}                       return Parser::make_DOT(loc);
+    {EQUAL}                     return Parser::make_EQUAL(loc);
+    {LOWER}                     return Parser::make_LOWER(loc);
+    {LOWER_EQUAL}               return Parser::make_LOWER_EQUAL(loc);
+    {ASSIGN}                    return Parser::make_ASSIGN(loc);
 
 
     /*todo think about out range errors and the likes*/
 
-{INTEGER_LITERAL_DECIMAL}  {
-    int val = stoi(yytext, nullptr, 10);
-    return Parser::make_INTEGER_LITERAL(val, loc);
-}
+    {INTEGER_LITERAL_DECIMAL}  {
+        int val = stoi(yytext, nullptr, 10);
+        return Parser::make_INTEGER_LITERAL(val, loc);
+    }
 
-{INTEGER_LITERAL_HEXADECIMAL}  {
-    int val = stoi(yytext, nullptr, 16);
-    return Parser::make_INTEGER_LITERAL(val, loc);
-}
+    {INTEGER_LITERAL_HEXADECIMAL}  {
+        int val = stoi(yytext, nullptr, 16);
+        return Parser::make_INTEGER_LITERAL(val, loc);
+    }
 
 
-{TYPE_IDENTIFIER}       return Parser::make_TYPE_IDENTIFIER(yytext, loc);     
+    {TYPE_IDENTIFIER}       return Parser::make_TYPE_IDENTIFIER(yytext, loc);     
 
-{OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
+    {OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
 
     /* Invalid characters */
-.           {
-                print_error(loc.begin, "invalid character: " + string(yytext));
-                return Parser::make_YYerror(loc);
-}
+    .           {
+                    print_error(loc.begin, "invalid character: " + string(yytext));
+                    return Parser::make_YYerror(loc);
+    }
     
     /* End of file */
-<<EOF>>     return Parser::make_YYEOF(loc);
+    <<EOF>>     return Parser::make_YYEOF(loc);
+
+
 %%
 
 static void print_error(const position &pos, const string &m)
