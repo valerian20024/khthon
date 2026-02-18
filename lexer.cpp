@@ -1094,15 +1094,18 @@ case 45:
 YY_RULE_SETUP
 #line 216 "lexer.lex"
 {
-        cout << "begin of comment" << endl;
         nested_comments_counter++;
+        cout << "begin of comment" << endl
+             << "nested comments: "
+             << nested_comments_counter
+             << endl;
         BEGIN(COMMENT);
     }
 	YY_BREAK
 /* Invalid characters */
 case 46:
 YY_RULE_SETUP
-#line 223 "lexer.lex"
+#line 226 "lexer.lex"
 {
                     print_error(loc.begin, "invalid character: " + string(yytext));
                     return Parser::make_YYerror(loc);
@@ -1112,7 +1115,7 @@ YY_RULE_SETUP
 
 case 47:
 YY_RULE_SETUP
-#line 231 "lexer.lex"
+#line 234 "lexer.lex"
 {
         cout << "end of string" << endl;
         BEGIN(INITIAL);
@@ -1120,27 +1123,27 @@ YY_RULE_SETUP
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 236 "lexer.lex"
+#line 239 "lexer.lex"
 {
         cout << yytext << endl;
     }
 	YY_BREAK
 case YY_STATE_EOF(STRING):
-#line 240 "lexer.lex"
+#line 243 "lexer.lex"
 return Parser::make_YYEOF(loc);
 	YY_BREAK
 
 
 case 49:
 YY_RULE_SETUP
-#line 245 "lexer.lex"
+#line 248 "lexer.lex"
 {
         cout << "matched: " << yytext << endl;
     }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 249 "lexer.lex"
+#line 252 "lexer.lex"
 {
         nested_comments_counter++;
         cout << "nested comments: "
@@ -1150,31 +1153,33 @@ YY_RULE_SETUP
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 256 "lexer.lex"
+#line 259 "lexer.lex"
 {
         nested_comments_counter--;
         cout << "nested comments: "
              << nested_comments_counter 
              << endl;
-        //BEGIN(INITIAL);
+
+        if (nested_comments_counter == 0)
+            BEGIN(INITIAL);
     }
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 264 "lexer.lex"
+#line 269 "lexer.lex"
 return Parser::make_YYEOF(loc);
 	YY_BREAK
 
 /* End of file */
 case YY_STATE_EOF(INITIAL):
-#line 268 "lexer.lex"
+#line 273 "lexer.lex"
 return Parser::make_YYEOF(loc);
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 271 "lexer.lex"
+#line 276 "lexer.lex"
 ECHO;
 	YY_BREAK
-#line 1177 "lexer.cpp"
+#line 1182 "lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2141,7 +2146,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 271 "lexer.lex"
+#line 276 "lexer.lex"
 
 
 static void print_error(const position &pos, const string &m)

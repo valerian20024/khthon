@@ -213,8 +213,11 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     }
 
     {COMMENT_START} {
-        cout << "begin of comment" << endl;
         nested_comments_counter++;
+        cout << "begin of comment" << endl
+             << "nested comments: "
+             << nested_comments_counter
+             << endl;
         BEGIN(COMMENT);
     }
 
@@ -239,7 +242,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     <<EOF>>     return Parser::make_YYEOF(loc);
 }
 
-
+    /*todo check Loup's comment state.*/
 <COMMENT>{
     .   {
         cout << "matched: " << yytext << endl;
@@ -257,7 +260,9 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         cout << "nested comments: "
              << nested_comments_counter 
              << endl;
-        //BEGIN(INITIAL);
+
+        if (nested_comments_counter == 0)
+            BEGIN(INITIAL);
     }
 
     <<EOF>>     return Parser::make_YYEOF(loc);
