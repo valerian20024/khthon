@@ -857,7 +857,6 @@ YY_RULE_SETUP
 #line 146 "lexer.lex"
 loc.lines(yyleng); loc.step();
 	YY_BREAK
-
 /* Keywords */
 case 3:
 YY_RULE_SETUP
@@ -1081,6 +1080,7 @@ YY_RULE_SETUP
                     return Parser::make_YYerror(loc);
     }
 	YY_BREAK
+
 /* End of file */
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):

@@ -143,7 +143,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     /* White spaces */
     {blank}+    loc.step();
     \n+         loc.lines(yyleng); loc.step();
-}
+
 
 
     /* Keywords */
@@ -210,7 +210,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
                     print_error(loc.begin, "invalid character: " + string(yytext));
                     return Parser::make_YYerror(loc);
     }
-    
+}
     /* End of file */
     <<EOF>>     return Parser::make_YYEOF(loc);
 
