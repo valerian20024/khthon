@@ -211,6 +211,24 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
                     return Parser::make_YYerror(loc);
     }
 }
+
+<STRING>{
+    .   {
+        cout << "im in string";
+    }
+    
+    <<EOF>>     return Parser::make_YYEOF(loc);
+}
+
+
+<COMMENT>{
+    .   {
+        cout << "im in comment";
+    }
+
+    <<EOF>>     return Parser::make_YYEOF(loc);
+}
+
     /* End of file */
     <<EOF>>     return Parser::make_YYEOF(loc);
 
