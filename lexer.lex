@@ -72,6 +72,9 @@ COMMENT_SL                      "//".*  /*todo check this*/
 INTEGER_LITERAL_DECIMAL         {DECIMAL_DIGIT}+
 INTEGER_LITERAL_HEXADECIMAL     0x{HEXADECIMAL_DIGIT}+
 
+    /* Unambiguous utility definitions */
+NEWLINE                         \n
+
     /* Keywords */
 AND                             "and"
 BOOL                            "bool"
@@ -136,6 +139,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 %{
     // Code run each time yylex is called.
     // Prepare location for new token
+    /* It moves loc.begin to where loc.end currently is */
     loc.step();
 %}
 
@@ -250,6 +254,8 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     {COMMENT_START} {
         nested_comments_counter++;
+        
+        /*debug info*/
         cout << "nested comments: "
              << nested_comments_counter 
              << endl;
@@ -257,6 +263,8 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     {COMMENT_END} {
         nested_comments_counter--;
+
+        /*debug info*/
         cout << "nested comments: "
              << nested_comments_counter 
              << endl;
@@ -264,6 +272,17 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         if (nested_comments_counter == 0)
             BEGIN(INITIAL);
     }
+    
+    {NEWLINE}+  {
+        loc.lines(yyleng);
+        loc.step();
+    }
+
+    . {
+        loc.step();
+    }
+    
+
 
     /*EOF cannot happen inside an opened comment*/
     /*using make_YYEOF to avoid an infinite loop of error*/
