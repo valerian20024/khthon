@@ -255,6 +255,10 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     {STRING_END} {
         cout << "end of string" << endl;
+        /*
+        generate a string token with the value of current string, 
+        then clear the current_string
+        */
         BEGIN(INITIAL);
     }
 
@@ -270,11 +274,21 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         cout << "current_string: " << current_string << endl;
     }
 
+    {ESCAPED_BACKSPACE}     {current_string += "\\x08";}
+    {ESCAPED_TABULATION}    {current_string += "\\x09";}
+    {ESCAPED_NEWLINE}       {current_string += "\\x0a";}
+    {ESCAPED_RETURN}        {current_string += "\\x0d";}
+    {ESCAPED_QUOTES}        {current_string += "\\x22";}
+    {ESCAPED_BACKSLASH}     {current_string += "\\x5c";}
+
+    {ESCAPED_HEXADECIMAL}   {current_string.append(yytext, yyleng);}
+
+
     .   {
         cout << yytext << endl;
     }
     
-    <<EOF>>     return Parser::make_YYEOF(loc);
+    <<EOF>>     {return Parser::make_YYEOF(loc);}
 }
 
     /*todo check Loup's comment state.*/
@@ -356,3 +370,4 @@ void Driver::scan_end()
 {
     fclose(yyin);
 }
+
