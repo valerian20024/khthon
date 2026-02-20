@@ -293,6 +293,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         cout << yytext << endl;
     }
     
+    /*! should be an error + the case of \n should be an error too*/
     <<EOF>>     {return Parser::make_YYEOF(loc);}
 }
 

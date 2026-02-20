@@ -1234,15 +1234,16 @@ YY_RULE_SETUP
         cout << yytext << endl;
     }
 	YY_BREAK
+/*! should be an error + the case of \n should be an error too*/
 case YY_STATE_EOF(STRING):
-#line 297 "lexer.lex"
+#line 298 "lexer.lex"
 {return Parser::make_YYEOF(loc);}
 	YY_BREAK
 
 
 case 59:
 YY_RULE_SETUP
-#line 301 "lexer.lex"
+#line 302 "lexer.lex"
 {
         nested_comments_counter++;
         
@@ -1256,7 +1257,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 312 "lexer.lex"
+#line 313 "lexer.lex"
 {
         nested_comments_counter--;
 
@@ -1273,7 +1274,7 @@ YY_RULE_SETUP
 case 61:
 /* rule 61 can match eol */
 YY_RULE_SETUP
-#line 325 "lexer.lex"
+#line 326 "lexer.lex"
 {
         loc.lines(yyleng);
         loc.step();
@@ -1282,7 +1283,7 @@ YY_RULE_SETUP
 /* debug */
 case 62:
 YY_RULE_SETUP
-#line 331 "lexer.lex"
+#line 332 "lexer.lex"
 {
         cout << yytext << endl;
         loc.step();
@@ -1290,7 +1291,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 336 "lexer.lex"
+#line 337 "lexer.lex"
 {
         loc.step();
     }
@@ -1300,7 +1301,7 @@ YY_RULE_SETUP
     Using make_YYEOF to avoid an infinite loop of error 
     */
 case YY_STATE_EOF(COMMENT):
-#line 344 "lexer.lex"
+#line 345 "lexer.lex"
 {
         print_error(loc.begin, "EOF cannot happen inside an unclosed comment" + string(yytext));
         return Parser::make_YYEOF(loc);
@@ -1309,15 +1310,15 @@ case YY_STATE_EOF(COMMENT):
 
 /* End of file */
 case YY_STATE_EOF(INITIAL):
-#line 351 "lexer.lex"
+#line 352 "lexer.lex"
 return Parser::make_YYEOF(loc);
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 352 "lexer.lex"
+#line 353 "lexer.lex"
 ECHO;
 	YY_BREAK
-#line 1320 "lexer.cpp"
+#line 1321 "lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2284,7 +2285,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 352 "lexer.lex"
+#line 353 "lexer.lex"
 
 
 static void print_error(const position &pos, const string &m)
