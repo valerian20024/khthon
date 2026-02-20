@@ -255,11 +255,10 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
 <STRING>{
     {STRING_END} {
-        cout << "end of string" << endl;
-        /*
-        generate a string token with the value of current string, 
-        then clear the current_string
-        */
+        cout << "End of string" << endl
+             << "Result: " << current_string << endl;
+        /* todo  Generate a string token with the value of current string, */
+        /* todo  then clear the current_string */
         BEGIN(INITIAL);
     }
 
@@ -283,9 +282,11 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {ESCAPED_BACKSLASH}     {current_string += "\\x5c";}
 
     {ESCAPED_HEXADECIMAL}   {
-        string value = printable_hex_value(yytext);
-        cout << "escaped hexa is: " << value << endl;
-        current_string.append(yytext, yyleng);
+        string decoded = printable_hex_value(yytext);
+        cout << "escaped hexa is: " << decoded << endl;
+
+        //current_string.append(decoded, yyleng);
+        current_string += decoded;
     }
 
 
