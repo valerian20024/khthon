@@ -218,8 +218,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     {COMMENT_START} {
         nested_comments_counter++;
-        cout << "begin of comment" << endl
-             << "nested comments: "
+        cout << "  comments level: "
              << nested_comments_counter
              << endl;
         BEGIN(COMMENT);
@@ -248,15 +247,11 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     /*todo check Loup's comment state.*/
 <COMMENT>{
-    .   {
-        cout << "matched: " << yytext << endl;
-    }
-
     {COMMENT_START} {
         nested_comments_counter++;
         
         /*debug info*/
-        cout << "nested comments: "
+        cout << "  comments level: "
              << nested_comments_counter 
              << endl;
     }
@@ -265,7 +260,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         nested_comments_counter--;
 
         /*debug info*/
-        cout << "nested comments: "
+        cout << "  comments level: "
              << nested_comments_counter 
              << endl;
 
@@ -278,11 +273,14 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         loc.step();
     }
 
+    [a-zA-Z0-9\-\_ :;.,]+    {
+        cout << yytext << endl;
+        loc.step();
+    }
+
     . {
         loc.step();
     }
-    
-
 
     /*EOF cannot happen inside an opened comment*/
     /*using make_YYEOF to avoid an infinite loop of error*/

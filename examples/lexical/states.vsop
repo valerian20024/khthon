@@ -1,5 +1,86 @@
-class (*class*) and
-while int32 (**)
-(* comment
+(* ----------------------------------------------
+   Comment stress-test file for VSOP lexer
+   Goal: nested comments, newlines, stars, parens, empty lines, trailing/leading junk
+---------------------------------------------- *)
+
+class TestCommentStress
+
+(* single-line comment with trailing spaces     *)
+let x : int32 <- 42;   (* inline after code *)
+
+(*------------------------------------------------*)
+
+(* nested level 1
+   (* nested level 2
+      (* nested level 3
+         this should still be ignored
+         (* even deeper 4 *)
+         still ignored
+      *)
+      back to level 2
+   *)
+   back to level 1
 *)
-new
+
+
+(*------------------------------------------------*)
+(* empty comment with just stars *)
+(*******************************)
+(* empty comment with spaces   *)
+(*                             *)
+
+(* comment with many stars in a row ********************)
+(* comment with many parens in a row ))))))))))))))))) *)
+(* comment with mixed junk: *()*)((**)(*)(*)*)(* *)
+
+(* comment ending exactly at newline
+*)
+let y : string <- "after multi-line comment";
+
+(* comment with trailing newline before closing
+   line 1
+   line 2
+
+*)
+let z : int32 <- 10;
+
+
+(* Unclosed nested comment starts here 
+   (* level 2
+      (* level 3
+         (* level 4
+*)
+ ending
+ *)  comments  *) strangely
+        *)
+
+
+(* This line should still be normal code if nesting was closed properly *)
+let self : TestCommentStress <- new TestCommentStress();
+
+(* comment containing a fake string "*) hello *)
+(* comment containing a fake assign <- inside comment *)
+
+(* very long comment line without newline but with many characters: abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;':",./<>?~` *)
+
+(* comment
+   with
+      irregular
+         indentation
+            and tabs		and 		spaces	  	   *)
+
+(* → The next token should be on line XX – count carefully *)
+
+    (* indented comment
+       still indented *)
+
+(* comment *) (* another comment right after without space *)let a : int32 <- 1;
+
+(* comment*)let b : int32 <- 2;(*comment*)let c : int32 <- 3;
+
+
+(* End of stress test – if the lexer survives until here
+   without wrong token positions / missing tokens / infinite loops
+   then it's probably doing quite well with comments *)
+  
+  class
