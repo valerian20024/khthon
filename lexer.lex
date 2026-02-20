@@ -371,3 +371,24 @@ void Driver::scan_end()
     fclose(yyin);
 }
 
+string printable_hex_value(const string& hex_string) {
+    // Verify input
+    if (hex_string.size() < 4 || hex_string.substr(0, 2) != "\\x")
+        cerr << "error in printable_hex_value: "
+                "incorrect escaped character" 
+                << endl;
+
+    // Remove the escaping header ("\x")
+    int hex_code = stoi(hex_string.substr(2), nullptr, 16);
+
+    /* 
+    Only change the value for printable hexadecimal characters.
+    Avoid ASCII non-printable characters and both " and \
+    */
+    if (hex_code <= 0x1f || hex_code >= 0x7f ||
+        hex_code == 0x5c || hex_code == 0x22) {
+        return hex_string;
+    }
+
+    return string(1, static_cast<char>(hex_code));
+}
