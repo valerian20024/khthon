@@ -64,6 +64,8 @@ HEXADECIMAL_DIGIT               [0-9a-fA-F]
 
 WHITESPACE                      [ \t\n\f\r]
 WHITESPACE_NO_LF                [ \t\f\r]
+SPACE                           " "
+TABULATION                      \t
 
 COMMENT_START                   "(*"
 COMMENT_END                     "*)"
@@ -101,16 +103,22 @@ TYPE_IDENTIFIER                 {UPPERCASE_LETTER}({LETTER}|{DECIMAL_DIGIT}|_)*
 
 OBJECT_IDENTIFIER               {LOWERCASE_LETTER}({LETTER}|{DECIMAL_DIGIT}|_)*
 
+    /* String and escaped characters */
 STRING_START                    "\""
 STRING_END                      "\""
-STRING_BREAK                    \\\n({WHITESPACE_NO_LF})*
-ESCAPED_HEX                     \\x{HEXADECIMAL_DIGIT}{HEXADECIMAL_DIGIT}
-ESCAPED_N                       \\n
-ESCAPED_T                       \\t
-ESCAPED_B                       \\b
-ESCAPED_R                       \\r
+STRING_BREAK                    \\\n({SPACE}|{TABULATION})*
+ESCAPED_HEXADECIMAL             \\x{HEXADECIMAL_DIGIT}{HEXADECIMAL_DIGIT}
+ESCAPED_NEWLINE                 \\n
+ESCAPED_TABULATION              \\t
+ESCAPED_BACKSPACE               \\b
+ESCAPED_RETURN                  \\r
 ESCAPED_QUOTES                  \\\"
 ESCAPED_BACKSLASH               \\\\
+
+    /*todo understand Loup's construct*/
+ESCAPED_HEX_ERR                 \\x..
+STRING_WRONG_ESCAPE_CHAR        \\[^ntbr\"\\\n]
+
 
     /* Operators */
 LEFT_BRACE                      "{"
@@ -196,12 +204,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     /*todo think about out range errors and the likes*/
 
-    {INTEGER_LITERAL_DECIMAL}  {
+    {INTEGER_LITERAL_DECIMAL} {
         int val = stoi(yytext, nullptr, 10);
         return Parser::make_INTEGER_LITERAL(val, loc);
     }
 
-    {INTEGER_LITERAL_HEXADECIMAL}  {
+    {INTEGER_LITERAL_HEXADECIMAL} {
         int val = stoi(yytext, nullptr, 16);
         return Parser::make_INTEGER_LITERAL(val, loc);
     }
@@ -216,7 +224,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         BEGIN(STRING);
     }
 
-    {COMMENT_START}     {
+    {COMMENT_START} {
         nested_comments_counter++;
         cout << "  comments level: "
              << nested_comments_counter
@@ -224,16 +232,16 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         BEGIN(COMMENT);
     }
 
-    {COMMENT_END}       {
+    {COMMENT_END} {
         print_error(loc.begin, "closing an unmatched opening comment: " + string(yytext));
         return Parser::make_YYerror(loc);
 
     }
 
     /* Invalid characters */
-    .           {
-                    print_error(loc.begin, "invalid character: " + string(yytext));
-                    return Parser::make_YYerror(loc);
+    . {
+        print_error(loc.begin, "invalid character: " + string(yytext));
+        return Parser::make_YYerror(loc);
     }
 }
 
@@ -242,6 +250,16 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {STRING_END} {
         cout << "end of string" << endl;
         BEGIN(INITIAL);
+    }
+
+    {STRING_BREAK} {
+        int ws_count = yyleng - 2;
+        loc.step();
+        loc.lines(1);
+        loc.columns(ws_count);
+
+        cout << "yyleng: " << yyleng << endl;
+        
     }
 
     .   {
