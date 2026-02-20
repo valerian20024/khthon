@@ -255,9 +255,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
 <STRING>{
     {STRING_END} {
-        cout << "  Resulting string: " << current_string << endl;
-        /*todo add " and " around the actual string*/
-        string value = current_string;
+        string value = "\"" + current_string + "\"";
         current_string.clear();
         BEGIN(INITIAL);
         return Parser::make_STRING_LITERAL(value, loc);
