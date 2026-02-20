@@ -216,12 +216,18 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         BEGIN(STRING);
     }
 
-    {COMMENT_START} {
+    {COMMENT_START}     {
         nested_comments_counter++;
         cout << "  comments level: "
              << nested_comments_counter
              << endl;
         BEGIN(COMMENT);
+    }
+
+    {COMMENT_END}       {
+        print_error(loc.begin, "closing an unmatched opening comment: " + string(yytext));
+        return Parser::make_YYerror(loc);
+
     }
 
     /* Invalid characters */

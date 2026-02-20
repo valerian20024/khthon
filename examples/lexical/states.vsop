@@ -54,6 +54,8 @@ let z : int32 <- 10;
  *)  comments  *) strangely
         *)
 
+(* *) *)  mettre dans initial que un comment ne peut pas se fermer si il n est pas commence
+
 
 (* This line should still be normal code if nesting was closed properly *)
 let self : TestCommentStress <- new TestCommentStress();
