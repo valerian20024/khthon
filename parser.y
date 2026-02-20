@@ -57,7 +57,6 @@
 
 // Token and symbols definitions
 %token
-    
     AND                             "and"
     BOOL                            "bool"
     CLASS                           "class"

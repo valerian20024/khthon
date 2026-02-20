@@ -121,7 +121,7 @@ ESCAPED_BACKSLASH               \\\\
     /* not " or \ or \n */
 STRING_NORMAL_CHARACTERS        [^"\\\n]+
 
-    /*todo understand Loup's construct*/
+    /*todo apply wrong hexadecimal code */
 ESCAPED_HEX_ERR                 \\x..
 STRING_WRONG_ESCAPE_CHAR        \\[^ntbr\"\\\n]
 
@@ -160,11 +160,9 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     /** === Rules === */
 
 <INITIAL>{
-    /* White spaces - legacy rules from calc */
+    /*! White spaces - legacy rules from calc */
     {blank}+    loc.step();
     \n+         loc.lines(yyleng); loc.step();
-
-
 
     /* Keywords */
     {AND}                       return Parser::make_AND(loc);
@@ -188,7 +186,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {UNIT}                      return Parser::make_UNIT(loc);
     {WHILE}                     return Parser::make_WHILE(loc);
 
-        /* Operators */
+    /* Operators */
     {LEFT_BRACE}                return Parser::make_LEFT_BRACE(loc);
     {RIGHT_BRACE}               return Parser::make_RIGHT_BRACE(loc);
     {LEFT_PARENTHESIS}          return Parser::make_LEFT_PARENTHESIS(loc);
@@ -207,9 +205,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {LOWER_EQUAL}               return Parser::make_LOWER_EQUAL(loc);
     {ASSIGN}                    return Parser::make_ASSIGN(loc);
 
-
     /*todo think about out range errors and the likes*/
-
     {INTEGER_LITERAL_DECIMAL} {
         int val = stoi(yytext, nullptr, 10);
         return Parser::make_INTEGER_LITERAL(val, loc);
@@ -220,9 +216,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         return Parser::make_INTEGER_LITERAL(val, loc);
     }
 
-
     {TYPE_IDENTIFIER}       return Parser::make_TYPE_IDENTIFIER(yytext, loc);     
-
     {OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
 
     {STRING_START} {
@@ -241,7 +235,6 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {COMMENT_END} {
         print_error(loc.begin, "closing an unmatched opening comment: " + string(yytext));
         return Parser::make_YYerror(loc);
-
     }
 
     /* Invalid characters */
@@ -252,7 +245,6 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 }
 
 <STRING>{
-
     {STRING_END} {
         cout << "end of string" << endl;
         /*
@@ -296,7 +288,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {COMMENT_START} {
         nested_comments_counter++;
         
-        /*debug info*/
+        /* debug info */
         cout << "  comments level: "
              << nested_comments_counter 
              << endl;
@@ -305,7 +297,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {COMMENT_END} {
         nested_comments_counter--;
 
-        /*debug info*/
+        /* debug info */
         cout << "  comments level: "
              << nested_comments_counter 
              << endl;
@@ -313,7 +305,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         if (nested_comments_counter == 0)
             BEGIN(INITIAL);
     }
-    
+
     {NEWLINE}+  {
         loc.lines(yyleng);
         loc.step();
@@ -328,8 +320,10 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         loc.step();
     }
 
-    /*EOF cannot happen inside an opened comment*/
-    /*using make_YYEOF to avoid an infinite loop of error*/
+    /* 
+    EOF cannot happen inside an opened comment
+    Using make_YYEOF to avoid an infinite loop of error 
+    */
     <<EOF>> {
         print_error(loc.begin, "EOF cannot happen inside an unclosed comment" + string(yytext));
         return Parser::make_YYEOF(loc);
@@ -338,8 +332,6 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     /* End of file */
     <<EOF>>     return Parser::make_YYEOF(loc);
-
-
 %%
 
 static void print_error(const position &pos, const string &m)
@@ -352,7 +344,7 @@ static void print_error(const position &pos, const string &m)
          << endl;
 }
 
-void Driver::scan_begin()
+void Driver::scan_begin() 
 {
     loc.initialize(&source_file);
 
@@ -366,17 +358,19 @@ void Driver::scan_begin()
     }
 }
 
-void Driver::scan_end()
+void Driver::scan_end() 
 {
     fclose(yyin);
 }
 
-string printable_hex_value(const string& hex_string) {
+string printable_hex_value(const string& hex_string) 
+{
     // Verify input
-    if (hex_string.size() < 4 || hex_string.substr(0, 2) != "\\x")
+    if (hex_string.size() < 4 || hex_string.substr(0, 2) != "\\x") {
         cerr << "error in printable_hex_value: "
                 "incorrect escaped character" 
                 << endl;
+    }
 
     // Remove the escaping header ("\x")
     int hex_code = stoi(hex_string.substr(2), nullptr, 16);

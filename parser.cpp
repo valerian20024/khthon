@@ -578,19 +578,19 @@ namespace VSOP {
           switch (yyn)
             {
   case 2: // unit: "class" assignments
-#line 116 "parser.y"
+#line 115 "parser.y"
                         { }
 #line 584 "parser.cpp"
     break;
 
   case 3: // unit: assignments
-#line 117 "parser.y"
+#line 116 "parser.y"
                    { }
 #line 590 "parser.cpp"
     break;
 
   case 4: // assignments: %empty
-#line 120 "parser.y"
+#line 119 "parser.y"
                                 {}
 #line 596 "parser.cpp"
     break;
@@ -871,7 +871,7 @@ namespace VSOP {
   const signed char
   Parser::yyrline_[] =
   {
-       0,   116,   116,   117,   120
+       0,   115,   115,   116,   119
   };
 
   void
@@ -906,7 +906,7 @@ namespace VSOP {
 } // VSOP
 #line 908 "parser.cpp"
 
-#line 144 "parser.y"
+#line 143 "parser.y"
 
 // User code
 void VSOP::Parser::error(const location_type& l, const std::string& m)
