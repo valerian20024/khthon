@@ -262,14 +262,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         int ws_count = yyleng - 2;
         loc.step();
         loc.lines(1);
-        loc.columns(ws_count);
-
-        cout << "yyleng: " << yyleng << endl;
-        
+        loc.columns(ws_count);        
     }
 
     {STRING_NORMAL_CHARACTERS} {
         current_string.append(yytext, yyleng);
+        cout << "current_string: " << current_string << endl;
     }
 
     .   {
