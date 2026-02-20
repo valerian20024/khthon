@@ -265,7 +265,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
             BEGIN(INITIAL);
     }
 
-    <<EOF>>     return Parser::make_YYEOF(loc);
+    /*EOF cannot happen inside an opened comment*/
+    /*using make_YYEOF to avoid an infinite loop of error*/
+    <<EOF>> {
+        print_error(loc.begin, "EOF cannot happen inside an unclosed comment" + string(yytext));
+        return Parser::make_YYEOF(loc);
+    }
 }
 
     /* End of file */

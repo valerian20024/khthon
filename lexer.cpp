@@ -1133,6 +1133,7 @@ case YY_STATE_EOF(STRING):
 return Parser::make_YYEOF(loc);
 	YY_BREAK
 
+/*todo check Loup's comment state.*/
 
 case 49:
 YY_RULE_SETUP
@@ -1164,22 +1165,26 @@ YY_RULE_SETUP
             BEGIN(INITIAL);
     }
 	YY_BREAK
+/*EOF cannot happen inside an opened comment*/
 case YY_STATE_EOF(COMMENT):
-#line 269 "lexer.lex"
-return Parser::make_YYEOF(loc);
+#line 270 "lexer.lex"
+{
+        print_error(loc.begin, "EOF cannot happen inside an unclosed comment" + string(yytext));
+        return Parser::make_YYEOF(loc);
+    }
 	YY_BREAK
 
 /* End of file */
 case YY_STATE_EOF(INITIAL):
-#line 273 "lexer.lex"
+#line 277 "lexer.lex"
 return Parser::make_YYEOF(loc);
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 276 "lexer.lex"
+#line 280 "lexer.lex"
 ECHO;
 	YY_BREAK
-#line 1182 "lexer.cpp"
+#line 1187 "lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2146,7 +2151,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 276 "lexer.lex"
+#line 280 "lexer.lex"
 
 
 static void print_error(const position &pos, const string &m)
