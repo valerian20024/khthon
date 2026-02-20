@@ -118,6 +118,9 @@ ESCAPED_RETURN                  \\r
 ESCAPED_QUOTES                  \\\"
 ESCAPED_BACKSLASH               \\\\
 
+    /* not " or \ or \n */
+STRING_NORMAL_CHARACTERS        [^"\\\n]+
+
     /*todo understand Loup's construct*/
 ESCAPED_HEX_ERR                 \\x..
 STRING_WRONG_ESCAPE_CHAR        \\[^ntbr\"\\\n]
@@ -263,6 +266,10 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
         cout << "yyleng: " << yyleng << endl;
         
+    }
+
+    {STRING_NORMAL_CHARACTERS} {
+        current_string.append(yytext, yyleng);
     }
 
     .   {
