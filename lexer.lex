@@ -43,15 +43,18 @@
     // Global variable used to maintain the current location.
     location loc;
 
+    // Global variable to track the nested comments number
     int nested_comments_counter = 0;
+
+    // Global variable for storing data when scanning a string
+    std::string current_string;
 %}
 
 %x COMMENT
 %x STRING
 
     /* Definitions */
-id    [a-zA-Z][a-zA-Z_0-9]*
-int   [0-9]+
+
 blank [ \t\r]
 
 LOWERCASE_LETTER                [a-z]
@@ -154,7 +157,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     /** === Rules === */
 
 <INITIAL>{
-    /* White spaces */
+    /* White spaces - legacy rules from calc */
     {blank}+    loc.step();
     \n+         loc.lines(yyleng); loc.step();
 
