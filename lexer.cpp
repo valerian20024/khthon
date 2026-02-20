@@ -588,7 +588,7 @@ char *yytext;
      * @example Transforms a "\x61" into "a".
      * @example "\x01" is not converted because it is not printable.
      */
-    std::string printable_hex_value(const std::string& hex_string);
+    static std::string printable_hex_value(const std::string& hex_string);
     
     // Code run each time a pattern is matched.
     #define YY_USER_ACTION  loc.columns(yyleng);
@@ -1241,11 +1241,10 @@ case YY_STATE_EOF(STRING):
 {return Parser::make_YYEOF(loc);}
 	YY_BREAK
 
-/*todo check Loup's comment state.*/
 
 case 59:
 YY_RULE_SETUP
-#line 304 "lexer.lex"
+#line 303 "lexer.lex"
 {
         nested_comments_counter++;
         
@@ -1259,7 +1258,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 315 "lexer.lex"
+#line 314 "lexer.lex"
 {
         nested_comments_counter--;
 
@@ -1276,7 +1275,7 @@ YY_RULE_SETUP
 case 61:
 /* rule 61 can match eol */
 YY_RULE_SETUP
-#line 328 "lexer.lex"
+#line 327 "lexer.lex"
 {
         loc.lines(yyleng);
         loc.step();
@@ -1285,7 +1284,7 @@ YY_RULE_SETUP
 /* debug */
 case 62:
 YY_RULE_SETUP
-#line 334 "lexer.lex"
+#line 333 "lexer.lex"
 {
         cout << yytext << endl;
         loc.step();
@@ -1293,7 +1292,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 339 "lexer.lex"
+#line 338 "lexer.lex"
 {
         loc.step();
     }
@@ -1303,7 +1302,7 @@ YY_RULE_SETUP
     Using make_YYEOF to avoid an infinite loop of error 
     */
 case YY_STATE_EOF(COMMENT):
-#line 347 "lexer.lex"
+#line 346 "lexer.lex"
 {
         print_error(loc.begin, "EOF cannot happen inside an unclosed comment" + string(yytext));
         return Parser::make_YYEOF(loc);
@@ -1312,15 +1311,15 @@ case YY_STATE_EOF(COMMENT):
 
 /* End of file */
 case YY_STATE_EOF(INITIAL):
-#line 354 "lexer.lex"
+#line 353 "lexer.lex"
 return Parser::make_YYEOF(loc);
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 355 "lexer.lex"
+#line 354 "lexer.lex"
 ECHO;
 	YY_BREAK
-#line 1323 "lexer.cpp"
+#line 1322 "lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2287,7 +2286,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 355 "lexer.lex"
+#line 354 "lexer.lex"
 
 
 static void print_error(const position &pos, const string &m)
@@ -2319,7 +2318,7 @@ void Driver::scan_end()
     fclose(yyin);
 }
 
-string printable_hex_value(const string& hex_string) 
+static string printable_hex_value(const string& hex_string) 
 {
     // Verify input
     if (hex_string.size() < 4 || hex_string.substr(0, 2) != "\\x") {

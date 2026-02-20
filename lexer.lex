@@ -44,7 +44,7 @@
      * @example Transforms a "\x61" into "a".
      * @example "\x01" is not converted because it is not printable.
      */
-    std::string printable_hex_value(const std::string& hex_string);
+    static std::string printable_hex_value(const std::string& hex_string);
     
     // Code run each time a pattern is matched.
     #define YY_USER_ACTION  loc.columns(yyleng);
@@ -298,7 +298,6 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     <<EOF>>     {return Parser::make_YYEOF(loc);}
 }
 
-    /*todo check Loup's comment state.*/
 <COMMENT>{
     {COMMENT_START} {
         nested_comments_counter++;
@@ -382,7 +381,7 @@ void Driver::scan_end()
     fclose(yyin);
 }
 
-string printable_hex_value(const string& hex_string) 
+static string printable_hex_value(const string& hex_string) 
 {
     // Verify input
     if (hex_string.size() < 4 || hex_string.substr(0, 2) != "\\x") {
