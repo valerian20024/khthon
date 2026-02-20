@@ -215,6 +215,7 @@ namespace VSOP {
 
       case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_OBJECT_IDENTIFIER: // "object-identifier"
+      case symbol_kind::S_STRING_LITERAL: // "string-literal"
         value.YY_MOVE_OR_COPY< std::string > (YY_MOVE (that.value));
         break;
 
@@ -239,6 +240,7 @@ namespace VSOP {
 
       case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_OBJECT_IDENTIFIER: // "object-identifier"
+      case symbol_kind::S_STRING_LITERAL: // "string-literal"
         value.move< std::string > (YY_MOVE (that.value));
         break;
 
@@ -263,6 +265,7 @@ namespace VSOP {
 
       case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_OBJECT_IDENTIFIER: // "object-identifier"
+      case symbol_kind::S_STRING_LITERAL: // "string-literal"
         value.copy< std::string > (that.value);
         break;
 
@@ -286,6 +289,7 @@ namespace VSOP {
 
       case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_OBJECT_IDENTIFIER: // "object-identifier"
+      case symbol_kind::S_STRING_LITERAL: // "string-literal"
         value.move< std::string > (that.value);
         break;
 
@@ -554,6 +558,7 @@ namespace VSOP {
 
       case symbol_kind::S_TYPE_IDENTIFIER: // "type-identifier"
       case symbol_kind::S_OBJECT_IDENTIFIER: // "object-identifier"
+      case symbol_kind::S_STRING_LITERAL: // "string-literal"
         yylhs.value.emplace< std::string > ();
         break;
 
@@ -578,25 +583,25 @@ namespace VSOP {
           switch (yyn)
             {
   case 2: // unit: "class" assignments
-#line 115 "parser.y"
+#line 116 "parser.y"
                         { }
-#line 584 "parser.cpp"
+#line 589 "parser.cpp"
     break;
 
   case 3: // unit: assignments
-#line 116 "parser.y"
+#line 117 "parser.y"
                    { }
-#line 590 "parser.cpp"
+#line 595 "parser.cpp"
     break;
 
   case 4: // assignments: %empty
-#line 119 "parser.y"
+#line 120 "parser.y"
                                 {}
-#line 596 "parser.cpp"
+#line 601 "parser.cpp"
     break;
 
 
-#line 600 "parser.cpp"
+#line 605 "parser.cpp"
 
             default:
               break;
@@ -832,13 +837,13 @@ namespace VSOP {
   const signed char
   Parser::yystos_[] =
   {
-       0,     5,    44,    45,    45,     0
+       0,     5,    45,    46,    46,     0
   };
 
   const signed char
   Parser::yyr1_[] =
   {
-       0,    43,    44,    44,    45
+       0,    44,    45,    45,    46
   };
 
   const signed char
@@ -861,8 +866,8 @@ namespace VSOP {
   "\"while\"", "\"{\"", "\"}\"", "\"(\"", "\")\"", "\":\"", "\";\"",
   "\",\"", "\"+\"", "\"-\"", "\"*\"", "\"/\"", "\"^\"", "\".\"", "\"=\"",
   "\"<\"", "\"<=\"", "\"<-\"", "\"type-identifier\"",
-  "\"object-identifier\"", "\"integer-literal\"", "$accept", "unit",
-  "assignments", YY_NULLPTR
+  "\"object-identifier\"", "\"string-literal\"", "\"integer-literal\"",
+  "$accept", "unit", "assignments", YY_NULLPTR
   };
 #endif
 
@@ -871,7 +876,7 @@ namespace VSOP {
   const signed char
   Parser::yyrline_[] =
   {
-       0,   115,   115,   116,   119
+       0,   116,   116,   117,   120
   };
 
   void
@@ -904,9 +909,9 @@ namespace VSOP {
 
 #line 19 "parser.y"
 } // VSOP
-#line 908 "parser.cpp"
+#line 913 "parser.cpp"
 
-#line 143 "parser.y"
+#line 144 "parser.y"
 
 // User code
 void VSOP::Parser::error(const location_type& l, const std::string& m)

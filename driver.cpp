@@ -54,6 +54,7 @@ static const map<Parser::token_type, string> type_to_string = {
     {Parser::token::INTEGER_LITERAL, "integer-literal"},
     {Parser::token::OBJECT_IDENTIFIER, "object-identifier"},
     {Parser::token::TYPE_IDENTIFIER, "type-identifier"},
+    {Parser::token::STRING_LITERAL, "string-literal"},
 };
 
 /**
@@ -86,6 +87,12 @@ static void print_token(Parser::symbol_type token)
             break;
         }
         case Parser::token::OBJECT_IDENTIFIER:
+        {
+            string id = token.value.as<string>();
+            cout << "," << id;
+            break;
+        }
+        case Parser::token::STRING_LITERAL:
         {
             string id = token.value.as<string>();
             cout << "," << id;

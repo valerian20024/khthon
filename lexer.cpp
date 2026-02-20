@@ -1161,17 +1161,18 @@ case 48:
 YY_RULE_SETUP
 #line 258 "lexer.lex"
 {
-        cout << "End of string" << endl
-             << "Result: " << current_string << endl;
-        /* todo  Generate a string token with the value of current string, */
-        /* todo  then clear the current_string */
+        cout << "  Resulting string: " << current_string << endl;
+        /*todo add " and " around the actual string*/
+        string value = current_string;
+        current_string.clear();
         BEGIN(INITIAL);
+        return Parser::make_STRING_LITERAL(value, loc);
     }
 	YY_BREAK
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-#line 266 "lexer.lex"
+#line 267 "lexer.lex"
 {
         int ws_count = yyleng - 2;
         loc.step();
@@ -1181,7 +1182,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 273 "lexer.lex"
+#line 274 "lexer.lex"
 {
         current_string.append(yytext, yyleng);
         cout << "current_string: " << current_string << endl;
@@ -1189,54 +1190,54 @@ YY_RULE_SETUP
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 278 "lexer.lex"
+#line 279 "lexer.lex"
 {current_string += "\\x08";}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 279 "lexer.lex"
+#line 280 "lexer.lex"
 {current_string += "\\x09";}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 280 "lexer.lex"
+#line 281 "lexer.lex"
 {current_string += "\\x0a";}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 281 "lexer.lex"
+#line 282 "lexer.lex"
 {current_string += "\\x0d";}
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 282 "lexer.lex"
+#line 283 "lexer.lex"
 {current_string += "\\x22";}
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 283 "lexer.lex"
+#line 284 "lexer.lex"
 {current_string += "\\x5c";}
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 285 "lexer.lex"
+#line 286 "lexer.lex"
 {
         string decoded = printable_hex_value(yytext);
-        cout << "escaped hexa is: " << decoded << endl;
-
-        //current_string.append(decoded, yyleng);
         current_string += decoded;
+
+        /* debug */
+        cout << "escaped hexa is: " << decoded << endl;
     }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 294 "lexer.lex"
+#line 295 "lexer.lex"
 {
         cout << yytext << endl;
     }
 	YY_BREAK
 case YY_STATE_EOF(STRING):
-#line 298 "lexer.lex"
+#line 299 "lexer.lex"
 {return Parser::make_YYEOF(loc);}
 	YY_BREAK
 
@@ -1244,27 +1245,30 @@ case YY_STATE_EOF(STRING):
 
 case 59:
 YY_RULE_SETUP
-#line 303 "lexer.lex"
+#line 304 "lexer.lex"
 {
         nested_comments_counter++;
         
         /* debug info */
+        /*
         cout << "  comments level: "
              << nested_comments_counter 
              << endl;
+        */
     }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 312 "lexer.lex"
+#line 315 "lexer.lex"
 {
         nested_comments_counter--;
 
         /* debug info */
+        /*
         cout << "  comments level: "
              << nested_comments_counter 
              << endl;
-
+        */
         if (nested_comments_counter == 0)
             BEGIN(INITIAL);
     }
@@ -1272,15 +1276,16 @@ YY_RULE_SETUP
 case 61:
 /* rule 61 can match eol */
 YY_RULE_SETUP
-#line 324 "lexer.lex"
+#line 328 "lexer.lex"
 {
         loc.lines(yyleng);
         loc.step();
     }
 	YY_BREAK
+/* debug */
 case 62:
 YY_RULE_SETUP
-#line 329 "lexer.lex"
+#line 334 "lexer.lex"
 {
         cout << yytext << endl;
         loc.step();
@@ -1288,7 +1293,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 334 "lexer.lex"
+#line 339 "lexer.lex"
 {
         loc.step();
     }
@@ -1298,7 +1303,7 @@ YY_RULE_SETUP
     Using make_YYEOF to avoid an infinite loop of error 
     */
 case YY_STATE_EOF(COMMENT):
-#line 342 "lexer.lex"
+#line 347 "lexer.lex"
 {
         print_error(loc.begin, "EOF cannot happen inside an unclosed comment" + string(yytext));
         return Parser::make_YYEOF(loc);
@@ -1307,15 +1312,15 @@ case YY_STATE_EOF(COMMENT):
 
 /* End of file */
 case YY_STATE_EOF(INITIAL):
-#line 349 "lexer.lex"
+#line 354 "lexer.lex"
 return Parser::make_YYEOF(loc);
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 350 "lexer.lex"
+#line 355 "lexer.lex"
 ECHO;
 	YY_BREAK
-#line 1318 "lexer.cpp"
+#line 1323 "lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2282,7 +2287,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 350 "lexer.lex"
+#line 355 "lexer.lex"
 
 
 static void print_error(const position &pos, const string &m)

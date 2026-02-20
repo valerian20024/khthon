@@ -255,11 +255,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
 <STRING>{
     {STRING_END} {
-        cout << "End of string" << endl
-             << "Result: " << current_string << endl;
-        /* todo  Generate a string token with the value of current string, */
-        /* todo  then clear the current_string */
+        cout << "  Resulting string: " << current_string << endl;
+        /*todo add " and " around the actual string*/
+        string value = current_string;
+        current_string.clear();
         BEGIN(INITIAL);
+        return Parser::make_STRING_LITERAL(value, loc);
     }
 
     {STRING_BREAK} {
@@ -283,10 +284,10 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     {ESCAPED_HEXADECIMAL}   {
         string decoded = printable_hex_value(yytext);
-        cout << "escaped hexa is: " << decoded << endl;
-
-        //current_string.append(decoded, yyleng);
         current_string += decoded;
+
+        /* debug */
+        cout << "escaped hexa is: " << decoded << endl;
     }
 
 
@@ -303,19 +304,22 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         nested_comments_counter++;
         
         /* debug info */
+        /*
         cout << "  comments level: "
              << nested_comments_counter 
              << endl;
+        */
     }
 
     {COMMENT_END} {
         nested_comments_counter--;
 
         /* debug info */
+        /*
         cout << "  comments level: "
              << nested_comments_counter 
              << endl;
-
+        */
         if (nested_comments_counter == 0)
             BEGIN(INITIAL);
     }
@@ -325,6 +329,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         loc.step();
     }
 
+    /* debug */
     [a-zA-Z0-9\-\_ :;.,]+    {
         cout << yytext << endl;
         loc.step();

@@ -100,6 +100,7 @@
 // For some symbols, need to store a value
 %token <std::string> TYPE_IDENTIFIER "type-identifier"
 %token <std::string> OBJECT_IDENTIFIER "object-identifier"
+%token <std::string> STRING_LITERAL "string-literal"
 %token <int> INTEGER_LITERAL "integer-literal"
 
 
