@@ -126,16 +126,6 @@ namespace VSOP
          * @brief Stop the lexer.
          */
         void scan_end();
-
-        /**
-         * @brief Transforms strings of escaped characters into
-         * a printable ASCII representation. 
-         * 
-         * @example Transforms a "\x61" into "a" 
-         * @example "\x01" is not converted because it is not printable.
-         * 
-         */
-        std::string printable_hex_value(const std::string& hex_string);
     };
 }
 

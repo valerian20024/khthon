@@ -33,10 +33,19 @@
     Parser::symbol_type make_NUMBER(const string &s,
                                     const location &loc);
 
-    // Print an lexical error message.
+    // Print a lexical error message.
     static void print_error(const position &pos,
                             const string &m);
-
+    
+    /**
+     * @brief Transforms strings of escaped characters into
+     * a printable ASCII representation. 
+     * 
+     * @example Transforms a "\x61" into "a".
+     * @example "\x01" is not converted because it is not printable.
+     */
+    std::string printable_hex_value(const std::string& hex_string);
+    
     // Code run each time a pattern is matched.
     #define YY_USER_ACTION  loc.columns(yyleng);
 
@@ -273,7 +282,11 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {ESCAPED_QUOTES}        {current_string += "\\x22";}
     {ESCAPED_BACKSLASH}     {current_string += "\\x5c";}
 
-    {ESCAPED_HEXADECIMAL}   {current_string.append(yytext, yyleng);}
+    {ESCAPED_HEXADECIMAL}   {
+        string value = printable_hex_value(yytext);
+        cout << "escaped hexa is: " << value << endl;
+        current_string.append(yytext, yyleng);
+    }
 
 
     .   {
