@@ -1,0 +1,16 @@
+1,1,class
+1,7,type-identifier,MyClass
+1,15,lbrace
+2,5,object-identifier,s
+2,7,colon
+2,9,string
+2,16,assign
+2,19,string-literal,"One\x0a\x1b[33;mTwo and three\x0d\x0a"
+3,30,semicolon
+4,5,object-identifier,i
+4,7,colon
+4,9,int32
+4,15,assign
+4,18,integer-literal,27
+4,22,semicolon
+5,1,rbrace

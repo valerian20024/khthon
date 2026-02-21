@@ -1,0 +1,2 @@
+1,1,string-literal,"Here it is, the broken\x0aline.\x0a"
+4,1,string-literal,"Another one,\x0awithout leading space.\x0a"
