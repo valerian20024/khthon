@@ -250,7 +250,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     }
 
     {COMMENT_END} {
-        print_error(loc.begin, "closing an unmatched opening comment: " + string(yytext));
+        print_error(loc.begin, "closing an unmatched opening comment");
         return Parser::make_YYerror(loc);
     }
 
@@ -269,7 +269,6 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         location start = string_start_loc;
 
         current_string.clear();
-        //string_start_loc = 0;
         BEGIN(INITIAL);
         return Parser::make_STRING_LITERAL(token_value, start);
     }
@@ -348,11 +347,13 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         if (!comments_start_loc.empty()) {
             position error = comments_start_loc.top();
             print_error(error, "Unmatched comment.");
+            BEGIN(INITIAL);
+            return Parser::make_YYerror(loc);
         }
 
         print_error(comments_start_loc.top(), "EOF cannot happen inside an unclosed comment");
         BEGIN(INITIAL);
-        return Parser::make_YYerror(loc);  /*! should return loc of beginning of comment*/
+        return Parser::make_YYerror(loc);
     }
 }
 
@@ -364,7 +365,6 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 %%
 
 /* ==================================================== */
-
 
 static void print_error(const position &pos, const string &m)
 {
