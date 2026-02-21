@@ -247,6 +247,8 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         /*cout << "  comments level: "
              << nested_comments_counter
              << endl;*/
+        comments_start_loc.push(loc.begin);
+        cout << "loc.begin is :" << loc.begin << endl;
         BEGIN(COMMENT);
     }
 
