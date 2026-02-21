@@ -57,7 +57,7 @@
     location loc;
 
     // Global variable to track the nested comments number
-    int nested_comments_counter = 0;
+    //int nested_comments_counter = 0;
     stack<position> comments_start_loc;
     
 
@@ -170,7 +170,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     loc.step();
 %}
 
-    /** === Rules === */
+    /* ==================================================== */
 
 <INITIAL>{
     {WHITESPACE_NO_LF}+ {loc.step();}
@@ -239,19 +239,13 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         string_start_loc = loc;
         
         current_string.clear();
-        //loc.columns(1);
         BEGIN(STRING);
     }
 
     {COMMENT_SL} { }
 
     {COMMENT_START} {
-        nested_comments_counter++;
-        /*cout << "  comments level: "
-             << nested_comments_counter
-             << endl;*/
         comments_start_loc.push(loc.begin);
-        //cout << "loc.begin is :" << loc.begin << endl;
         BEGIN(COMMENT);
     }
 
@@ -266,6 +260,8 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         return Parser::make_YYerror(loc);
     }
 }
+
+    /* ==================================================== */
 
 <STRING>{
     {STRING_END} {
@@ -287,7 +283,6 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     {STRING_NORMAL_CHARACTERS} {
         current_string.append(yytext, yyleng);
-        //cout << "current_string: " << current_string << endl;
     }
 
     {ESCAPED_BACKSPACE}     {current_string += "\\x08";}
@@ -300,56 +295,37 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {ESCAPED_HEXADECIMAL} {
         string decoded = printable_hex_value(yytext);
         current_string += decoded;
+    }
 
-        /* debug */
-        //cout << "escaped hexa is: " << decoded << endl;
+    . {
+
     }
 
     {NEWLINE} {
         print_error(loc.begin, "Cannot have a newline inside a string.");
         return Parser::make_YYerror(loc);
     }
-
-    . {
-        //cout << yytext << endl;
-    }
     
-    /*! should be an error + the case of \n should be an error too*/
-    <<EOF>>     {
+    <<EOF>> {
         print_error(loc.begin, "Cannot have EOF inside an unclosed string.");
         BEGIN(INITIAL);
         return Parser::make_YYerror(loc);
     }
 }
 
+    /* ==================================================== */
+
 <COMMENT>{
     {COMMENT_START} {
-        nested_comments_counter++;
         comments_start_loc.push(loc.begin);
-        dump_stack_content(comments_start_loc);
-
-        //cout << "loc.begin is :" << loc.begin << endl;
-
-        /* debug info */
-        /*
-        cout << "  comments level: "
-             << nested_comments_counter 
-             << endl;
-        */
+        //dump_stack_content(comments_start_loc);
     }
 
     {COMMENT_END} {
-        nested_comments_counter--;
         comments_start_loc.pop();
-        dump_stack_content(comments_start_loc);
+        //dump_stack_content(comments_start_loc);
 
-        /* debug info */
-        /*
-        cout << "  comments level: "
-             << nested_comments_counter 
-             << endl;
-        */
-        if (nested_comments_counter == 0)
+        if (comments_start_loc.empty())
             BEGIN(INITIAL);
     }
 
@@ -369,7 +345,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     }
 
     <<EOF>> {
-        print_error(loc.begin, "EOF cannot happen inside an unclosed comment");
+        if (!comments_start_loc.empty()) {
+            position error = comments_start_loc.top();
+            print_error(error, "Unmatched comment.");
+        }
+
+        print_error(comments_start_loc.top(), "EOF cannot happen inside an unclosed comment");
         BEGIN(INITIAL);
         return Parser::make_YYerror(loc);  /*! should return loc of beginning of comment*/
     }
@@ -381,6 +362,9 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     */
     <<EOF>>     return Parser::make_YYEOF(loc);
 %%
+
+/* ==================================================== */
+
 
 static void print_error(const position &pos, const string &m)
 {
