@@ -60,13 +60,10 @@
     location string_start_loc;
 %}
 
-%x COMMENT
-%x STRING
+    /* Starting states */
+%x COMMENT STRING
 
     /* Definitions */
-
-blank [ \t\r]
-
 LOWERCASE_LETTER                [a-z]
 UPPERCASE_LETTER                [A-Z]
 LETTER                          [a-zA-Z]

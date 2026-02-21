@@ -1,7 +1,7 @@
 #!/bin/bash
 
 COMPILER="./vsopc"
-SOURCE_FILE="examples/submission/1_lexical/11-multiline-string.vsop"
+SOURCE_FILE="examples/automatic/1_lexical/11-multiline-string.vsop"
 EXPECTED_OUTPUT="output/1_lexical/11-multiline-string.out"
 
 # todo fix the colors
