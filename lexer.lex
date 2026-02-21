@@ -81,7 +81,7 @@ TABULATION                      \t
 
 COMMENT_START                   "(*"
 COMMENT_END                     "*)"
-COMMENT_SL                      "//".*  /*todo check this*/
+COMMENT_SL                      "//".*
 
 INTEGER_LITERAL_DECIMAL         {DECIMAL_DIGIT}+
 INTEGER_LITERAL_HEXADECIMAL     0x{HEXADECIMAL_DIGIT}+
@@ -172,6 +172,10 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     /*! White spaces - legacy rules from calc */
     {blank}+    loc.step();
     \n+         loc.lines(yyleng); loc.step();
+
+    {COMMENT_SL} {
+        
+    }
 
     /* Keywords */
     {AND}                       return Parser::make_AND(loc);

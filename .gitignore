@@ -40,7 +40,10 @@
 # debug information files
 *.dwo
 
-
 # Khthon project
 vsopc
+lexer.cpp
+location.hh
+parser.cpp
+parser.hpp
 vsopcompiler.tar.xz
