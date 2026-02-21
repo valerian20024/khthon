@@ -16,10 +16,13 @@ OBJ	  			= $(SRC:.cpp=.o)
 
 all: $(EXEC)
 
+install-tools: 
+	@:
+
 archive: vsopcompiler.tar.xz
 
 vsopcompiler.tar.xz: driver.cpp driver.hpp main.cpp lexer.lex parser.y Makefile
-	tar -cJf $@ --transform='s, ^, vsopcompiler/,' $^
+	tar -cJf $@ --transform='s,^,vsopcompiler/,' $^
 
 main.o: driver.hpp parser.hpp
 
@@ -48,4 +51,4 @@ clean:
 	@rm -f parser.cpp parser.hpp location.hh
 	@rm -f vsopcompiler.tar.xz
 
-.PHONY: clean archive
+.PHONY: clean install-tools archive

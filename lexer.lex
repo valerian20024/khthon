@@ -229,15 +229,15 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
 
     {STRING_START} {
-        cout << "begin of string" << endl;
+        //cout << "begin of string" << endl;
         BEGIN(STRING);
     }
 
     {COMMENT_START} {
         nested_comments_counter++;
-        cout << "  comments level: "
+        /*cout << "  comments level: "
              << nested_comments_counter
-             << endl;
+             << endl;*/
         BEGIN(COMMENT);
     }
 
@@ -270,7 +270,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     {STRING_NORMAL_CHARACTERS} {
         current_string.append(yytext, yyleng);
-        cout << "current_string: " << current_string << endl;
+        //cout << "current_string: " << current_string << endl;
     }
 
     {ESCAPED_BACKSPACE}     {current_string += "\\x08";}
@@ -285,12 +285,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         current_string += decoded;
 
         /* debug */
-        cout << "escaped hexa is: " << decoded << endl;
+        //cout << "escaped hexa is: " << decoded << endl;
     }
 
 
     .   {
-        cout << yytext << endl;
+        //cout << yytext << endl;
     }
     
     /*! should be an error + the case of \n should be an error too*/
@@ -329,7 +329,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     /* debug */
     [a-zA-Z0-9\-\_ :;.,]+    {
-        cout << yytext << endl;
+        //cout << yytext << endl;
         loc.step();
     }
 
