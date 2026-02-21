@@ -47,6 +47,9 @@
      */
     static std::string printable_hex_value(const std::string& hex_string);
     
+    void dump_stack_content(std::stack<position> s);
+
+
     // Code run each time a pattern is matched.
     #define YY_USER_ACTION  loc.columns(yyleng);
 
@@ -425,4 +428,13 @@ static string printable_hex_value(const string& hex_string)
     }
 
     return string(1, static_cast<char>(hex_code));
+}
+
+void dump_stack_content(std::stack<position> s) {
+    std::cout << "--- Unclosed Comments Stack (Top to Bottom) ---" << std::endl;
+    while (!s.empty()) {
+        std::cout << s.top() << std::endl;
+        s.pop();
+    }
+    std::cout << "-----------------------------------------------" << std::endl;
 }
