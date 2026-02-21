@@ -55,8 +55,9 @@
     // Global variable to track the nested comments number
     int nested_comments_counter = 0;
 
-    // Global variable for storing data when scanning a string
+    // Global variables for storing data when scanning a string
     std::string current_string;
+    location string_start_loc;
 %}
 
 %x COMMENT
@@ -234,7 +235,10 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
 
     {STRING_START} {
-        //cout << "begin of string" << endl;
+        string_start_loc = loc;
+        
+        current_string.clear();
+        //loc.columns(1);
         BEGIN(STRING);
     }
 
@@ -260,10 +264,13 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
 <STRING>{
     {STRING_END} {
-        string value = "\"" + current_string + "\"";
+        string token_value = "\"" + current_string + "\"";
+        location start = string_start_loc;
+
         current_string.clear();
+        //string_start_loc = 0;
         BEGIN(INITIAL);
-        return Parser::make_STRING_LITERAL(value, loc);
+        return Parser::make_STRING_LITERAL(token_value, start);
     }
 
     {STRING_BREAK} {
@@ -292,7 +299,6 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         /* debug */
         //cout << "escaped hexa is: " << decoded << endl;
     }
-
 
     .   {
         //cout << yytext << endl;
