@@ -49,6 +49,7 @@
 // Add an argument to the parser constructor
 %parse-param {VSOP::Driver &driver}
 
+
 %code {
     #include "driver.hpp"
 

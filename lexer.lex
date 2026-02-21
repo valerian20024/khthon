@@ -169,13 +169,14 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     /** === Rules === */
 
 <INITIAL>{
-    /*! White spaces - legacy rules from calc */
-    {blank}+    loc.step();
-    \n+         loc.lines(yyleng); loc.step();
+    {WHITESPACE_NO_LF}+ {loc.step();}
 
-    {COMMENT_SL} {
-        
+    {NEWLINE}+ {
+        loc.lines(yyleng); 
+        loc.step();
     }
+
+    {COMMENT_SL} { }
 
     /* Keywords */
     {AND}                       return Parser::make_AND(loc);
