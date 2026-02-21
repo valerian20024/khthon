@@ -348,12 +348,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
             position error = comments_start_loc.top();
             print_error(error, "Unmatched comment.");
             BEGIN(INITIAL);
-            return Parser::make_YYerror(loc);
+            return Parser::make_YYEOF(loc);
         }
 
         print_error(comments_start_loc.top(), "EOF cannot happen inside an unclosed comment");
         BEGIN(INITIAL);
-        return Parser::make_YYerror(loc);
+        return Parser::make_YYEOF(loc);
     }
 }
 
