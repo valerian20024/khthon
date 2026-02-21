@@ -11,6 +11,7 @@
 %{
     /* Includes */
     #include <string>
+    #include <stack>
 
     #include "parser.hpp"
     #include "driver.hpp"
@@ -54,9 +55,11 @@
 
     // Global variable to track the nested comments number
     int nested_comments_counter = 0;
+    stack<position> comments_start_loc;
+    
 
     // Global variables for storing data when scanning a string
-    std::string current_string;
+    string current_string;
     location string_start_loc;
 %}
 
@@ -317,7 +320,8 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 <COMMENT>{
     {COMMENT_START} {
         nested_comments_counter++;
-        
+        comments_start_loc.push(loc.begin);
+        cout << loc.begin << endl;
         /* debug info */
         /*
         cout << "  comments level: "
@@ -357,7 +361,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     <<EOF>> {
         print_error(loc.begin, "EOF cannot happen inside an unclosed comment");
         BEGIN(INITIAL);
-        return Parser::make_YYerror(loc);
+        return Parser::make_YYerror(loc);  /*! should return loc of beginning of comment*/
     }
 }
 

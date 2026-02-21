@@ -1,0 +1,2 @@
+24-wrong-decimal-number.vsop:1:1: lexical error
+  42x is not a valid integer literal.
