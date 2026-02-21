@@ -174,8 +174,6 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         loc.step();
     }
 
-    {COMMENT_SL} { }
-
     /* Keywords */
     {AND}                       return Parser::make_AND(loc);
     {BOOL}                      return Parser::make_BOOL(loc);
@@ -216,6 +214,9 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {LOWER}                     return Parser::make_LOWER(loc);
     {LOWER_EQUAL}               return Parser::make_LOWER_EQUAL(loc);
     {ASSIGN}                    return Parser::make_ASSIGN(loc);
+    
+    {TYPE_IDENTIFIER}       return Parser::make_TYPE_IDENTIFIER(yytext, loc);     
+    {OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
 
     /*todo think about out range errors and the likes*/
     {INTEGER_LITERAL_DECIMAL} {
@@ -227,10 +228,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         int val = stoi(yytext, nullptr, 16);
         return Parser::make_INTEGER_LITERAL(val, loc);
     }
-
-    {TYPE_IDENTIFIER}       return Parser::make_TYPE_IDENTIFIER(yytext, loc);     
-    {OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
-
+    
     {STRING_START} {
         string_start_loc = loc;
         
@@ -238,6 +236,8 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         //loc.columns(1);
         BEGIN(STRING);
     }
+
+    {COMMENT_SL} { }
 
     {COMMENT_START} {
         nested_comments_counter++;
@@ -289,7 +289,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {ESCAPED_QUOTES}        {current_string += "\\x22";}
     {ESCAPED_BACKSLASH}     {current_string += "\\x5c";}
 
-    {ESCAPED_HEXADECIMAL}   {
+    {ESCAPED_HEXADECIMAL} {
         string decoded = printable_hex_value(yytext);
         current_string += decoded;
 
@@ -297,12 +297,21 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         //cout << "escaped hexa is: " << decoded << endl;
     }
 
-    .   {
+    {NEWLINE} {
+        print_error(loc.begin, "Cannot have a newline inside a string.");
+        return Parser::make_YYerror(loc);
+    }
+
+    . {
         //cout << yytext << endl;
     }
     
     /*! should be an error + the case of \n should be an error too*/
-    <<EOF>>     {return Parser::make_YYEOF(loc);}
+    <<EOF>>     {
+        print_error(loc.begin, "Cannot have EOF inside an unclosed string.");
+        BEGIN(INITIAL);
+        return Parser::make_YYerror(loc);
+    }
 }
 
 <COMMENT>{
@@ -345,17 +354,17 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         loc.step();
     }
 
-    /* 
-    EOF cannot happen inside an opened comment
-    Using make_YYEOF to avoid an infinite loop of error 
-    */
     <<EOF>> {
-        print_error(loc.begin, "EOF cannot happen inside an unclosed comment" + string(yytext));
-        return Parser::make_YYEOF(loc);
+        print_error(loc.begin, "EOF cannot happen inside an unclosed comment");
+        BEGIN(INITIAL);
+        return Parser::make_YYerror(loc);
     }
 }
 
-    /* End of file */
+    /* 
+    Serves as a default case when EOF errors occur in the other
+    states. This catches the EOF and allows the lexer to stop.
+    */
     <<EOF>>     return Parser::make_YYEOF(loc);
 %%
 
