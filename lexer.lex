@@ -93,7 +93,6 @@ COMMENT_SL                      "//".*
 INT_LIT_DEC_E                   [0-9]+[a-zA-Z_][a-zA-Z0-9]*
 INT_LIT_DEC                     [0-9][0-9]*
 
-
 INT_LIT_HEX_E                   0x|(0x[0-9a-fA-F]*[g-zG-Z_]*)
 INT_LIT_HEX                     0x{HEX_DIGIT}+
 
@@ -237,12 +236,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     /*todo think about out range errors and the likes*/
 
     {INT_LIT_DEC_E} {
-        print_error(loc.begin, std::string(yytext) + " is not a valid decimal integer literal");
+        print_error(loc.begin, std::string(yytext) + " is not a valid integer literal");
         return Parser::make_YYerror(loc);
     }
 
     {INT_LIT_HEX_E} {
-        print_error(loc.begin, std::string(yytext) + " is not a valid hexadecimal integer literal");
+        print_error(loc.begin, std::string(yytext) + " is not a valid integer literal");
         return Parser::make_YYerror(loc);
     }
 
