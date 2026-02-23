@@ -91,8 +91,10 @@ COMMENT_SL                      "//".*
     /* Integer literals with error catchers */
 
 INTEGER_LITERAL_DECIMAL_E       [1-9]+[a-zA-Z_][a-zA-Z0-9]*
-
+    //INTEGER_LITERAL_DECIMAL_E_LZ    0[0-9]+
 INTEGER_LITERAL_DECIMAL         [1-9][0-9]*
+
+INTEGER_LITERAL_HEXADECIMAL_E   0x[0-9a-fA-F]*[^0-9a-fA-F]
 INTEGER_LITERAL_HEXADECIMAL     0x{HEXADECIMAL_DIGIT}+
 
 
@@ -233,7 +235,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     /*todo think about out range errors and the likes*/
 
     {INTEGER_LITERAL_DECIMAL_E} {
-        print_error(loc.begin, std::string(yytext) + " is not a valid integer literal");
+        print_error(loc.begin, std::string(yytext) + " is not a valid decimal integer literal");
+        return Parser::make_YYerror(loc);
+    }
+
+    {INTEGER_LITERAL_HEXADECIMAL_E} {
+        print_error(loc.begin, std::string(yytext) + " is not a valid hexadecimal integer literal");
         return Parser::make_YYerror(loc);
     }
 

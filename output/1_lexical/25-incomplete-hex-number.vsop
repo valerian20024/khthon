@@ -1,0 +1,2 @@
+25-incomplete-hex-number.vsop:1:1: lexical error
+  0x is not a valid integer literal.
