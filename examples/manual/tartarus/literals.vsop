@@ -1,9 +1,66 @@
-0 1 2 3
-10 20 30
+// integers.vsop  ─────────────────────────────────────────────────────────────
+// Comprehensive test for decimal and hexadecimal integer literals
+// ──────────────────────────────────────────────────────────────────────────────
 
--0 -1 -2 
+// ── Valid decimal literals ──────────────────────────────────────────────────
 
-0x0 0x1 0x2
+0
+1
+42
+999999
+//2147483647          // INT32_MAX
+//-2147483648         // INT32_MIN   (if your lexer accepts unary minus as separate token)
+1000000000
 
-0x15
+// ── Valid hexadecimal literals ──────────────────────────────────────────────
 
+0x0
+0x1
+0xA
+0xFF
+0xdeadbeef
+//0x7FFFFFFF          // 2147483647
+//0x80000000          // -2147483648 in two's complement interpretation
+//0x123456789ABCDEF   // large but still fits in 64-bit during parsing
+
+0XCAFE              // uppercase X is allowed (most languages do)
+0x42
+
+// ── Malformed / invalid decimal literals ────────────────────────────────────
+
+42x                 // letter right after
+123abc              // letters
+999_hello           // underscore + letters
+42A                 // uppercase letter
+0identifier         // starts with 0 but then letters
+//12345678901234567890 // way too big for int32 (should be caught in semantic or during stoi)
+
+// ── Malformed / incomplete / invalid hexadecimal literals ───────────────────
+
+0x                  // empty after prefix
+0X                  // same with uppercase X
+0xG                 // invalid digit G
+0x42z               // invalid char after valid digits
+//0x1a2b3c4d5e6f0g    // g invalid
+0x                      // prefix + spaces (should fail)
+0x 42               // space after prefix
+0x42 0xAA           // two hex numbers without separator
+
+// ── Edge cases & tricky ones ────────────────────────────────────────────────
+
+0x0x42              // hex inside hex (should tokenize as 0x0 then x42 or error)
+0                   // single zero is valid
+00                  // leading zero — usually valid
+00042               // leading zeros — usually valid
+0x00000042          // leading zeros in hex
+//0xFFFFFFFF          // 32-bit max unsigned — should overflow int32 signed
+//2147483648          // one more than INT32_MAX — overflow
+-0                  // negative zero (if unary minus separate)
+-42x                // negative + invalid suffix
+
+// ── Context with other tokens to avoid greedy matching bugs ─────────────────
+
+let x = 42x in x    // should error on 42x
+let y = 0x in y     // error on incomplete hex
+let z = 0x42g + 10  // error on 0x42g
+42x + 0xFF          // error only on 42x
