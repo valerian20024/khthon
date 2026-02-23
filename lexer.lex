@@ -75,9 +75,9 @@ UPPERCASE_LETTER                [A-Z]
 LETTER                          [a-zA-Z]
 ALPHANUMERICAL                  [a-zA-Z0-9]
 
-BINARY_DIGIT                    [01]
-DECIMAL_DIGIT                   [0-9]
-HEXADECIMAL_DIGIT               [0-9a-fA-F]
+BIN_DIGIT                       [01]
+DEC_DIGIT                       [0-9]
+HEX_DIGIT                       [0-9a-fA-F]
 
 WHITESPACE                      [ \t\n\f\r]
 WHITESPACE_NO_LF                [ \t\f\r]
@@ -90,12 +90,12 @@ COMMENT_SL                      "//".*
 
     /* Integer literals with error catchers */
 
-INTEGER_LITERAL_DECIMAL_E       [1-9]+[a-zA-Z_][a-zA-Z0-9]*
-    //INTEGER_LITERAL_DECIMAL_E_LZ    0[0-9]+
-INTEGER_LITERAL_DECIMAL         0|([1-9][0-9]*)
+INT_LIT_DEC_E                   [0-9]+[a-zA-Z_][a-zA-Z0-9]*
+INT_LIT_DEC                     [0-9][0-9]*
 
-INTEGER_LITERAL_HEXADECIMAL_E   0x[0-9a-fA-F]+[g-zG-Z_]
-INTEGER_LITERAL_HEXADECIMAL     0x{HEXADECIMAL_DIGIT}+
+
+INT_LIT_HEX_E                   0x|(0x[0-9a-fA-F]*[g-zG-Z_]*)
+INT_LIT_HEX                     0x{HEX_DIGIT}+
 
 
     /* Unambiguous utility definitions */
@@ -123,15 +123,15 @@ TRUE                            "true"
 UNIT                            "unit"
 WHILE                           "while"
 
-TYPE_IDENTIFIER                 {UPPERCASE_LETTER}({LETTER}|{DECIMAL_DIGIT}|_)*
+TYPE_IDENTIFIER                 {UPPERCASE_LETTER}({LETTER}|{DEC_DIGIT}|_)*
 
-OBJECT_IDENTIFIER               {LOWERCASE_LETTER}({LETTER}|{DECIMAL_DIGIT}|_)*
+OBJECT_IDENTIFIER               {LOWERCASE_LETTER}({LETTER}|{DEC_DIGIT}|_)*
 
     /* String and escaped characters */
 STRING_START                    "\""
 STRING_END                      "\""
 STRING_BREAK                    \\\n({SPACE}|{TABULATION})*
-ESCAPED_HEXADECIMAL             \\x{HEXADECIMAL_DIGIT}{HEXADECIMAL_DIGIT}
+ESCAPED_HEX                     \\x{HEX_DIGIT}{HEX_DIGIT}
 ESCAPED_NEWLINE                 \\n
 ESCAPED_TABULATION              \\t
 ESCAPED_BACKSPACE               \\b
@@ -236,22 +236,22 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     /*todo think about out range errors and the likes*/
 
-    {INTEGER_LITERAL_DECIMAL_E} {
+    {INT_LIT_DEC_E} {
         print_error(loc.begin, std::string(yytext) + " is not a valid decimal integer literal");
         return Parser::make_YYerror(loc);
     }
 
-    {INTEGER_LITERAL_HEXADECIMAL_E} {
+    {INT_LIT_HEX_E} {
         print_error(loc.begin, std::string(yytext) + " is not a valid hexadecimal integer literal");
         return Parser::make_YYerror(loc);
     }
 
-    {INTEGER_LITERAL_DECIMAL} {
+    {INT_LIT_DEC} {
         int val = stoi(yytext, nullptr, 10);
         return Parser::make_INTEGER_LITERAL(val, loc);
     }
 
-    {INTEGER_LITERAL_HEXADECIMAL} {
+    {INT_LIT_HEX} {
         int val = stoi(yytext, nullptr, 16);
         return Parser::make_INTEGER_LITERAL(val, loc);
     }
@@ -310,7 +310,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {ESCAPED_QUOTES}        {current_string += "\\x22";}
     {ESCAPED_BACKSLASH}     {current_string += "\\x5c";}
 
-    {ESCAPED_HEXADECIMAL} {
+    {ESCAPED_HEX} {
         string decoded = printable_hex_value(yytext);
         current_string += decoded;
     }
