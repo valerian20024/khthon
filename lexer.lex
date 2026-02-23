@@ -139,6 +139,8 @@ ESCAPED_RETURN                  \\r
 ESCAPED_QUOTES                  \\\"
 ESCAPED_BACKSLASH               \\\\
 
+ESCAPED_E                       \\.
+
     /* not " or \ or \n */
 STRING_NORMAL_CHARACTERS        [^"\\\n]+
 
@@ -313,6 +315,11 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {ESCAPED_HEXADECIMAL} {
         string decoded = printable_hex_value(yytext);
         current_string += decoded;
+    }
+
+    {ESCAPED_E} {
+        print_error(loc.begin, "Unknown escaped sequence.");
+        return Parser::make_YYerror(loc);
     }
 
     . {

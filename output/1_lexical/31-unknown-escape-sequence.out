@@ -1,0 +1,2 @@
+31-unknown-escape-sequence.vsop:1:26: lexical error
+  \k is not a valid escape sequence.
