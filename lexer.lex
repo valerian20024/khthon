@@ -302,6 +302,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
     {NEWLINE} {
         print_error(loc.begin, "Cannot have a newline inside a string.");
+        // Begin initial?
         return Parser::make_YYerror(loc);
     }
     
@@ -348,12 +349,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
             position error = comments_start_loc.top();
             print_error(error, "Unmatched comment.");
             BEGIN(INITIAL);
-            return Parser::make_YYEOF(loc);
+            return Parser::make_YYerror(loc);
         }
 
         print_error(comments_start_loc.top(), "EOF cannot happen inside an unclosed comment");
         BEGIN(INITIAL);
-        return Parser::make_YYEOF(loc);
+        return Parser::make_YYerror(loc);
     }
 }
 
