@@ -75,9 +75,6 @@ UPPERCASE_LETTER                [A-Z]
 LETTER                          [a-zA-Z]
 ALPHANUMERICAL                  [a-zA-Z0-9]
 
-BIN_DIGIT                       [01]
-DEC_DIGIT                       [0-9]
-HEX_DIGIT                       [0-9a-fA-F]
 
 WHITESPACE                      [ \t\n\f\r]
 WHITESPACE_NO_LF                [ \t\f\r]
@@ -90,11 +87,28 @@ COMMENT_SL                      "//".*
 
     /* Integer literals with error catchers */
 
-INT_LIT_DEC_E                   [0-9]+[a-zA-Z_][a-zA-Z0-9]*
-INT_LIT_DEC                     [0-9][0-9]*
+HEX_PREFIX                      0[xX]
+HEX_DIGIT                       [0-9a-fA-F]
+BAD_HEX_EMPTY                   {HEX_PREFIX}
+    /* todo find the symbols that can be next to an hex lit vvv*/
+BAD_HEX_INVALID                 {HEX_PREFIX}{HEX_DIGIT}*[^0-9a-fA-F \t\n\r\f;]
 
-INT_LIT_HEX_E                   0x|(0x[0-9a-fA-F]*[g-zG-Z_]*)
-INT_LIT_HEX                     0x{HEX_DIGIT}+
+INT_LIT_HEX                     {HEX_PREFIX}{HEX_DIGIT}+
+
+DEC_DIGIT                       [0-9]
+BAD_DEC_SUFFIX                  {DEC_DIGIT}+[a-wyzA-WYZ_][a-zA-Z0-9_]*
+
+INT_LIT_DEC                     {DEC_DIGIT}+
+
+    /* old code */
+    /*
+    INT_LIT_HEX_E                   0x|(0x[0-9a-fA-F]*[g-zG-Z_]+)
+    INT_LIT_HEX                     0x{HEX_DIGIT}+
+
+    INT_LIT_DEC_E                   [0-9]+[a-zA-Z_][a-zA-Z0-9]*
+    INT_LIT_DEC                     [0-9]+
+    */
+
 
 
     /* Unambiguous utility definitions */
@@ -234,7 +248,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
 
     /*todo think about out range errors and the likes*/
-
+    /*
     {INT_LIT_DEC_E} {
         print_error(loc.begin, std::string(yytext) + " is not a valid integer literal");
         return Parser::make_YYerror(loc);
@@ -253,7 +267,38 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {INT_LIT_HEX} {
         int val = stoi(yytext, nullptr, 16);
         return Parser::make_INTEGER_LITERAL(val, loc);
+    }*/
+
+    /* Hex errors first */
+    {BAD_HEX_EMPTY} {
+        print_error(loc.begin, std::string(yytext) + " is an incomplete hexadecimal literal (missing digits)");
+        return Parser::make_YYerror(loc);
     }
+
+    {BAD_HEX_INVALID} {
+        print_error(loc.begin, std::string(yytext) + " is not a valid hexadecimal literal");
+        return Parser::make_YYerror(loc);
+    }
+
+    /* Hex valid */
+    {INT_LIT_HEX} {
+        int val = stoi(yytext, nullptr, 16);
+        return Parser::make_INTEGER_LITERAL(val, loc);
+    }
+
+    /* Decimal errors */
+    {BAD_DEC_SUFFIX} {
+        print_error(loc.begin, std::string(yytext) + " is not a valid integer literal");
+        return Parser::make_YYerror(loc);
+    }
+
+    /* Decimal valid */
+    {INT_LIT_DEC} {
+        int val = stoi(yytext, nullptr, 10);
+        return Parser::make_INTEGER_LITERAL(val, loc);
+    }
+    
+
 
     {STRING_START} {
         string_start_loc = loc;
