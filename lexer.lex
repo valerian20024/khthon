@@ -301,9 +301,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         loc.columns(ws_count);        
     }
 
-    {STRING_NORMAL_CHARACTERS} {
-        current_string.append(yytext, yyleng);
-    }
+    {STRING_NORMAL_CHARACTERS} {current_string.append(yytext, yyleng);}
 
     {ESCAPED_BACKSPACE}     {current_string += "\\x08";}
     {ESCAPED_TABULATION}    {current_string += "\\x09";}
@@ -318,7 +316,16 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     }
 
     {ESCAPED_E} {
+        position tmp = loc.begin;
+        loc.begin = loc.end;
+        loc.begin.column -= yyleng;
+
         print_error(loc.begin, "Unknown escaped sequence.");
+
+        current_string += yytext[1];  // Ignore the \ and add the character to the string
+
+        loc.begin = tmp;
+
         return Parser::make_YYerror(loc);
     }
 
