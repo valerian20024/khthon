@@ -73,6 +73,7 @@
 LOWERCASE_LETTER                [a-z]
 UPPERCASE_LETTER                [A-Z]
 LETTER                          [a-zA-Z]
+ALPHANUMERICAL                  [a-zA-Z0-9]
 
 BINARY_DIGIT                    [01]
 DECIMAL_DIGIT                   [0-9]
@@ -87,8 +88,13 @@ COMMENT_START                   "(*"
 COMMENT_END                     "*)"
 COMMENT_SL                      "//".*
 
-INTEGER_LITERAL_DECIMAL         {DECIMAL_DIGIT}+
+    /* Integer literals with error catchers */
+
+INTEGER_LITERAL_DECIMAL_E       [1-9]+[a-zA-Z_][a-zA-Z0-9]*
+
+INTEGER_LITERAL_DECIMAL         [1-9][0-9]*
 INTEGER_LITERAL_HEXADECIMAL     0x{HEXADECIMAL_DIGIT}+
+
 
     /* Unambiguous utility definitions */
 NEWLINE                         \n
@@ -135,8 +141,8 @@ ESCAPED_BACKSLASH               \\\\
 STRING_NORMAL_CHARACTERS        [^"\\\n]+
 
     /*todo apply wrong hexadecimal code */
-ESCAPED_HEX_ERR                 \\x..
-STRING_WRONG_ESCAPE_CHAR        \\[^ntbr\"\\\n]
+    /*ESCAPED_HEX_ERR                 \\x..*/
+    /*STRING_WRONG_ESCAPE_CHAR        \\[^ntbr\"\\\n]*/
 
 
     /* Operators */
@@ -225,6 +231,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
 
     /*todo think about out range errors and the likes*/
+
+    {INTEGER_LITERAL_DECIMAL_E} {
+        print_error(loc.begin, std::string(yytext) + " is not a valid integer literal");
+        return Parser::make_YYerror(loc);
+    }
+
     {INTEGER_LITERAL_DECIMAL} {
         int val = stoi(yytext, nullptr, 10);
         return Parser::make_INTEGER_LITERAL(val, loc);
@@ -234,7 +246,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         int val = stoi(yytext, nullptr, 16);
         return Parser::make_INTEGER_LITERAL(val, loc);
     }
-    
+
     {STRING_START} {
         string_start_loc = loc;
         
