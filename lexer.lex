@@ -73,8 +73,6 @@
 LOWERCASE_LETTER                [a-z]
 UPPERCASE_LETTER                [A-Z]
 LETTER                          [a-zA-Z]
-ALPHANUMERICAL                  [a-zA-Z0-9]
-
 
 WHITESPACE                      [ \t\n\f\r]
 WHITESPACE_NO_LF                [ \t\f\r]
@@ -89,14 +87,16 @@ COMMENT_SL                      "//".*
 
 HEX_PREFIX                      0[xX]
 HEX_DIGIT                       [0-9a-fA-F]
+DEC_DIGIT                       [0-9]
+
 BAD_HEX_EMPTY                   {HEX_PREFIX}
     /* todo find the symbols that can be next to an hex lit vvv*/
 BAD_HEX_INVALID                 {HEX_PREFIX}{HEX_DIGIT}*[^0-9a-fA-F \t\n\r\f;]
 
 INT_LIT_HEX                     {HEX_PREFIX}{HEX_DIGIT}+
 
-DEC_DIGIT                       [0-9]
-BAD_DEC_SUFFIX                  {DEC_DIGIT}+[a-wyzA-WYZ_][a-zA-Z0-9_]*
+
+BAD_DEC_SUFFIX                  {DEC_DIGIT}+[a-zA-Z_][a-zA-Z0-9_]*
 
 INT_LIT_DEC                     {DEC_DIGIT}+
 
