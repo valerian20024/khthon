@@ -47,3 +47,5 @@ location.hh
 parser.cpp
 parser.hpp
 vsopcompiler.tar.xz
+
+build/*
