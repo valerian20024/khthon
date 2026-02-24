@@ -1,13 +1,3 @@
-    /* This flex/bison example is provided to you as a starting point for your
-     * assignment. You are free to use its code in your project.
-     *
-     * This example implements a simple calculator. You can use the '-l' flag to
-     * list all the tokens found in the source file, and the '-p' flag (or no flag)
-     * to parse the file and to compute the result.
-     *
-     * Also, if you have any suggestions for improvements, please let us know.
-     */
-
 %{
     /* Includes */
     #include <string>
@@ -70,15 +60,20 @@
     location string_start_loc;
 %}
 
+
+    /*================================================++
+    ||                  DEFINITIONS                   ||
+    ++================================================*/
+
+
     /* Starting states */
 %x COMMENT STRING
 
-    /* Definitions */
+    /* Basics */
 LOWERCASE_LETTER                [a-z]
 UPPERCASE_LETTER                [A-Z]
 LETTER                          [a-zA-Z]
 
-    //WHITESPACE                      [ \t\n\f\r]
 WHITESPACE_NO_LF                [ \t\f\r]
 SPACE                           " "
 TABULATION                      \t
@@ -86,25 +81,20 @@ TABULATION                      \t
 COMMENT_START                   "(*"
 COMMENT_END                     "*)"
 COMMENT_SL                      "//".*
+NEWLINE                         \n
 
     /* Integer literals with error catchers */
 HEX_PREFIX                      0[xX]
 HEX_DIGIT                       [0-9a-fA-F]
 DEC_DIGIT                       [0-9]
 
-BAD_HEX_EMPTY                   {HEX_PREFIX}
-    /* todo find the symbols that can be next to an hex lit vvv*/
-BAD_HEX_INVALID                 {HEX_PREFIX}{HEX_DIGIT}*[^0-9a-fA-F \t\n\r\f;]
-
+INT_LIT_HEX_E_EMPTY             {HEX_PREFIX}
+    /* todo find the symbols that can be next to an hex lit and add them here vvv*/
+INT_LIT_HEX_E_INVALID           {HEX_PREFIX}{HEX_DIGIT}*[^0-9a-fA-F \t\n\r\f;]
 INT_LIT_HEX                     {HEX_PREFIX}{HEX_DIGIT}+
 
-
-BAD_DEC_SUFFIX                  {DEC_DIGIT}+[a-zA-Z_][a-zA-Z0-9_]*
-
+INT_LIT_DEC_E_INVALID           {DEC_DIGIT}+[a-zA-Z_][a-zA-Z0-9_]*
 INT_LIT_DEC                     {DEC_DIGIT}+
-
-    /* Unambiguous utility definitions */
-NEWLINE                         \n
 
     /* Keywords */
 AND                             "and"
@@ -128,6 +118,7 @@ TRUE                            "true"
 UNIT                            "unit"
 WHILE                           "while"
 
+    /* Identifiers */
 TYPE_IDENTIFIER                 {UPPERCASE_LETTER}({LETTER}|{DEC_DIGIT}|_)*
 OBJECT_IDENTIFIER               {LOWERCASE_LETTER}({LETTER}|{DEC_DIGIT}|_)*
 
@@ -135,6 +126,7 @@ OBJECT_IDENTIFIER               {LOWERCASE_LETTER}({LETTER}|{DEC_DIGIT}|_)*
 STRING_START                    "\""
 STRING_END                      "\""
 STRING_BREAK                    \\\n({SPACE}|{TABULATION})*
+STRING_NORMAL_CHARACTERS        [^"\\\n]+
 
 ESCAPED_HEX                     \\x{HEX_DIGIT}{HEX_DIGIT}
 ESCAPED_NEWLINE                 \\n
@@ -145,9 +137,6 @@ ESCAPED_QUOTES                  \\\"
 ESCAPED_BACKSLASH               \\\\
 
 ESCAPED_E                       \\.
-
-    /* not " or \ or \n */
-STRING_NORMAL_CHARACTERS        [^"\\\n]+
 
     /* Operators */
 LEFT_BRACE                      "{"
@@ -168,19 +157,23 @@ LOWER                           "<"
 LOWER_EQUAL                     "<="
 ASSIGN                          "<-"
 
-    /*todo understand Loup's error catcher*/
-    //OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
-
-
 %%
 %{
-    // Code run each time yylex is called.
-    // Prepare location for new token
-    /* It moves loc.begin to where loc.end currently is */
+    /* 
+    Code runs each time yylex is called.
+    Prepares location for new token.
+    It moves loc.begin to where loc.end currently is 
+    */
     loc.step();
 %}
 
-    /* ==================================================== */
+    /*================================================++
+    ||                    RULES                       ||
+    ++================================================*/
+
+    /*-------------------------+
+    |         INITIAL          |
+    +-------------------------*/
 
 <INITIAL>{
     {WHITESPACE_NO_LF}+ {loc.step();}
@@ -231,39 +224,37 @@ ASSIGN                          "<-"
     {LOWER_EQUAL}               return Parser::make_LOWER_EQUAL(loc);
     {ASSIGN}                    return Parser::make_ASSIGN(loc);
     
+    /* Identifiers */
     {TYPE_IDENTIFIER}       return Parser::make_TYPE_IDENTIFIER(yytext, loc);     
     {OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
 
     /*todo think about out range errors and the likes*/
-    /*todo change names of rules */
-    {BAD_HEX_EMPTY} {
+    {INT_LIT_HEX_E_EMPTY} {
         print_error(loc.begin, std::string(yytext) + " is an incomplete hexadecimal literal (missing digits)");
         return Parser::make_YYerror(loc);
     }
 
-    {BAD_HEX_INVALID} {
+    {INT_LIT_HEX_E_INVALID} {
         print_error(loc.begin, std::string(yytext) + " is not a valid hexadecimal literal");
         return Parser::make_YYerror(loc);
     }
 
-    /* Hex valid */
     {INT_LIT_HEX} {
         int val = stoi(yytext, nullptr, 16);
         return Parser::make_INTEGER_LITERAL(val, loc);
     }
 
-    /* Decimal errors */
-    {BAD_DEC_SUFFIX} {
+    {INT_LIT_DEC_E_INVALID} {
         print_error(loc.begin, std::string(yytext) + " is not a valid integer literal");
         return Parser::make_YYerror(loc);
     }
 
-    /* Decimal valid */
     {INT_LIT_DEC} {
         int val = stoi(yytext, nullptr, 10);
         return Parser::make_INTEGER_LITERAL(val, loc);
     }
 
+    /* Beginning strings */
     {STRING_START} {
         string_start_loc = loc;
         
@@ -271,7 +262,8 @@ ASSIGN                          "<-"
         BEGIN(STRING);
     }
 
-    {COMMENT_SL} { }
+    /* Comments */
+    {COMMENT_SL} { /* eats up to a newline */ }
 
     {COMMENT_START} {
         comments_start_loc.push(loc.begin);
@@ -290,7 +282,9 @@ ASSIGN                          "<-"
     }
 }
 
-    /* ==================================================== */
+    /*-------------------------+
+    |         STRING           |
+    +-------------------------*/
 
 <STRING>{
     {STRING_END} {
@@ -303,11 +297,10 @@ ASSIGN                          "<-"
     }
 
     {STRING_BREAK} {
-        int ws_count = yyleng - 2;
+        int whitespace_count = yyleng - 2;
         loc.step();
         loc.lines(1);
-        //loc.step();
-        loc.columns(ws_count);
+        loc.columns(whitespace_count);
     }
 
     {STRING_NORMAL_CHARACTERS} {current_string.append(yytext, yyleng);}
@@ -347,38 +340,26 @@ ASSIGN                          "<-"
         return Parser::make_YYerror(loc);
     }
 
-    /*
     . {
         print_error(string_start_loc.begin, "Catched an invalid char in string.");
     }
-    */
-
 }
 
-    /* ==================================================== */
+    /*-------------------------+
+    |         COMMENT          |
+    +-------------------------*/
 
 <COMMENT>{
-    {COMMENT_START} {
-        comments_start_loc.push(loc.begin);
-        //dump_stack_content(comments_start_loc);
-    }
+    {COMMENT_START} {comments_start_loc.push(loc.begin);}
 
     {COMMENT_END} {
         comments_start_loc.pop();
-        //dump_stack_content(comments_start_loc);
-
         if (comments_start_loc.empty())
             BEGIN(INITIAL);
     }
 
-    {NEWLINE}+  {
+    {NEWLINE}+ {
         loc.lines(yyleng);
-        loc.step();
-    }
-
-    /* debug */
-    [a-zA-Z0-9\-\_ :;.,]+    {
-        //cout << yytext << endl;
         loc.step();
     }
 
@@ -407,7 +388,9 @@ ASSIGN                          "<-"
     <<EOF>>     return Parser::make_YYEOF(loc);
 %%
 
-/* ==================================================== */
+    /*================================================++
+    ||                  USER CODE                     ||
+    ++================================================*/
 
 static void print_error(const position &pos, const string &m)
 {
