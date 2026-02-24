@@ -47,22 +47,26 @@
      */
     static std::string printable_hex_value(const std::string& hex_string);
     
+    /**
+     * @brief Prints the whole stack content. Used for debugging nested
+     * comments start positions.
+     * todo: making it static triggers [-Wunused-function] warning. Make it static without triggering a warning
+     */
     void dump_stack_content(std::stack<position> s);
-
 
     // Code run each time a pattern is matched.
     #define YY_USER_ACTION  loc.columns(yyleng);
 
-    // Global variable used to maintain the current location.
+    // Maintains the current location across the code.
     location loc;
 
-    // Global variable to track the nested comments number
-    //int nested_comments_counter = 0;
+    // Stack to track the nested comments number and starting positions.
     stack<position> comments_start_loc;
-    
 
-    // Global variables for storing data when scanning a string
+    // Storing string contentwhen scanning a string.
     string current_string;
+
+    // Remember the current string's start position.
     location string_start_loc;
 %}
 
@@ -74,7 +78,7 @@ LOWERCASE_LETTER                [a-z]
 UPPERCASE_LETTER                [A-Z]
 LETTER                          [a-zA-Z]
 
-WHITESPACE                      [ \t\n\f\r]
+    //WHITESPACE                      [ \t\n\f\r]
 WHITESPACE_NO_LF                [ \t\f\r]
 SPACE                           " "
 TABULATION                      \t
@@ -84,7 +88,6 @@ COMMENT_END                     "*)"
 COMMENT_SL                      "//".*
 
     /* Integer literals with error catchers */
-
 HEX_PREFIX                      0[xX]
 HEX_DIGIT                       [0-9a-fA-F]
 DEC_DIGIT                       [0-9]
@@ -99,17 +102,6 @@ INT_LIT_HEX                     {HEX_PREFIX}{HEX_DIGIT}+
 BAD_DEC_SUFFIX                  {DEC_DIGIT}+[a-zA-Z_][a-zA-Z0-9_]*
 
 INT_LIT_DEC                     {DEC_DIGIT}+
-
-    /* old code */
-    /*
-    INT_LIT_HEX_E                   0x|(0x[0-9a-fA-F]*[g-zG-Z_]+)
-    INT_LIT_HEX                     0x{HEX_DIGIT}+
-
-    INT_LIT_DEC_E                   [0-9]+[a-zA-Z_][a-zA-Z0-9]*
-    INT_LIT_DEC                     [0-9]+
-    */
-
-
 
     /* Unambiguous utility definitions */
 NEWLINE                         \n
@@ -137,13 +129,13 @@ UNIT                            "unit"
 WHILE                           "while"
 
 TYPE_IDENTIFIER                 {UPPERCASE_LETTER}({LETTER}|{DEC_DIGIT}|_)*
-
 OBJECT_IDENTIFIER               {LOWERCASE_LETTER}({LETTER}|{DEC_DIGIT}|_)*
 
     /* String and escaped characters */
 STRING_START                    "\""
 STRING_END                      "\""
 STRING_BREAK                    \\\n({SPACE}|{TABULATION})*
+
 ESCAPED_HEX                     \\x{HEX_DIGIT}{HEX_DIGIT}
 ESCAPED_NEWLINE                 \\n
 ESCAPED_TABULATION              \\t
@@ -156,11 +148,6 @@ ESCAPED_E                       \\.
 
     /* not " or \ or \n */
 STRING_NORMAL_CHARACTERS        [^"\\\n]+
-
-    /*todo apply wrong hexadecimal code */
-    /*ESCAPED_HEX_ERR                 \\x..*/
-    /*STRING_WRONG_ESCAPE_CHAR        \\[^ntbr\"\\\n]*/
-
 
     /* Operators */
 LEFT_BRACE                      "{"
@@ -181,8 +168,8 @@ LOWER                           "<"
 LOWER_EQUAL                     "<="
 ASSIGN                          "<-"
 
-/*todo understand Loup's error catcher*/
-OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
+    /*todo understand Loup's error catcher*/
+    //OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
 
 
 %%
@@ -248,33 +235,7 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     {OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
 
     /*todo think about out range errors and the likes*/
-    /*
-    {INT_LIT_DEC_E} {
-        print_error(loc.begin, std::string(yytext) + " is not a valid integer literal");
-        return Parser::make_YYerror(loc);
-    }
-
-    {INT_LIT_HEX_E} {
-        print_error(loc.begin, std::string(yytext) + " is not a valid integer literal");
-        return Parser::make_YYerror(loc);
-    }
-
-    {INT_LIT_DEC} {
-        int val = stoi(yytext, nullptr, 10);
-        return Parser::make_INTEGER_LITERAL(val, loc);
-    }
-
-    {INT_LIT_HEX} {
-        int val = stoi(yytext, nullptr, 16);
-        return Parser::make_INTEGER_LITERAL(val, loc);
-    }*/
-
-    /* 
-    Order is important - hex related rules come first to have
-    priority over the decimal rules in the case of a '0x'.
-    Avoids the decimal error rule to eat it up too early.
-    */
-    
+    /*todo change names of rules */
     {BAD_HEX_EMPTY} {
         print_error(loc.begin, std::string(yytext) + " is an incomplete hexadecimal literal (missing digits)");
         return Parser::make_YYerror(loc);
