@@ -303,11 +303,11 @@ ASSIGN                          "<-"
     }
 
     {STRING_BREAK} {
-        //int ws_count = yyleng - 2;
-        //loc.step();
-        loc.lines(1);
+        int ws_count = yyleng - 2;
         loc.step();
-        //loc.columns(ws_count);
+        loc.lines(1);
+        //loc.step();
+        loc.columns(ws_count);
     }
 
     {STRING_NORMAL_CHARACTERS} {current_string.append(yytext, yyleng);}
@@ -335,8 +335,7 @@ ASSIGN                          "<-"
     }
 
     {NEWLINE} {
-        loc.step();
-        print_error(loc.begin - 1, "Cannot have a newline inside a string.");
+        print_error(loc.end - 1, "Cannot have a newline inside a string.");
         //BEGIN(INITIAL);
         return Parser::make_YYerror(loc);
     }
