@@ -303,10 +303,11 @@ ASSIGN                          "<-"
     }
 
     {STRING_BREAK} {
-        int ws_count = yyleng - 2;
-        loc.step();
+        //int ws_count = yyleng - 2;
+        //loc.step();
         loc.lines(1);
-        loc.columns(ws_count);        
+        loc.step();
+        //loc.columns(ws_count);
     }
 
     {STRING_NORMAL_CHARACTERS} {current_string.append(yytext, yyleng);}
@@ -317,11 +318,7 @@ ASSIGN                          "<-"
     {ESCAPED_RETURN}        {current_string += "\\x0d";}
     {ESCAPED_QUOTES}        {current_string += "\\x22";}
     {ESCAPED_BACKSLASH}     {current_string += "\\x5c";}
-
-    {ESCAPED_HEX} {
-        string decoded = printable_hex_value(yytext);
-        current_string += decoded;
-    }
+    {ESCAPED_HEX}           {current_string += printable_hex_value(yytext);}
 
     {ESCAPED_E} {
         position tmp = loc.begin;
@@ -337,13 +334,10 @@ ASSIGN                          "<-"
         return Parser::make_YYerror(loc);
     }
 
-    . {
-
-    }
-
     {NEWLINE} {
-        print_error(loc.begin, "Cannot have a newline inside a string.");
-        // Begin initial?
+        loc.step();
+        print_error(loc.begin - 1, "Cannot have a newline inside a string.");
+        //BEGIN(INITIAL);
         return Parser::make_YYerror(loc);
     }
     
@@ -353,6 +347,13 @@ ASSIGN                          "<-"
         BEGIN(INITIAL);
         return Parser::make_YYerror(loc);
     }
+
+    /*
+    . {
+        print_error(string_start_loc.begin, "Catched an invalid char in string.");
+    }
+    */
+
 }
 
     /* ==================================================== */
