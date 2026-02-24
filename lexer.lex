@@ -269,7 +269,12 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         return Parser::make_INTEGER_LITERAL(val, loc);
     }*/
 
-    /* Hex errors first */
+    /* 
+    Order is important - hex related rules come first to have
+    priority over the decimal rules in the case of a '0x'.
+    Avoids the decimal error rule to eat it up too early.
+    */
+    
     {BAD_HEX_EMPTY} {
         print_error(loc.begin, std::string(yytext) + " is an incomplete hexadecimal literal (missing digits)");
         return Parser::make_YYerror(loc);
@@ -297,8 +302,6 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
         int val = stoi(yytext, nullptr, 10);
         return Parser::make_INTEGER_LITERAL(val, loc);
     }
-    
-
 
     {STRING_START} {
         string_start_loc = loc;
@@ -384,7 +387,8 @@ OTHER			[^a-zA-Z0-9\t\n\r\f*"{}():;,-/\^.=<]
     }
     
     <<EOF>> {
-        print_error(loc.begin, "Cannot have EOF inside an unclosed string.");
+        print_error(string_start_loc.begin, "Cannot have EOF inside an unclosed string.");
+        //print_error(loc.begin, "Cannot have EOF inside an unclosed string.");
         BEGIN(INITIAL);
         return Parser::make_YYerror(loc);
     }

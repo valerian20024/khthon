@@ -1,0 +1,2 @@
+32-string-ends-in-backslash.vsop:1:23: lexical error
+  character '\n' is illegal in this context.

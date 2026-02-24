@@ -1,0 +1,2 @@
+28-invalid-lf-in-string.vsop:1:35: lexical error
+  character '\n' is illegal in this context.
