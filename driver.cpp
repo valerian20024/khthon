@@ -6,7 +6,7 @@
 #include "parser.hpp"
 
 using namespace std;
-using namespace VSOP;
+using namespace Khthon;
 
 /**
  * @brief Map a token type to a string (pretty-print token types).

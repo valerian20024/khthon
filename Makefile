@@ -13,6 +13,7 @@ SRC				= main.cpp \
 
 OBJ	  			= $(SRC:.cpp=.o)
 
+BUILD_DIR		= build
 
 all: $(EXEC)
 

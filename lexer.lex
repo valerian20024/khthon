@@ -18,7 +18,7 @@
 %{
     /* Code to include at the beginning of the lexer file. */
     using namespace std;
-    using namespace VSOP;
+    using namespace Khthon;
 
     // Create a new NUMBER token from the value s.
     Parser::symbol_type make_NUMBER(const string &s,

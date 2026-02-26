@@ -56,7 +56,7 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-    VSOP::Driver driver = VSOP::Driver(source_file);
+    Khthon::Driver driver = Khthon::Driver(source_file);
 
     int res;
     switch (mode)

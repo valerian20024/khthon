@@ -18,10 +18,10 @@
 #include "parser.hpp"
 
 // Give prototype of yylex() function, then declare it.
-#define YY_DECL VSOP::Parser::symbol_type yylex()
+#define YY_DECL Khthon::Parser::symbol_type yylex()
 YY_DECL;
 
-namespace VSOP
+namespace Khthon
 {
     /*
     The Driver class acts as a central coordinator. 
@@ -105,7 +105,7 @@ namespace VSOP
         /**
          * @brief The parser.
          */
-        VSOP::Parser *parser;
+        Khthon::Parser *parser;
 
         /**
          * @brief Store the variables (names + values).

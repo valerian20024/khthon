@@ -16,7 +16,7 @@
 %defines
 
 // Put parser inside a namespace
-%define api.namespace {VSOP}
+%define api.namespace {Khthon}
 
 // Give the name of the parser class
 %define api.parser.class {Parser}
@@ -40,14 +40,14 @@
 %code requires {
     #include <string>
 
-    namespace VSOP
+    namespace Khthon
     {
         class Driver;
     }
 }
 
 // Add an argument to the parser constructor
-%parse-param {VSOP::Driver &driver}
+%parse-param {Khthon::Driver &driver}
 
 
 %code {
@@ -144,7 +144,7 @@ exp:
 */
 %%
 // User code
-void VSOP::Parser::error(const location_type& l, const std::string& m)
+void Khthon::Parser::error(const location_type& l, const std::string& m)
 {
     const position &pos = l.begin;
 
