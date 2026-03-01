@@ -68,6 +68,7 @@ lexer.cpp: lexer.lex
 debug:
 	@echo "OBJ: " $(OBJ)
 
+# Add a root directory called vscompiler in the archive
 archive: $(ARCHIVE_FILES)
 	tar -cJf $(ARCHIVE) --transform='s,^,vsopcompiler/,' $^
 
