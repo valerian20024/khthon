@@ -120,28 +120,6 @@ unit: CLASS assignments { }
 assignments:
     %empty                      {}
 
-/*
-    | assignments assignment    {};
-
-assignment:
-    "identifier" ":=" exp { driver.add_variable($1, $3); };
-
-exp:
-    "number"
-    | "identifier"  {
-                        if (!driver.has_variable($1))
-                        {
-                            error(@1, "variable " + $1 + " not defined");
-                            YYERROR;
-                        }
-                        $$ = driver.get_variable($1);
-                    }
-    | exp "+" exp   { $$ = $1 + $3; }
-    | exp "-" exp   { $$ = $1 - $3; }
-    | exp "*" exp   { $$ = $1 * $3; }
-    | exp "/" exp   { $$ = $1 / $3; }
-    | "(" exp ")"   { $$ = $2; }
-*/
 %%
 // User code
 void Khthon::Parser::error(const location_type& l, const std::string& m)
