@@ -41,7 +41,6 @@ ARCHIVE_FILES	= \
 
 all: $(EXEC)
 
-
 main.o: driver.hpp parser.hpp
 
 driver.o: driver.hpp parser.hpp
@@ -66,7 +65,8 @@ lexer.cpp: lexer.lex
 #  Utility targets
 # ────────────────────────────────────────────────────────────────
 
-#archive: vsopcompiler.tar.gz
+debug:
+	@echo "OBJ: " $(OBJ)
 
 archive: $(ARCHIVE_FILES)
 	tar -cJf $(ARCHIVE) --transform='s,^,vsopcompiler/,' $^
@@ -81,4 +81,4 @@ clean:
 	@rm -f parser.cpp parser.hpp location.hh
 	@rm -f vsopcompiler.tar.xz
 
-.PHONY: clean install-tools archive
+.PHONY: clean install-tools archive debug
