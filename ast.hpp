@@ -29,7 +29,7 @@ namespace Khthon {
     private:
         location loc_;
     public:
-        virtual void accept(Visitor<std::string>& v) const = 0;
+        virtual std::string accept(Visitor<std::string>& v) const = 0;
         virtual ~Node() = default;
         location location() const { return loc_; }
     };
@@ -43,14 +43,56 @@ namespace Khthon {
         // Getter
         const NodeList<ClassNode>& classes() const { return classes_; }
         // Accept visitor
-        void accept(Visitor<std::string>& v) const override { v.visit(*this); }
+        std::string accept(Visitor<std::string>& v) const override { return v.visit(*this); }
     };
 
     class ClassNode : public Node {
     private:
-        std::string name;
+        std::string name_;
+        std::string parent_;
+        NodeList<Node> fields_;
+        NodeList<Node> methods_;
+    public:
+        // Constructor
+        ClassNode(std::string n, std::string p = "Object") : name_(std::move(n)), parent_(std::move(p)) { }
+
+        // Getters
+        const std::string& name() const { return name_; }
+        const std::string& parent() const { return parent_; }
+        const NodeList<Node>& fields() const { return fields_; }
+        const NodeList<Node>& methods() const { return methods_; }
+
+        // Accept visitors
+        std::string accept(Visitor<std::string>& v) const override { return v.visit(*this); }
     };
 
+    class PrintVisitor : public Visitor<std::string> {
+    private:
+        std::string printList(const NodeList<Node>& items) const {
+            return "HEY IM A PLACEHOLDER!!";
+        }
+
+    public:
+        // Visiting ProgramNode
+        std::string visit(const ProgramNode& node) override {
+            std::string result;
+            const auto& classes = node.classes();
+
+            for (size_t i = 0; i < classes.size(); ++i) {
+                if (i > 0)
+                    result += ", ";
+                result += classes[i]->accept(*this);
+            }
+            return result;
+        }
+
+        // Visiting ClassNode
+        std::string visit(const ClassNode& node) override {
+            return "Class(" + node.name() + ", " + node.parent() + ", [" +
+                printList(node.fields()) + "], [" + printList(node.methods()) + "])";
+        }
+        
+    };
 }
 
 #endif
