@@ -7,26 +7,50 @@
 #include <optional>     // for std::optional
 #include "parser.hpp"   // for Bison location
 
-// Forward declarations for Visitor. Avoid circular dependencies. 
-class ProgramNode;
-class ClassNode;
+namespace Khthon {
 
-template <typename R> class Visitor {
-public:
-    // Pure virtual methods and virtual destructor (rule of zero)
-    virtual R visit(const ProgramNode& node) = 0;
-    virtual R visit(const ClassNode& node) = 0;
-    virtual ~Visitor() = default;
-};
+    template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
 
-class Node {
-private:
-    Khthon::location loc;
-public:
-    virtual void accept(Visitor<std::string>& v) const = 0;
-    virtual ~Node() = default;
-};
+    // Forward declarations for Visitor. Avoid circular dependencies. 
+    class ProgramNode;
+    class ClassNode;
 
+    // Abstract class for visitors.
+    template <typename R> class Visitor {
+    public:
+        // Pure virtual methods and virtual destructor (rule of zero)
+        virtual R visit(const ProgramNode& node) = 0;
+        virtual R visit(const ClassNode& node) = 0;
+        virtual ~Visitor() = default;
+    };
 
+    // Abstract class for nodes. 
+    class Node {
+    private:
+        location loc_;
+    public:
+        virtual void accept(Visitor<std::string>& v) const = 0;
+        virtual ~Node() = default;
+        location location() const { return loc_; }
+    };
 
-#endif  // AST_HPP
+    class ProgramNode : public Node {
+    private:
+        NodeList<ClassNode> classes_;
+    public:
+        // Constructor
+        ProgramNode(NodeList<ClassNode> cs) : classes_(std::move(cs)) { }
+        // Getter
+        const NodeList<ClassNode>& classes() const { return classes_; }
+        // Accept visitor
+        void accept(Visitor<std::string>& v) const override { v.visit(*this); }
+    };
+
+    class ClassNode : public Node {
+    private:
+        std::string name;
+    };
+
+}
+
+#endif

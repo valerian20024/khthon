@@ -3,7 +3,7 @@
 # ────────────────────────────────────────────────────────────────
 
 CXX 			= clang++
-CXXFLAGS 		= -Wall -Wextra -g -std=c++11
+CXXFLAGS 		= -Wall -Wextra -g -std=c++14
 
 BISONFLAGS 		= -d
 LEXFLAGS		=
