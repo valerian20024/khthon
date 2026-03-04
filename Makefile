@@ -17,6 +17,7 @@ EXEC			= vsopc
 
 SRC				= main.cpp \
 				  driver.cpp \
+				  ast.cpp \
 				  parser.cpp \
 				  lexer.cpp
 
