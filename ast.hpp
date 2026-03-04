@@ -7,7 +7,7 @@
 #include <optional>     // for std::optional
 
 #include "parser.hpp"   // for Bison Khthon::location
-#include "driver.hpp"
+//#include "driver.hpp"  //remove this and code takes fire
 #include "location.hh"
 
 namespace Khthon {
@@ -75,7 +75,8 @@ namespace Khthon {
 
     class PrintVisitor : public Visitor<std::string> {
     private:
-        std::string printList(NodeList<Node>& items) const {
+        std::string printList(const NodeList<Node>& items) const {
+            (void) items;
             return "HEY IM A PLACEHOLDER!!";
         }
 
