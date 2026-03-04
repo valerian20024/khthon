@@ -102,11 +102,6 @@
 %token <std::string> STRING_LITERAL "string-literal"
 %token <int> INTEGER_LITERAL "integer-literal"
 
-%type <std::shared_ptr<Khthon::ProgramNode>> program
-%type <std::vector<std::shared_ptr<Khthon::ClassNode>>> class_list
-%type <std::shared_ptr<Khthon::ClassNode>> class
-%type <std::optional<std::string>> opt_extends
-
 // Precedence
 %left "+" "-"; // Could also do: %left PLUS MINUS
 %left "*" "/";
@@ -114,47 +109,11 @@
 %%
 // Grammar rules
 
-/*
 %start unit;
 unit: CLASS assignments { }
-    | assignments  { }
 
 assignments:
-    %empty                      {}
-*/
-
-%start program;
-
-program: 
-    class_list {
-        $$ = std::make_shared<Khthon::ProgramNode>($1);
-        $$->loc = @$;
-    }
-
-class_list: 
-    class_list class {
-        $1.push_back($2);
-        $$ = $1;
-    }
-    | class {
-        $$ = {$1};
-    }
-    | %empty {
-        $$ = {};
-    }
-
-class: 
-    CLASS TYPE_IDENTIFIER opt_extends LEFT_BRACE RIGHT_BRACE SEMICOLON {
-        $$ = std::make_shared<Khthon::ClassNode>($2, $3);
-        $$->loc = @$;
-    }
-
-opt_extends: EXTENDS TYPE_IDENTIFIER {
-    $$ = $2;
-}
-           | %empty {
-    $$ = std::nullopt;
-}
+    %empty {}
 
 %%
 // User code

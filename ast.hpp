@@ -5,7 +5,10 @@
 #include <string>       // for std::string
 #include <vector>       // for std::vector
 #include <optional>     // for std::optional
-#include "parser.hpp"   // for Bison location
+
+#include "parser.hpp"   // for Bison Khthon::location
+#include "driver.hpp"
+#include "location.hh"
 
 namespace Khthon {
 
@@ -27,11 +30,15 @@ namespace Khthon {
     // Abstract class for nodes. 
     class Node {
     private:
-        location loc_;
+        Khthon::location loc_;
     public:
-        virtual std::string accept(Visitor<std::string>& v) const = 0;
+        // Constructor and destructor
+        Node(Khthon::location l) : loc_(l) { }
         virtual ~Node() = default;
-        location location() const { return loc_; }
+        // Accept visitors
+        virtual std::string accept(Visitor<std::string>& v) const = 0;
+        // Getters
+        Khthon::location location() const { return loc_; }
     };
 
     class ProgramNode : public Node {
@@ -39,7 +46,7 @@ namespace Khthon {
         NodeList<ClassNode> classes_;
     public:
         // Constructor
-        ProgramNode(NodeList<ClassNode> cs) : classes_(std::move(cs)) { }
+        ProgramNode(Khthon::location l, NodeList<ClassNode> cs) : Node(l), classes_(std::move(cs)) { }
         // Getter
         const NodeList<ClassNode>& classes() const { return classes_; }
         // Accept visitor
@@ -54,7 +61,7 @@ namespace Khthon {
         NodeList<Node> methods_;
     public:
         // Constructor
-        ClassNode(std::string n, std::string p = "Object") : name_(std::move(n)), parent_(std::move(p)) { }
+        ClassNode(Khthon::location l, std::string n, std::string p = "Object") : Node(l), name_(std::move(n)), parent_(std::move(p)) { }
 
         // Getters
         const std::string& name() const { return name_; }
@@ -68,7 +75,7 @@ namespace Khthon {
 
     class PrintVisitor : public Visitor<std::string> {
     private:
-        std::string printList(const NodeList<Node>& items) const {
+        std::string printList(NodeList<Node>& items) const {
             return "HEY IM A PLACEHOLDER!!";
         }
 
