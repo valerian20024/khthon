@@ -102,6 +102,9 @@
 %token <std::string> STRING_LITERAL "string-literal"
 %token <int> INTEGER_LITERAL "integer-literal"
 
+//%type <std::vector<std::shared_ptr<Khthon::ClassNode>>> class_list
+%type <std::shared_ptr<Khthon::Node>> program
+
 // Precedence
 %left "+" "-"; // Could also do: %left PLUS MINUS
 %left "*" "/";
@@ -109,11 +112,15 @@
 %%
 // Grammar rules
 
-%start unit;
-unit: CLASS assignments { }
+%start program;
 
-assignments:
-    %empty {}
+program: 
+    class_list {
+        $$ = std::make_shared<Khthon::Node>(@$);
+    }
+
+class_list:
+    %empty
 
 %%
 // User code
