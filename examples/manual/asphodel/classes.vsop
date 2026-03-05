@@ -1,0 +1,7 @@
+class Coucou {
+    
+}
+
+class Coucou2 extends Coucou {
+
+}
