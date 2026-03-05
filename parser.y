@@ -26,7 +26,7 @@
 // Add some assertions.
 %define parse.assert
 
-// C++ code put inside header file
+// C++ code put inside parser.hpp
 %code requires {
     #include <string>
     #include <memory>
@@ -43,14 +43,11 @@
 // Add an argument to the parser constructor
 %parse-param {Khthon::Driver &driver}
 
-
+// C++ code put inside parser.cpp
 %code {
-    #include <optional>
-    #include <memory>
-
     #include "driver.hpp"
     #include "ast.hpp"
-
+    
     using namespace std;
 }
 
@@ -103,7 +100,7 @@
 %token <int> INTEGER_LITERAL "integer-literal"
 
 //%type <std::vector<std::shared_ptr<Khthon::ClassNode>>> class_list
-%type <std::shared_ptr<Khthon::ProgramNode>> program
+%type <std::shared_ptr<ProgramNode>> program
 
 // Precedence
 %left "+" "-"; // Could also do: %left PLUS MINUS
@@ -116,7 +113,7 @@
 
 program: 
     class_list {
-        $$ = std::make_shared<Khthon::ProgramNode>(@$);
+        $$ = std::make_shared<ProgramNode>(@$);
     }
 
 class_list:
