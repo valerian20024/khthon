@@ -61,6 +61,7 @@ namespace Khthon {
         NodeList<Node> methods_;
     public:
         // Constructor
+        ClassNode(Khthon::location l) : Node(l) { }
         ClassNode(Khthon::location l, std::string n, std::string p = "Object") : Node(l), name_(std::move(n)), parent_(std::move(p)) { }
 
         // Getters

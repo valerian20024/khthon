@@ -4,6 +4,7 @@
 
 #include "driver.hpp"
 #include "parser.hpp"
+#include "ast.hpp"
 
 using namespace std;
 using namespace Khthon;
@@ -135,9 +136,18 @@ int Driver::parse()
 {
     scan_begin();
 
-    parser = new Parser(*this);
+    PrintVisitor printer;
+    location l;
 
+    parser = new Parser(*this);
+    
     int res = parser->parse();
+
+    auto p = new ClassNode(l);
+    std::string result = p->accept(printer);
+    cout << result << endl;
+
+
     scan_end();
 
     delete parser;
