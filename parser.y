@@ -51,7 +51,10 @@
     using namespace std;
 }
 
-// Token and symbols definitions
+    /*================================================++
+    ||                 DEFINITIONS                    ||
+    ++================================================*/
+
 %token
     AND                             "and"
     BOOL                            "bool"
@@ -107,7 +110,11 @@
 %left "*" "/";
 
 %%
-// Grammar rules
+
+    /*================================================++
+    ||                 GRAMMAR RULE                   ||
+    ++================================================*/
+
 
 %start program;
 
@@ -120,7 +127,11 @@ class_list:
     %empty
 
 %%
-// User code
+
+    /*================================================++
+    ||                  USER CODE                     ||
+    ++================================================*/
+
 void Khthon::Parser::error(const location_type& l, const std::string& m)
 {
     const position &pos = l.begin;
