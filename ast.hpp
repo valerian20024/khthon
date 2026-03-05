@@ -6,7 +6,7 @@
 #include <vector>       // for std::vector
 #include <optional>     // for std::optional
 
-#include "parser.hpp"   // for Bison Khthon::location
+//#include "parser.hpp"   // for Bison Khthon::location
 //#include "driver.hpp"  //remove this and code takes fire
 #include "location.hh"
 
@@ -47,6 +47,8 @@ namespace Khthon {
     public:
         // Constructor
         ProgramNode(Khthon::location l, NodeList<ClassNode> cs) : Node(l), classes_(std::move(cs)) { }
+        
+        ProgramNode(Khthon::location l) : Node(l) {}
         // Getter
         const NodeList<ClassNode>& classes() const { return classes_; }
         // Accept visitor

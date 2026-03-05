@@ -103,7 +103,7 @@
 %token <int> INTEGER_LITERAL "integer-literal"
 
 //%type <std::vector<std::shared_ptr<Khthon::ClassNode>>> class_list
-%type <std::shared_ptr<Khthon::Node>> program
+%type <std::shared_ptr<Khthon::ProgramNode>> program
 
 // Precedence
 %left "+" "-"; // Could also do: %left PLUS MINUS
@@ -116,7 +116,7 @@
 
 program: 
     class_list {
-        $$ = std::make_shared<Khthon::Node>(@$);
+        $$ = std::make_shared<Khthon::ProgramNode>(@$);
     }
 
 class_list:
