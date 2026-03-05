@@ -92,7 +92,8 @@ namespace Khthon {
                     result += ", ";
                 result += classes[i]->accept(*this);
             }
-            return result;
+            //return result;
+            return "Wow I'm a programnode";
         }
 
         // Visiting ClassNode

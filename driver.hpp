@@ -4,8 +4,10 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 #include "parser.hpp"
+#include "ast.hpp"
 
 // Give prototype of yylex() function, then declare it.
 #define YY_DECL Khthon::Parser::symbol_type yylex()
@@ -86,6 +88,8 @@ namespace Khthon
          */
         int result;
 
+        std::shared_ptr<ProgramNode> ast_root;
+
     private:
         /**
          * @brief The source file.
@@ -106,6 +110,8 @@ namespace Khthon
          * @brief Store the tokens.
          */
         std::vector<Parser::symbol_type> tokens;
+
+        
 
         /**
          * @brief Start the lexer.

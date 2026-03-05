@@ -136,21 +136,18 @@ int Driver::parse()
 {
     scan_begin();
 
-    PrintVisitor printer;
-    location l;
-
-    parser = new Parser(*this);
-    
+    parser = new Parser(*this);    
     int res = parser->parse();
-
-    auto p = new ClassNode(l);
-    std::string result = p->accept(printer);
-    cout << result << endl;
-
 
     scan_end();
 
     delete parser;
+
+
+    PrintVisitor printer;
+    std::string text = ast_root->accept(printer);
+    cout << text << endl;
+
 
     return res;
 }
