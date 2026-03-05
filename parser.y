@@ -102,8 +102,10 @@
 %token <std::string> STRING_LITERAL "string-literal"
 %token <int> INTEGER_LITERAL "integer-literal"
 
-//%type <std::vector<std::shared_ptr<Khthon::ClassNode>>> class_list
+
 %type <std::shared_ptr<ProgramNode>> program
+%type <std::vector<std::shared_ptr<Khthon::ClassNode>>> class_list
+%type <std::shared_ptr<ClassNode>> class
 
 // Precedence
 %left "+" "-"; // Could also do: %left PLUS MINUS
@@ -123,8 +125,11 @@ program:
         $$ = std::make_shared<ProgramNode>(@$);
         driver.ast_root = $$;
     }
+    ;
 
-class_list:
+class_list: class_list class {
+
+    }
     %empty
 
 %%

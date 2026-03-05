@@ -78,7 +78,7 @@ namespace Khthon {
     private:
         std::string printList(const NodeList<Node>& items) const {
             (void) items;
-            return "HEY IM A PLACEHOLDER!!";
+            return "HEY IM A PLACEHOLDER (for lists)!!";
         }
 
     public:
@@ -92,8 +92,7 @@ namespace Khthon {
                     result += ", ";
                 result += classes[i]->accept(*this);
             }
-            //return result;
-            return "Wow I'm a programnode";
+            return result;
         }
 
         // Visiting ClassNode
