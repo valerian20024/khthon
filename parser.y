@@ -49,6 +49,7 @@
     #include "ast.hpp"
     
     using namespace std;
+    using namespace Khthon;
 }
 
     /*================================================++
@@ -104,8 +105,8 @@
 
 
 %type <std::shared_ptr<ProgramNode>> program
-%type <std::vector<std::shared_ptr<Khthon::ClassNode>>> class_list
-//%type <std::shared_ptr<ClassNode>> class
+%type <std::vector<std::shared_ptr<ClassNode>>> class_list
+%type <std::shared_ptr<ClassNode>> class
 
 // Precedence : defined in descending order
 %right      ASSIGN                  // 9
@@ -129,13 +130,43 @@
 %start program;
 
 program 
-    : class_list {
+    : class_list 
+      {
         $$ = std::make_shared<ProgramNode>(@$);
         driver.ast_root = $$;
       }
     ;
 
 class_list
+    : class 
+      {
+
+      }
+    | class_list class 
+      {
+
+      }
+    ;
+
+class
+    : CLASS TYPE_IDENTIFIER optional_extends class_body 
+      {
+
+      }
+    ;
+
+optional_extends
+    : %empty 
+      {
+
+      }
+    | EXTENDS TYPE_IDENTIFIER 
+      {
+
+      }
+    ;
+
+class_body
     : %empty
 
 %%
