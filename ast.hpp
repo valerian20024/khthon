@@ -15,6 +15,8 @@ namespace Khthon {
     // Forward declarations for Visitor. Avoid circular dependencies. 
     class ProgramNode;
     class ClassNode;
+    class FieldNode;
+    class MethodNode;
     
     /*================================================++
     ||               ABSTRACT CLASSES                 ||
@@ -26,6 +28,8 @@ namespace Khthon {
         // Pure virtual methods and virtual destructor (rule of zero)
         virtual R visit(const ProgramNode& node) = 0;
         virtual R visit(const ClassNode& node) = 0;
+        virtual R visit(const FieldNode& node) = 0;
+        virtual R visit(const MethodNode& node) = 0;
         virtual ~Visitor() = default;
     };
 
@@ -54,11 +58,9 @@ namespace Khthon {
         // Constructor
         ProgramNode(Khthon::location l, NodeList<ClassNode> cs) : Node(l), classes_(std::move(cs)) { }
 
-        //! Dummy constructor for testing
-        //ProgramNode(Khthon::location l) : Node(l) {}
-
         // Getter
         const NodeList<ClassNode>& classes() const { return classes_; }
+        
         // Accept visitor
         std::string accept(Visitor<std::string>& v) const override { return v.visit(*this); }
     };
@@ -73,7 +75,8 @@ namespace Khthon {
     public:
         // Constructor
         ClassNode(Khthon::location l) : Node(l) { }
-        ClassNode(Khthon::location l, std::string n, std::string p = "Object") : Node(l), name_(std::move(n)), parent_(std::move(p)) { }
+        ClassNode(Khthon::location l, std::string n, std::string p = "Object") : 
+            Node(l), name_(std::move(n)), parent_(std::move(p)) { }
 
         // Getters
         const std::string& name() const { return name_; }
@@ -82,7 +85,45 @@ namespace Khthon {
         const NodeList<Node>& methods() const { return methods_; }
 
         // Accept visitors
-        std::string accept(Visitor<std::string>& v) const override { return v.visit(*this); }
+        std::string accept(Visitor<std::string>& v) const override { 
+            return v.visit(*this); 
+        }
+    };
+
+    class FieldNode : public Node {
+    private:
+        std::string name_;
+        std::string type_;
+    public:
+        // Constructor
+        FieldNode(Khthon::location l) : Node(l) { }
+        FieldNode(Khthon::location l, std::string n, std::string t) : 
+            Node(l), name_(std::move(n)), type_(std::move(t)) { }
+        // Getters
+        const std::string& name() const { return name_; }
+        const std::string& type() const { return type_; }
+
+        std::string accept(Visitor<std::string>& v) const override {
+            return v.visit(*this);
+        }
+    };
+
+    class MethodNode : public Node {
+    private:
+        std::string name_;
+        std::string type_;
+    public:
+        // Constructor
+        MethodNode(Khthon::location l) : Node(l) { }
+        MethodNode(Khthon::location l, std::string n, std::string t) : 
+            Node(l), name_(std::move(n)), type_(std::move(t)) { }
+        // Getters
+        const std::string& name() const { return name_; }
+        const std::string& type() const { return type_; }
+
+        std::string accept(Visitor<std::string>& v) const override {
+            return v.visit(*this);
+        }
     };
 
     /*================================================++
@@ -97,13 +138,9 @@ namespace Khthon {
         }
 
     public:
-        // Visiting ProgramNode
         std::string visit(const ProgramNode& node) override {
             std::string result;
             const auto& classes = node.classes();
-
-            /* debug */
-            std::cout << "=> Print visitor has seen a ProgramNode" << std::endl;
 
             // Chaining visit to each of the classes
             for (size_t i = 0; i < classes.size(); ++i) {
@@ -114,10 +151,19 @@ namespace Khthon {
             return result;
         }
 
-        // Visiting ClassNode
         std::string visit(const ClassNode& node) override {
             return "Class(" + node.name() + ", " + node.parent() + ", [" +
                 printList(node.fields()) + "], [" + printList(node.methods()) + "])";
+        }
+
+        std::string visit(const FieldNode& node) override {
+            (void) node;
+            return "superfieldnode ici";
+        }
+
+        std::string visit(const MethodNode& node) override {
+            (void) node;
+            return "super METHOD ici";
         }
     };
 }

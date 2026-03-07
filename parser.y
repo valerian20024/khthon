@@ -170,15 +170,37 @@ optional_extends
       }
     | EXTENDS TYPE_IDENTIFIER 
       {
-        $$ = std::move($2);
+        $$ = $2;  // works with std::move as well
       }
     ;
 
 class_body
-    : LEFT_BRACE RIGHT_BRACE {
+    : LEFT_BRACE class_content RIGHT_BRACE 
+      {
 
-    }
+      }
     ;
+
+class_content
+    :
+      {
+
+      }
+    | class_content field
+      {
+
+      }
+    | class_content method
+      {
+
+      }
+    ;
+
+field
+    : %empty
+
+method
+    : %empty
 
 %%
 
