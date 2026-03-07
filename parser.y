@@ -107,9 +107,17 @@
 %type <std::vector<std::shared_ptr<Khthon::ClassNode>>> class_list
 //%type <std::shared_ptr<ClassNode>> class
 
-// Precedence
-%left "+" "-"; // Could also do: %left PLUS MINUS
-%left "*" "/";
+// Precedence : defined in descending order
+%right      ASSIGN                  // 9
+%left       AND                     // 8
+%right      NOT                     // 7
+%nonassoc   EQUAL LOWER_EQUAL LOWER // 6
+%left       PLUS MINUS              // 5
+%left       TIMES DIVIDE            // 4
+%right      ISNULL                  // 3. 
+//%right      "Unary MINUS operator"// 3
+%right      POWER                   // 2
+%left       DOT                     // 1
 
 %%
 
@@ -120,15 +128,15 @@
 
 %start program;
 
-program: 
-    class_list {
+program 
+    : class_list {
         $$ = std::make_shared<ProgramNode>(@$);
         driver.ast_root = $$;
-    }
+      }
     ;
 
-class_list:
-    %empty
+class_list
+    : %empty
 
 %%
 
