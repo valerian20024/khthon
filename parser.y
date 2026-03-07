@@ -107,6 +107,7 @@
 %type <std::shared_ptr<ProgramNode>> program
 %type <std::vector<std::shared_ptr<ClassNode>>> class_list
 %type <std::shared_ptr<ClassNode>> class
+%type <std::string> optional_extends
 
 // Precedence : defined in descending order
 %right      ASSIGN                  // 9
@@ -146,26 +147,30 @@ class_list
     | class_list class 
       {
         std::cerr << "recursive case – previous size = " << $1.size() << endl;
-        //$$ = std::move($1);
-        //$$.emplace_back(std::move($2));
+        $$ = std::move($1);
+        $$.emplace_back(std::move($2));
       }
     ;
 
 class
     : CLASS TYPE_IDENTIFIER optional_extends class_body 
       {
-        $$ = std::make_shared<ClassNode>(@$);
+        $$ = std::make_shared<ClassNode>(
+            @$,
+            $2,
+            $3  
+        );  /*todo add fields and methods*/
       }
     ;
 
 optional_extends
     : %empty 
       {
-
+        $$ = "Object";  // Default parent of any class
       }
     | EXTENDS TYPE_IDENTIFIER 
       {
-
+        $$ = std::move($2);
       }
     ;
 
