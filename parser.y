@@ -105,7 +105,7 @@
 
 %type <std::shared_ptr<ProgramNode>> program
 %type <std::vector<std::shared_ptr<Khthon::ClassNode>>> class_list
-%type <std::shared_ptr<ClassNode>> class
+//%type <std::shared_ptr<ClassNode>> class
 
 // Precedence
 %left "+" "-"; // Could also do: %left PLUS MINUS
@@ -127,9 +127,7 @@ program:
     }
     ;
 
-class_list: class_list class {
-
-    }
+class_list:
     %empty
 
 %%
