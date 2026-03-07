@@ -18,6 +18,12 @@ namespace Khthon {
     class FieldNode;
     class MethodNode;
     
+    // Datastructure to hold fields and methods together when parsing a class
+    struct ClassMembers {
+        NodeList<FieldNode> fields;
+        NodeList<MethodNode> methods;
+    };
+
     /*================================================++
     ||               ABSTRACT CLASSES                 ||
     ++================================================*/
@@ -70,19 +76,28 @@ namespace Khthon {
     private:
         std::string name_;
         std::string parent_;
-        NodeList<Node> fields_;
-        NodeList<Node> methods_;
+        NodeList<FieldNode> fields_;
+        NodeList<MethodNode> methods_;
     public:
         // Constructor
         ClassNode(Khthon::location l) : Node(l) { }
-        ClassNode(Khthon::location l, std::string n, std::string p = "Object") : 
+        ClassNode(Khthon::location l, std::string n, std::string p) : 
             Node(l), name_(std::move(n)), parent_(std::move(p)) { }
+        ClassNode(
+            Khthon::location l, 
+            std::string n, 
+            std::string p,
+            NodeList<FieldNode> fs,
+            NodeList<MethodNode> ms
+        ) : 
+            Node(l), name_(std::move(n)), parent_(std::move(p)), 
+            fields_(std::move(fs)), methods_(std::move(ms)) { }
 
         // Getters
         const std::string& name() const { return name_; }
         const std::string& parent() const { return parent_; }
-        const NodeList<Node>& fields() const { return fields_; }
-        const NodeList<Node>& methods() const { return methods_; }
+        const NodeList<FieldNode>& fields() const { return fields_; }
+        const NodeList<MethodNode>& methods() const { return methods_; }
 
         // Accept visitors
         std::string accept(Visitor<std::string>& v) const override { 
@@ -134,7 +149,17 @@ namespace Khthon {
     private:
         std::string printList(const NodeList<Node>& items) const {
             (void) items;
-            return "HEY IM A PLACEHOLDER (for lists)!!";
+            return "LIST PLACEHOLDER";
+        }
+
+        std::string printList(const NodeList<FieldNode>& items) const {
+            (void) items;
+            return "LIST OF FIELDS";
+        }
+
+        std::string printList(const NodeList<MethodNode>& items) const {
+            (void) items;
+            return "LIST OF METHODS";
         }
 
     public:
@@ -158,7 +183,7 @@ namespace Khthon {
 
         std::string visit(const FieldNode& node) override {
             (void) node;
-            return "superfieldnode ici";
+            return "super FIELD ici";
         }
 
         std::string visit(const MethodNode& node) override {
