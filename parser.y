@@ -50,8 +50,6 @@
     
     using namespace std;
     using namespace Khthon;
-
-    using std::move;
 }
 
     /*================================================++
@@ -142,12 +140,14 @@ program
 class_list
     : class 
       {
-        $$.push_back(std::move($1));
+        std::cerr << "base case – creating new vector, size will be 1" << endl;
+        //$$.emplace_back(std::move($1));
       }
     | class_list class 
       {
-        $$.push_back(std::move($2));
-        $$ = std::move($1);
+        std::cerr << "recursive case – previous size = " << $1.size() << endl;
+        //$$ = std::move($1);
+        //$$.emplace_back(std::move($2));
       }
     ;
 
@@ -170,7 +170,10 @@ optional_extends
     ;
 
 class_body
-    : %empty
+    : LEFT_BRACE RIGHT_BRACE {
+
+    }
+    ;
 
 %%
 

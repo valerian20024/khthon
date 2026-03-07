@@ -143,11 +143,22 @@ int Driver::parse()
 
     delete parser;
 
+    if (ast_root) {
+        cout << "=> AST root exists. Number of classes = "
+            << ast_root->classes().size() << "\n";
+    }
 
+    if (res != 0) {
+        cerr << "!> Error in parsing" << endl;
+        return res;
+    }
+
+
+    // Printing the AST
     PrintVisitor printer;
     std::string text = ast_root->accept(printer);
+    
     cout << text << endl;
-
 
     return res;
 }

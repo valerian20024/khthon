@@ -88,6 +88,9 @@ namespace Khthon {
             std::string result;
             const auto& classes = node.classes();
 
+            /* debug */
+            std::cout << "=> Print visitor has seen a ProgramNode" << std::endl;
+
             for (size_t i = 0; i < classes.size(); ++i) {
                 if (i > 0)
                     result += ", ";
