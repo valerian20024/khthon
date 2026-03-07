@@ -50,6 +50,8 @@
     
     using namespace std;
     using namespace Khthon;
+
+    using std::move;
 }
 
     /*================================================++
@@ -103,7 +105,7 @@
 %token <std::string> STRING_LITERAL "string-literal"
 %token <int> INTEGER_LITERAL "integer-literal"
 
-
+// Tell Bison the semantic type of non-terminals. Uses variant support.
 %type <std::shared_ptr<ProgramNode>> program
 %type <std::vector<std::shared_ptr<ClassNode>>> class_list
 %type <std::shared_ptr<ClassNode>> class
@@ -132,7 +134,7 @@
 program 
     : class_list 
       {
-        $$ = std::make_shared<ProgramNode>(@$, $1);
+        $$ = std::make_shared<ProgramNode>(@$, $1);  // std::move($1) seems to work as well
         driver.ast_root = $$;
       }
     ;
@@ -140,11 +142,12 @@ program
 class_list
     : class 
       {
-
+        $$.push_back(std::move($1));
       }
     | class_list class 
       {
-
+        $$.push_back(std::move($2));
+        $$ = std::move($1);
       }
     ;
 
