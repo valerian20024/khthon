@@ -154,7 +154,7 @@ class_list
 class
     : CLASS TYPE_IDENTIFIER optional_extends class_body 
       {
-
+        $$ = std::make_shared<ClassNode>(@$);
       }
     ;
 
