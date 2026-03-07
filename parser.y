@@ -132,7 +132,7 @@
 program 
     : class_list 
       {
-        $$ = std::make_shared<ProgramNode>(@$);
+        $$ = std::make_shared<ProgramNode>(@$, $1);
         driver.ast_root = $$;
       }
     ;

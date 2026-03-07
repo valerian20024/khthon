@@ -46,6 +46,7 @@ namespace Khthon {
         // Constructor
         ProgramNode(Khthon::location l, NodeList<ClassNode> cs) : Node(l), classes_(std::move(cs)) { }
 
+        //! Dummy constructor for testing
         ProgramNode(Khthon::location l) : Node(l) {}
         // Getter
         const NodeList<ClassNode>& classes() const { return classes_; }
