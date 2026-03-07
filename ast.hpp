@@ -22,6 +22,8 @@ namespace Khthon {
     struct ClassMembers {
         NodeList<FieldNode> fields;
         NodeList<MethodNode> methods;
+
+        ClassMembers() {}
     };
 
     /*================================================++

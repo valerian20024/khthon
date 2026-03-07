@@ -108,6 +108,9 @@
 %type <std::vector<std::shared_ptr<ClassNode>>> class_list
 %type <std::shared_ptr<ClassNode>> class
 %type <std::string> optional_extends
+%type <Khthon::ClassMembers> class_body class_content
+
+
 
 // Precedence : defined in descending order
 %right      ASSIGN                  // 9
@@ -175,14 +178,14 @@ optional_extends
 class_body
     : LEFT_BRACE class_content RIGHT_BRACE 
       {
-
+        $$ = $2;
       }
     ;
 
 class_content
-    :
+    : %empty  /*todo placed %empty here just to allow compiling. Remove */
       {
-
+        
       }
     | class_content field
       {
