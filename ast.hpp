@@ -123,6 +123,7 @@ namespace Khthon {
         }
     };
 
+    //! dummy class copy pasted from FieldNode
     class MethodNode : public Node {
     private:
         std::string name_;
@@ -147,11 +148,7 @@ namespace Khthon {
 
     class PrintVisitor : public Visitor<std::string> {
     private:
-        std::string printList(const NodeList<Node>& items) const {
-            (void) items;
-            return "LIST PLACEHOLDER";
-        }
-
+        // For handling both fields and methods.
         std::string printList(const NodeList<FieldNode>& items) const {
             (void) items;
             return "LIST OF FIELDS";
