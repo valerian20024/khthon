@@ -141,7 +141,7 @@ class_list
     : class 
       {
         std::cerr << "base case – creating new vector, size will be 1" << endl;
-        //$$.emplace_back(std::move($1));
+        $$.emplace_back(std::move($1));
       }
     | class_list class 
       {

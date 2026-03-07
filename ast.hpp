@@ -15,6 +15,10 @@ namespace Khthon {
     // Forward declarations for Visitor. Avoid circular dependencies. 
     class ProgramNode;
     class ClassNode;
+    
+    /*================================================++
+    ||               ABSTRACT CLASSES                 ||
+    ++================================================*/
 
     // Abstract class for visitors.
     template <typename R> class Visitor {
@@ -39,6 +43,10 @@ namespace Khthon {
         Khthon::location location() const { return loc_; }
     };
 
+    /*================================================++
+    ||                CONCRETE NODES                  ||
+    ++================================================*/
+
     class ProgramNode : public Node {
     private:
         NodeList<ClassNode> classes_;
@@ -47,12 +55,14 @@ namespace Khthon {
         ProgramNode(Khthon::location l, NodeList<ClassNode> cs) : Node(l), classes_(std::move(cs)) { }
 
         //! Dummy constructor for testing
-        ProgramNode(Khthon::location l) : Node(l) {}
+        //ProgramNode(Khthon::location l) : Node(l) {}
+
         // Getter
         const NodeList<ClassNode>& classes() const { return classes_; }
         // Accept visitor
         std::string accept(Visitor<std::string>& v) const override { return v.visit(*this); }
     };
+
 
     class ClassNode : public Node {
     private:
@@ -75,6 +85,10 @@ namespace Khthon {
         std::string accept(Visitor<std::string>& v) const override { return v.visit(*this); }
     };
 
+    /*================================================++
+    ||               CONCRETE VISITORS                ||
+    ++================================================*/
+
     class PrintVisitor : public Visitor<std::string> {
     private:
         std::string printList(const NodeList<Node>& items) const {
@@ -91,6 +105,7 @@ namespace Khthon {
             /* debug */
             std::cout << "=> Print visitor has seen a ProgramNode" << std::endl;
 
+            // Chaining visit to each of the classes
             for (size_t i = 0; i < classes.size(); ++i) {
                 if (i > 0)
                     result += ", ";
@@ -104,7 +119,6 @@ namespace Khthon {
             return "Class(" + node.name() + ", " + node.parent() + ", [" +
                 printList(node.fields()) + "], [" + printList(node.methods()) + "])";
         }
-        
     };
 }
 
