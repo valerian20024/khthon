@@ -50,10 +50,10 @@ namespace Khthon {
     template <typename R> class Visitor {
     public:
         // Pure virtual methods and virtual destructor (rule of zero)
-        virtual R visit(const ProgramNode& node) = 0;
-        virtual R visit(const ClassNode& node) = 0;
-        virtual R visit(const FieldNode& node) = 0;
-        virtual R visit(const MethodNode& node) = 0;
+        virtual R visit(const ProgramNode& node) const = 0;
+        virtual R visit(const ClassNode& node) const   = 0;
+        virtual R visit(const FieldNode& node) const   = 0;
+        virtual R visit(const MethodNode& node) const  = 0;
         virtual ~Visitor() = default;
     };
 
@@ -66,7 +66,7 @@ namespace Khthon {
         Node(Khthon::location l) : loc_(l) { }
         virtual ~Node() = default;
         // Accept visitors
-        virtual std::string accept(Visitor<std::string>& v) const = 0;
+        virtual std::string accept(Visitor<std::string> const& v) const = 0;
         // Getters
         Khthon::location location() const { return loc_; }
     };
@@ -86,7 +86,7 @@ namespace Khthon {
         const NodeList<ClassNode>& classes() const { return classes_; }
         
         // Accept visitor
-        std::string accept(Visitor<std::string>& v) const override { return v.visit(*this); }
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
     };
 
 
@@ -118,7 +118,7 @@ namespace Khthon {
         const NodeList<MethodNode>& methods() const { return methods_; }
 
         // Accept visitors
-        std::string accept(Visitor<std::string>& v) const override { 
+        std::string accept(Visitor<std::string> const& v) const override { 
             return v.visit(*this); 
         }
     };
@@ -138,7 +138,7 @@ namespace Khthon {
         const std::string& name() const { return name_; }
         const Type& type() const { return type_; }
 
-        std::string accept(Visitor<std::string>& v) const override {
+        std::string accept(Visitor<std::string> const& v) const override {
             return v.visit(*this);
         }
     };
@@ -157,7 +157,7 @@ namespace Khthon {
         const std::string& name() const { return name_; }
         const std::string& type() const { return type_; }
 
-        std::string accept(Visitor<std::string>& v) const override {
+        std::string accept(Visitor<std::string> const& v) const override {
             return v.visit(*this);
         }
     };
@@ -185,7 +185,7 @@ namespace Khthon {
         }
 
     public:
-        std::string visit(const ProgramNode& node) override {
+        std::string visit(const ProgramNode& node) const override {
             std::string result;
             const auto& classes = node.classes();
 
@@ -198,12 +198,12 @@ namespace Khthon {
             return result;
         }
 
-        std::string visit(const ClassNode& node) override {
+        std::string visit(const ClassNode& node) const override {
             return "Class(" + node.name() + ", " + node.parent() + ", [" +
                 printNodeList(node.fields()) + "], [" + printNodeList(node.methods()) + "])";
         }
 
-        std::string visit(const FieldNode& node) override {
+        std::string visit(const FieldNode& node) const override {
             //! the following is only if no default init expr
             //todo need to add a case with init expr
             std::string type;
@@ -217,7 +217,7 @@ namespace Khthon {
             return "Field(" + node.name() + ", " + type + ")";
         }
 
-        std::string visit(const MethodNode& node) override {
+        std::string visit(const MethodNode& node) const override {
             (void) node;
             return "METHOD placeholder";
         }
