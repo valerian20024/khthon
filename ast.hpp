@@ -169,12 +169,17 @@ namespace Khthon {
     class PrintVisitor : public Visitor<std::string> {
     private:
         // For handling both fields and methods.
-        std::string printList(const NodeList<FieldNode>& items) const {
-            (void) items;
-            return "LIST OF FIELDS";
+        std::string printNodeList(const NodeList<FieldNode>& items) const {
+            std::string result;
+            for (size_t i = 0; i < items.size(); ++i) {
+                if (i > 0)
+                    result += ", ";
+                result += items[i]->accept(*this);
+            }
+            return result;
         }
 
-        std::string printList(const NodeList<MethodNode>& items) const {
+        std::string printNodeList(const NodeList<MethodNode>& items) const {
             (void) items;
             return "LIST OF METHODS";
         }
@@ -195,34 +200,26 @@ namespace Khthon {
 
         std::string visit(const ClassNode& node) override {
             return "Class(" + node.name() + ", " + node.parent() + ", [" +
-                printList(node.fields()) + "], [" + printList(node.methods()) + "])";
+                printNodeList(node.fields()) + "], [" + printNodeList(node.methods()) + "])";
         }
 
         std::string visit(const FieldNode& node) override {
+            //! the following is only if no default init expr
+            //todo need to add a case with init expr
             std::string type;
             switch (node.type().kind) {
-                case Type::Kind::CUSTOM: 
-                    type = node.type().custom_name; 
-                    break;
-                case Type::Kind::INT32:
-                    type = "int32";
-                    break;
-                case Type::Kind::BOOL:
-                    type = "bool"; 
-                    break;
-                case Type::Kind::STRING: 
-                    type = "string"; 
-                    break;
-                case Type::Kind::UNIT:
-                    type = "unit"; 
-                    break;
+                case Type::Kind::CUSTOM: type = node.type().custom_name; break;
+                case Type::Kind::INT32:  type = "int32";    break;
+                case Type::Kind::BOOL:   type = "bool";     break;
+                case Type::Kind::STRING: type = "string";   break;
+                case Type::Kind::UNIT:   type = "unit";     break;
             }
-            return node.name() + " : " + type;
+            return "Field(" + node.name() + ", " + type + ")";
         }
 
         std::string visit(const MethodNode& node) override {
             (void) node;
-            return "super METHOD ici";
+            return "METHOD placeholder";
         }
     };
 }

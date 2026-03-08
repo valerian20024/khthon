@@ -446,7 +446,7 @@ static string printable_hex_value(const string& hex_string)
 }
 
 void dump_stack_content(std::stack<position> s) {
-    std::cout << "--- Unclosed Comments Stack (Top to Bottom) ---" << std::endl;
+    std::cout << "--- Unclosed comments stack (top) ---" << std::endl;
     while (!s.empty()) {
         std::cout << s.top() << std::endl;
         s.pop();
