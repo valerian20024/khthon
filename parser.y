@@ -109,8 +109,8 @@
 %type <std::shared_ptr<ClassNode>> class
 %type <std::string> optional_extends
 %type <Khthon::ClassMembers> class_body class_content
-
-
+%type <std::shared_ptr<FieldNode>> field
+//%type <std::shared_ptr<MethodNode>> method
 
 // Precedence : defined in descending order
 %right      ASSIGN                  // 9
@@ -189,20 +189,27 @@ class_content
       }
     | class_content field
       {
-
+        $$ = std::move($1);
+        $$.fields.push_back(std::move($2));
       }
+      /*
     | class_content method
       {
-
+        $$ = std::move($1);
+        $$.methods.push_back(std::move($2));
       }
+      */
     ;
 
 field
-    : %empty
-
+    : OBJECT_IDENTIFIER COLON TYPE_IDENTIFIER SEMICOLON 
+      {
+        $$ = make_shared<FieldNode>(@$, $1, $3);
+      }
+/*
 method
     : %empty
-
+*/
 %%
 
     /*================================================++
