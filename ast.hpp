@@ -26,6 +26,22 @@ namespace Khthon {
         ClassMembers() {}
     };
 
+    // This class holds the possible types of VSOP: both builtin and user-defined
+    struct Type {
+        enum class Kind { CUSTOM, INT32, BOOL, STRING, UNIT };
+
+        Kind kind = Kind::UNIT;
+        std::string custom_name;
+
+        // Default ctor is required by Bison
+        Type() = default;
+
+        // Constructor polymorphism allows to construct a new Type conveniently
+        explicit Type(Kind k) : kind(k), custom_name("") { }
+        explicit Type(std::string name) : kind(Kind::CUSTOM), custom_name(std::move(name)) { }
+    };
+
+
     /*================================================++
     ||               ABSTRACT CLASSES                 ||
     ++================================================*/
@@ -110,15 +126,17 @@ namespace Khthon {
     class FieldNode : public Node {
     private:
         std::string name_;
-        std::string type_;
+        Type type_;
     public:
         // Constructor
-        FieldNode(Khthon::location l) : Node(l) { }
+        // FieldNode(Khthon::location l) : Node(l) { }
         FieldNode(Khthon::location l, std::string n, std::string t) : 
+            Node(l), name_(std::move(n)), type_(std::move(t)) { }
+        FieldNode(Khthon::location l, std::string n, Khthon::Type t) :
             Node(l), name_(std::move(n)), type_(std::move(t)) { }
         // Getters
         const std::string& name() const { return name_; }
-        const std::string& type() const { return type_; }
+        const Type& type() const { return type_; }
 
         std::string accept(Visitor<std::string>& v) const override {
             return v.visit(*this);
@@ -181,8 +199,25 @@ namespace Khthon {
         }
 
         std::string visit(const FieldNode& node) override {
-            (void) node;
-            return "super FIELD ici";
+            std::string type;
+            switch (node.type().kind) {
+                case Type::Kind::CUSTOM: 
+                    type = node.type().custom_name; 
+                    break;
+                case Type::Kind::INT32:
+                    type = "int32";
+                    break;
+                case Type::Kind::BOOL:
+                    type = "bool"; 
+                    break;
+                case Type::Kind::STRING: 
+                    type = "string"; 
+                    break;
+                case Type::Kind::UNIT:
+                    type = "unit"; 
+                    break;
+            }
+            return node.name() + " : " + type;
         }
 
         std::string visit(const MethodNode& node) override {
