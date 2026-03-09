@@ -18,7 +18,8 @@ Notes about the whole file
 !   Warning: it'll certainly break stuff. But in the end it would be
 !   more legible. Keep constructors here and put methods there?
 
-
+? is it safe to use a for each loop instead of size_t etc. in printNode methods 
+?   of FieldNode and MethodNode
 */
 
 namespace Khthon {
@@ -195,8 +196,13 @@ namespace Khthon {
         }
 
         std::string printNodeList(const NodeList<MethodNode>& items) const {
-            (void) items;
-            return "LIST OF METHODS";
+            std::string result;
+            for (size_t i = 0; i < items.size(); ++i) {
+                if (i > 0)
+                    result += ", ";
+                result += items[i]->accept(*this);
+            }
+            return result;
         }
 
     public:
@@ -233,8 +239,17 @@ namespace Khthon {
         }
 
         std::string visit(const MethodNode& node) const override {
-            (void) node;
-            return "METHOD placeholder";
+            //! for now it's been copied from field but afterwards we need to 
+            //! add formals and stuff so it'll be different
+            std::string type;
+            switch (node.type().kind) {
+                case Type::Kind::CUSTOM: type = node.type().custom_name; break;
+                case Type::Kind::INT32:  type = "int32";    break;
+                case Type::Kind::BOOL:   type = "bool";     break;
+                case Type::Kind::STRING: type = "string";   break;
+                case Type::Kind::UNIT:   type = "unit";     break;
+            }
+            return "Method(" + node.name() + ", blablaformals, " + type + ", blabla block)";
         }
     };
 }
