@@ -110,7 +110,7 @@
 %type <std::string> optional_extends
 %type <Khthon::ClassMembers> class_body class_content
 %type <std::shared_ptr<FieldNode>> field
-//%type <std::shared_ptr<MethodNode>> method
+%type <std::shared_ptr<MethodNode>> method
 %type <Khthon::Type> type
 
 // Precedence : defined in descending order
@@ -121,7 +121,7 @@
 %left       PLUS MINUS              // 5
 %left       TIMES DIVIDE            // 4
 %right      ISNULL                  // 3. 
-//%right      "Unary MINUS operator"// 3
+//%right      "Unary MINUS operator"// 3  // comment out inherited from ABK6 parser /*todo remove and check reduce conflicts*/
 %right      POWER                   // 2
 %left       DOT                     // 1
 
@@ -163,7 +163,7 @@ class
             $3,
             std::move($4.fields),
             std::move($4.methods)
-        );  /*todo add fields and methods*/
+        );
       }
     ;
 
@@ -205,8 +205,9 @@ class_content
       */
     ;
 
+/*todo: when expr are started, add the optional init-expr here */ 
 field
-    : OBJECT_IDENTIFIER COLON type SEMICOLON 
+    : OBJECT_IDENTIFIER COLON type SEMICOLON
       {
         $$ = make_shared<FieldNode>(@$, $1, $3);
       }
@@ -218,10 +219,14 @@ type
     | STRING          { $$ = Khthon::Type(Khthon::Type::Kind::STRING); }
     | UNIT            { $$ = Khthon::Type(Khthon::Type::Kind::UNIT);   }
 
-/*
+
+/*todo missing BLOCK and FORMALS*/
 method
-    : %empty
-*/
+    : OBJECT_IDENTIFIER LEFT_PARENTHESIS RIGHT_PARENTHESIS COLON type SEMICOLON 
+      {
+        $$ = make_shared<MethodNode>(@$);
+      }
+
 %%
 
     /*================================================++

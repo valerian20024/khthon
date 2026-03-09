@@ -8,6 +8,19 @@
 
 #include "location.hh"  // for Bison location 
 
+/*
+Notes about the whole file
+
+? should I put back every scope ?
+?   that is : Khthon::Type for example
+
+? should I try to cut the file into .cpp and .hpp
+!   Warning: it'll certainly break stuff. But in the end it would be
+!   more legible. Keep constructors here and put methods there?
+
+
+*/
+
 namespace Khthon {
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
@@ -133,9 +146,7 @@ namespace Khthon {
         Type type_;
     public:
         // Constructor
-        // FieldNode(Khthon::location l) : Node(l) { }
-        FieldNode(Khthon::location l, std::string n, std::string t) : 
-            Node(l), name_(std::move(n)), type_(std::move(t)) { }
+        FieldNode(Khthon::location l) : Node(l) { }
         FieldNode(Khthon::location l, std::string n, Khthon::Type t) :
             Node(l), name_(std::move(n)), type_(std::move(t)) { }
         // Getters
@@ -147,19 +158,19 @@ namespace Khthon {
         }
     };
 
-    //! dummy class copy pasted from FieldNode
     class MethodNode : public Node {
     private:
         std::string name_;
-        std::string type_;
+        Type type_;
     public:
         // Constructor
         MethodNode(Khthon::location l) : Node(l) { }
-        MethodNode(Khthon::location l, std::string n, std::string t) : 
+        MethodNode(Khthon::location l, std::string n, Khthon::Type t) : 
             Node(l), name_(std::move(n)), type_(std::move(t)) { }
+        
         // Getters
         const std::string& name() const { return name_; }
-        const std::string& type() const { return type_; }
+        const Type& type() const { return type_; }
 
         std::string accept(Visitor<std::string> const& v) const override {
             return v.visit(*this);
