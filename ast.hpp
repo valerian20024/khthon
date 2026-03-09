@@ -108,8 +108,12 @@ namespace Khthon {
             NodeList<FieldNode> fs,
             NodeList<MethodNode> ms
         ) : 
-            Node(l), name_(std::move(n)), parent_(std::move(p)), 
-            fields_(std::move(fs)), methods_(std::move(ms)) { }
+            Node(l), 
+            name_(std::move(n)), 
+            parent_(std::move(p)), 
+            fields_(std::move(fs)), 
+            methods_(std::move(ms)) 
+        { }
 
         // Getters
         const std::string& name() const { return name_; }

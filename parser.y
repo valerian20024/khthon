@@ -160,7 +160,9 @@ class
         $$ = std::make_shared<ClassNode>(
             @$,
             $2,
-            $3  
+            $3,
+            std::move($4.fields),
+            std::move($4.methods)
         );  /*todo add fields and methods*/
       }
     ;
@@ -186,7 +188,7 @@ class_body
 class_content
     : %empty  /*todo placed %empty here just to allow compiling. Remove */
       {
-        
+        /*? default constructor for ClassMember*/
       }
     | class_content field
       {
