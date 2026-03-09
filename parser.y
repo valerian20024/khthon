@@ -196,13 +196,11 @@ class_content
         $$ = std::move($1);
         $$.fields.push_back(std::move($2));
       }
-      /*
     | class_content method
       {
         $$ = std::move($1);
         $$.methods.push_back(std::move($2));
       }
-      */
     ;
 
 /*todo: when expr are started, add the optional init-expr here */ 
@@ -212,6 +210,13 @@ field
         $$ = make_shared<FieldNode>(@$, $1, $3);
       }
 
+/*todo missing BLOCK and FORMALS*/
+method
+    : OBJECT_IDENTIFIER LEFT_PARENTHESIS RIGHT_PARENTHESIS COLON type SEMICOLON 
+      {
+        $$ = make_shared<MethodNode>(@$, $1, $5);
+      }
+
 type
     : TYPE_IDENTIFIER { $$ = Khthon::Type(std::move($1)); }
     | INT32           { $$ = Khthon::Type(Khthon::Type::Kind::INT32);  }
@@ -219,13 +224,6 @@ type
     | STRING          { $$ = Khthon::Type(Khthon::Type::Kind::STRING); }
     | UNIT            { $$ = Khthon::Type(Khthon::Type::Kind::UNIT);   }
 
-
-/*todo missing BLOCK and FORMALS*/
-method
-    : OBJECT_IDENTIFIER LEFT_PARENTHESIS RIGHT_PARENTHESIS COLON type SEMICOLON 
-      {
-        $$ = make_shared<MethodNode>(@$);
-      }
 
 %%
 

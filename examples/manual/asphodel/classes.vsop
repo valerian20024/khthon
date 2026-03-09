@@ -1,3 +1,9 @@
 class Coucou extends Salam {
+    x : int32;
+    y : string;
+    z : bool;
+    u : unit;
+    v : ThatsANeatClassBabe; 
+
     methodtest() : int32;
 }
