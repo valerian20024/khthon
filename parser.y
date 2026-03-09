@@ -186,9 +186,10 @@ class_body
     ;
 
 class_content
-    : %empty  /*todo placed %empty here just to allow compiling. Remove */
+    : %empty
       {
-        /*? default constructor for ClassMember*/
+        // Default-constructed => fields and methods of the class are set to "" 
+        $$ = Khthon::ClassMembers();
       }
     | class_content field
       {
