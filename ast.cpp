@@ -31,6 +31,7 @@ namespace Khthon {
 
     //todo: redundant function here, should factorize
     //todo make a templated version
+    /*
     string PrintVisitor::printNodeList(const NodeList<FieldNode>& items) const {
         string result;
         for (size_t i = 0; i < items.size(); ++i) {
@@ -71,6 +72,7 @@ namespace Khthon {
         }
         return result;
     }
+    */
 
     string PrintVisitor::visit(const ProgramNode& node) const {
         string result = "";
