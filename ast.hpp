@@ -28,6 +28,7 @@ namespace Khthon {
     class MethodNode;
     class FormalNode;
     class BlockExpr;
+    class StringLiteralExpr;
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
@@ -68,7 +69,9 @@ namespace Khthon {
         virtual R visit(const FieldNode& node) const   = 0;
         virtual R visit(const MethodNode& node) const  = 0;
         virtual R visit(const FormalNode& node) const  = 0;
-        virtual R visit(const BlockExpr& node) const  = 0;
+        virtual R visit(const BlockExpr& node) const   = 0;
+        virtual R visit(const StringLiteralExpr& node) const = 0;
+        
         virtual ~Visitor() = default;
     };
 
@@ -214,18 +217,35 @@ namespace Khthon {
 
     class BlockExpr : public Expr {
     private:
-        NodeList<Expr> exprs_;
+        NodeList<Expr> expressions_;
     public:
         BlockExpr(
             Khthon::location l, 
             NodeList<Expr> es
         ) : 
             Expr(l), 
-            exprs_(std::move(es)) 
+            expressions_(std::move(es)) 
         {}
 
-        const NodeList<Expr>& exprs() const { return exprs_; }
+        const NodeList<Expr>& expressions() const { return expressions_; }
         
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+    };
+
+    class StringLiteralExpr : public Expr {
+    private:
+        std::string value_;  // Escaped as per your lexer/print reqs
+    public:
+        StringLiteralExpr(
+            Khthon::location l, 
+            std::string v
+        ) : 
+            Expr(l), 
+            value_(std::move(v)) 
+        {}
+
+        const std::string& value() const { return value_; }
+
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
     };
 
@@ -245,6 +265,7 @@ namespace Khthon {
         std::string visit(const MethodNode& node) const override;
         std::string visit(const FormalNode& node) const override;
         std::string visit(const BlockExpr& node) const override;
+        std::string visit(const StringLiteralExpr& node) const override;
     };
 }
 

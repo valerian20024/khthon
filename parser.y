@@ -104,16 +104,22 @@
 %token <int> INTEGER_LITERAL "integer-literal"
 
 // Tell Bison the semantic type of non-terminals. Uses variant support.
-%type <std::shared_ptr<ProgramNode>> program
-%type <std::vector<std::shared_ptr<ClassNode>>> class_list
-%type <std::shared_ptr<ClassNode>> class
-%type <std::string> optional_extends
-%type <Khthon::ClassMembers> class_body class_content
-%type <std::shared_ptr<FieldNode>> field
-%type <std::shared_ptr<MethodNode>> method
-%type <Khthon::Type> type
-%type <std::vector<std::shared_ptr<FormalNode>>> formals
-%type <std::shared_ptr<FormalNode>> formal
+%type <std::shared_ptr<ProgramNode>>              program
+%type <std::vector<std::shared_ptr<ClassNode>>>   class_list
+%type <std::shared_ptr<ClassNode>>                class
+%type <std::string>                               optional_extends
+%type <Khthon::ClassMembers>                      class_body class_content
+%type <std::shared_ptr<FieldNode>>                field
+%type <std::shared_ptr<MethodNode>>               method
+%type <Khthon::Type>                              type
+%type <std::vector<std::shared_ptr<FormalNode>>>  formals
+%type <std::shared_ptr<FormalNode>>               formal
+%type <std::shared_ptr<BlockExpr>>                block
+%type <std::shared_ptr<Expr>>                     expression
+%type <std::shared_ptr<Expr>>                     literal
+%type <std::shared_ptr<StringLiteralExpr>>        string_literal
+%type <std::vector<std::shared_ptr<Expr>>>        expression_list
+
 
 // Precedence : defined in descending order
 %right      ASSIGN                  // 9
@@ -253,8 +259,44 @@ type
 block
     : LEFT_BRACE RIGHT_BRACE
       {
-        
+        //$$ = std::make_shared<BlockExpr>($@);  // make it default initialize for empty blocks
       }
+    | LEFT_BRACE expression_list RIGHT_BRACE
+      {
+        $$ = std::make_shared<BlockExpr>(@$, std::move($2));
+      }
+
+literal
+    : string_literal 
+      {
+        $$ = $1;
+      }
+    ;
+
+string_literal 
+    : STRING_LITERAL
+      {
+        $$ = std::make_shared<StringLiteralExpr>(@$, std::move($1));
+      }
+
+expression_list
+    : expression SEMICOLON
+      {
+        $$.push_back(std::move($1));
+      }
+    | expression_list expression SEMICOLON
+      {
+        $$ = std::move($1);
+        $$.push_back(std::move($2));
+      }
+
+expression
+    : literal 
+      {
+        $$ = $1;
+      }
+
+
 
 %%
 

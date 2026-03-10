@@ -113,6 +113,12 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const BlockExpr& node) const {
+        (void) node;
         return "BLOCKEXPR VISITED";
+    }
+
+    string PrintVisitor::visit(const StringLiteralExpr& node) const {
+        (void) node;
+        return "STRING LITERAL VISITED";
     }
 }
