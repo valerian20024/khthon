@@ -30,6 +30,7 @@ namespace Khthon {
     }
 
     //todo: redundant function here, should factorize
+    //todo make a templated version
     string PrintVisitor::printNodeList(const NodeList<FieldNode>& items) const {
         string result;
         for (size_t i = 0; i < items.size(); ++i) {
@@ -61,7 +62,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::printNodeList(const NodeList<Expr>& items) const {
-        std::string result;
+        string result;
         for (size_t i = 0; i < items.size(); ++i) {
             if (i > 0) {
                 result += ", ";
@@ -72,7 +73,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const ProgramNode& node) const {
-        string result;
+        string result = "";
         const auto& classes = node.classes();
 
         // Chaining visit to each of the classes
@@ -98,7 +99,6 @@ namespace Khthon {
 
     string PrintVisitor::visit(const FieldNode& node) const {
         //todo need to handle fields with init expr
-        //todo make a templated version
         return "Field(" 
             + node.name() 
             + ", " 
@@ -125,7 +125,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const BlockExpr& node) const {
-        return "BLOCKK([" + printNodeList(node.expressions()) + "])";    
+        return printNodeList(node.expressions());
     }
 
     string PrintVisitor::visit(const StringLiteralExpr& node) const {
