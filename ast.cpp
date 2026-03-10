@@ -1,5 +1,12 @@
 #include "ast.hpp"
 
+/*
+Notes about the whole file
+
+? Is it safe to use a for each loop instead of size_t etc. in printNode methods 
+?   of FieldNode and MethodNode
+
+*/
 namespace Khthon {
 
     // For handling both fields and methods.

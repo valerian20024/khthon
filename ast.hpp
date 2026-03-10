@@ -14,14 +14,9 @@ Notes about the whole file
 ? Should I put back every scope ?
 ?   that is : Khthon::Type for example
 
-? Should I try to cut the file into .cpp and .hpp
-!   Warning: it'll certainly break stuff. But in the end it would be
-!   more legible. Keep constructors here and put methods there?
-
-? Is it safe to use a for each loop instead of size_t etc. in printNode methods 
-?   of FieldNode and MethodNode
-
 ? Is it better to keep make_shared or use unique ptr?
+
+? Visitor<std::string> or PrintVisitor in the methods arguments?
 */
 
 namespace Khthon {
