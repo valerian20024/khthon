@@ -27,6 +27,7 @@ namespace Khthon {
     class FieldNode;
     class MethodNode;
     class FormalNode;
+    class BlockExpr;
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
@@ -67,6 +68,7 @@ namespace Khthon {
         virtual R visit(const FieldNode& node) const   = 0;
         virtual R visit(const MethodNode& node) const  = 0;
         virtual R visit(const FormalNode& node) const  = 0;
+        virtual R visit(const BlockExpr& node) const  = 0;
         virtual ~Visitor() = default;
     };
 
@@ -82,6 +84,14 @@ namespace Khthon {
         virtual std::string accept(Visitor<std::string> const& v) const = 0;
         
         Khthon::location location() const { return loc_; }
+    };
+
+    // Abstract class for expression nodes.
+    class Expr : public Node {
+    public:
+        Expr(Khthon::location l) : Node(l) {}
+        virtual ~Expr() = default;
+        virtual std::string accept(Visitor<std::string> const& v) const = 0;
     };
 
     /*================================================++
@@ -202,6 +212,23 @@ namespace Khthon {
         const Type& type() const { return type_; }
     };
 
+    class BlockExpr : public Expr {
+    private:
+        NodeList<Expr> exprs_;
+    public:
+        BlockExpr(
+            Khthon::location l, 
+            NodeList<Expr> es
+        ) : 
+            Expr(l), 
+            exprs_(std::move(es)) 
+        {}
+
+        const NodeList<Expr>& exprs() const { return exprs_; }
+        
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+    };
+
     /*================================================++
     ||               CONCRETE VISITORS                ||
     ++================================================*/
@@ -217,6 +244,7 @@ namespace Khthon {
         std::string visit(const FieldNode& node) const override;
         std::string visit(const MethodNode& node) const override;
         std::string visit(const FormalNode& node) const override;
+        std::string visit(const BlockExpr& node) const override;
     };
 }
 

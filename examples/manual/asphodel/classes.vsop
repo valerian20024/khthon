@@ -1,8 +1,15 @@
 class Cons extends List {
     head : int32;
     tail : List;
-    init(hd : int32, tl : List) : Cons {
+    init() : Cons {
 
+    }
+}
+class Cons extends List {
+    head : int32;
+    tail : List;
+    init(hd : int32) : Cons {
+        
     }
 }
 class Cons extends List {
@@ -15,7 +22,7 @@ class Cons extends List {
 class Cons extends List {
     head : int32;
     tail : List;
-    init(hd : int32, tl : List) : Cons {
+    init(hd : int32, tl : List, sl : string) : Cons {
         
     }
 }

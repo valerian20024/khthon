@@ -111,4 +111,8 @@ namespace Khthon {
             + " : "
             + node.type().to_string();
     }
+
+    string PrintVisitor::visit(const BlockExpr& node) const {
+        return "BLOCKEXPR VISITED";
+    }
 }
