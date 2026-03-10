@@ -50,7 +50,7 @@ parser.o: driver.hpp parser.hpp
 
 lexer.o: driver.hpp parser.hpp
 
-ast.o: driver.hpp parser.hpp location.hh
+ast.o: ast.hpp location.hh 
 
 $(EXEC): $(OBJ)
 	$(CXX) -o $@ $(LDFLAGS) $(OBJ)
