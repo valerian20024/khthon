@@ -6,10 +6,6 @@ Notes about the whole file
 ? Is it safe to use a for each loop instead of size_t etc. in printNode methods 
 ?   of FieldNode and MethodNode
 
-? using std::string would be easier to read
-
-todo add some spaces or lf in the AST dump for legibility
-
 */
 
 using std::string;
