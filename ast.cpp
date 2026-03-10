@@ -6,7 +6,10 @@ Notes about the whole file
 ? Is it safe to use a for each loop instead of size_t etc. in printNode methods 
 ?   of FieldNode and MethodNode
 
+? using std::string would be easier to read
+
 */
+
 namespace Khthon {
 
     // For handling both fields and methods.
@@ -74,5 +77,10 @@ namespace Khthon {
             case Type::Kind::UNIT:   type = "unit";     break;
         }
         return "Method(" + node.name() + ", blablaformals, " + type + ", blabla block)";
+    }
+
+    std::string PrintVisitor::visit(const FormalNode& node) const {
+        (void) node;
+        return "IM A FORMAL NODE";
     }
 }

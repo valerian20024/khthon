@@ -26,6 +26,7 @@ namespace Khthon {
     class ClassNode;
     class FieldNode;
     class MethodNode;
+    class FormalNode;
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
@@ -63,6 +64,7 @@ namespace Khthon {
         virtual R visit(const ClassNode& node) const   = 0;
         virtual R visit(const FieldNode& node) const   = 0;
         virtual R visit(const MethodNode& node) const  = 0;
+        virtual R visit(const FormalNode& node) const  = 0;
         virtual ~Visitor() = default;
     };
 
@@ -188,6 +190,11 @@ namespace Khthon {
             name_(std::move(n)),
             type_(std::move(t))
         { }
+
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+
+        const std::string& name() const { return name_; }
+        const Type& type() const { return type_; }
     };
 
     /*================================================++
@@ -203,6 +210,7 @@ namespace Khthon {
         std::string visit(const ClassNode& node) const override;
         std::string visit(const FieldNode& node) const override;
         std::string visit(const MethodNode& node) const override;
+        std::string visit(const FormalNode& node) const override;
     };
 }
 
