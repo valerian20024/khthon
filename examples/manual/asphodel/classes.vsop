@@ -2,6 +2,20 @@ class Cons extends List {
     head : int32;
     tail : List;
     init(hd : int32, tl : List) : Cons {
+
+    }
+}
+class Cons extends List {
+    head : int32;
+    tail : List;
+    init(hd : int32, tl : List) : Cons {
+        
+    }
+}
+class Cons extends List {
+    head : int32;
+    tail : List;
+    init(hd : int32, tl : List) : Cons {
         
     }
 }
