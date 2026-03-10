@@ -26,7 +26,7 @@ namespace Khthon {
             case Type::Kind::UNIT:   return "unit";
         }
 
-        throw std::runtime_error("Unkwnow type kind in Type::to_string()");
+        throw std::runtime_error("Unknown type kind in Type::to_string()");
     }
 
     // For handling both fields and methods.
@@ -86,8 +86,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const FieldNode& node) const {
-        //! the following is only if no default init expr
-        //todo need to add a case with init expr
+        //todo need to handle fields with init expr
         return "Field(" 
             + node.name() 
             + ", " 

@@ -129,9 +129,9 @@ namespace Khthon {
 
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
 
-        const std::string&          name() const { return name_; }
-        const std::string&          parent() const { return parent_; }
-        const NodeList<FieldNode>&  fields() const { return fields_; }
+        const std::string& name() const { return name_; }
+        const std::string& parent() const { return parent_; }
+        const NodeList<FieldNode>& fields() const { return fields_; }
         const NodeList<MethodNode>& methods() const { return methods_; }
     };
 
@@ -176,8 +176,8 @@ namespace Khthon {
         
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
 
-        const std::string&          name() const { return name_; }
-        const Type&                 type() const { return type_; }
+        const std::string& name() const { return name_; }
+        const Type& type() const { return type_; }
         const NodeList<FormalNode>& formals() const { return formals_; }
     };
 
