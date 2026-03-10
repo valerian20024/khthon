@@ -88,45 +88,25 @@ namespace Khthon {
     string PrintVisitor::visit(const FieldNode& node) const {
         //! the following is only if no default init expr
         //todo need to add a case with init expr
-        string type;
-        switch (node.type().kind) {
-            case Type::Kind::CUSTOM: type = node.type().custom_name; break;
-            case Type::Kind::INT32:  type = "int32";    break;
-            case Type::Kind::BOOL:   type = "bool";     break;
-            case Type::Kind::STRING: type = "string";   break;
-            case Type::Kind::UNIT:   type = "unit";     break;
-        }
-        return "Field(" + node.name() + ", " + type + ")";
+        return "Field(" 
+            + node.name() 
+            + ", " 
+            + node.type().to_string() 
+            + ")";
     }
 
     string PrintVisitor::visit(const MethodNode& node) const {
-        string type;
-        switch (node.type().kind) {
-            case Type::Kind::CUSTOM: type = node.type().custom_name; break;
-            case Type::Kind::INT32:  type = "int32";    break;
-            case Type::Kind::BOOL:   type = "bool";     break;
-            case Type::Kind::STRING: type = "string";   break;
-            case Type::Kind::UNIT:   type = "unit";     break;
-        }
-        return "Method(" 
-            + node.name() 
-            + ", " 
-            + printNodeList(node.formals()) 
-            + type
+        return "Method("
+            + node.name()
+            + ", "
+            + printNodeList(node.formals())
+            + node.type().to_string()
             + "blabla block)";
     }
 
     string PrintVisitor::visit(const FormalNode& node) const {
-        string type;
-        switch (node.type().kind) {
-            case Type::Kind::CUSTOM: type = node.type().custom_name; break;
-            case Type::Kind::INT32:  type = "int32";    break;
-            case Type::Kind::BOOL:   type = "bool";     break;
-            case Type::Kind::STRING: type = "string";   break;
-            case Type::Kind::UNIT:   type = "unit";     break;
-        }
         return node.name() 
             + " : "
-            + type;
+            + node.type().to_string();
     }
 }
