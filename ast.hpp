@@ -11,26 +11,28 @@
 /*
 Notes about the whole file
 
-? should I put back every scope ?
+? Should I put back every scope ?
 ?   that is : Khthon::Type for example
 
-? should I try to cut the file into .cpp and .hpp
+? Should I try to cut the file into .cpp and .hpp
 !   Warning: it'll certainly break stuff. But in the end it would be
 !   more legible. Keep constructors here and put methods there?
 
-? is it safe to use a for each loop instead of size_t etc. in printNode methods 
+? Is it safe to use a for each loop instead of size_t etc. in printNode methods 
 ?   of FieldNode and MethodNode
+
+? Is it better to keep make_shared or use unique ptr?
 */
 
 namespace Khthon {
-
-    template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
 
     // Forward declarations for Visitor. Avoid circular dependencies. 
     class ProgramNode;
     class ClassNode;
     class FieldNode;
     class MethodNode;
+
+    template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
     // Datastructure to hold fields and methods together when parsing a class
     struct ClassMembers {
@@ -55,7 +57,6 @@ namespace Khthon {
         explicit Type(std::string name) : kind(Kind::CUSTOM), custom_name(std::move(name)) { }
     };
 
-
     /*================================================++
     ||               ABSTRACT CLASSES                 ||
     ++================================================*/
@@ -63,7 +64,6 @@ namespace Khthon {
     // Abstract class for visitors.
     template <typename R> class Visitor {
     public:
-        // Pure virtual methods and virtual destructor (rule of zero)
         virtual R visit(const ProgramNode& node) const = 0;
         virtual R visit(const ClassNode& node) const   = 0;
         virtual R visit(const FieldNode& node) const   = 0;
@@ -79,9 +79,9 @@ namespace Khthon {
         // Constructor and destructor
         Node(Khthon::location l) : loc_(l) { }
         virtual ~Node() = default;
-        // Accept visitors
+
         virtual std::string accept(Visitor<std::string> const& v) const = 0;
-        // Getters
+        
         Khthon::location location() const { return loc_; }
     };
 
@@ -93,14 +93,17 @@ namespace Khthon {
     private:
         NodeList<ClassNode> classes_;
     public:
-        // Constructor
-        ProgramNode(Khthon::location l, NodeList<ClassNode> cs) : Node(l), classes_(std::move(cs)) { }
+        ProgramNode(
+            Khthon::location l, 
+            NodeList<ClassNode> cs
+        ) : 
+            Node(l), 
+            classes_(std::move(cs)) 
+        { }
 
-        // Getter
-        const NodeList<ClassNode>& classes() const { return classes_; }
-        
-        // Accept visitor
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+        
+        const NodeList<ClassNode>& classes() const { return classes_; }        
     };
 
 
@@ -111,10 +114,6 @@ namespace Khthon {
         NodeList<FieldNode> fields_;
         NodeList<MethodNode> methods_;
     public:
-        // Constructor
-        ClassNode(Khthon::location l) : Node(l) { }
-        ClassNode(Khthon::location l, std::string n, std::string p) : 
-            Node(l), name_(std::move(n)), parent_(std::move(p)) { }
         ClassNode(
             Khthon::location l, 
             std::string n, 
@@ -129,16 +128,12 @@ namespace Khthon {
             methods_(std::move(ms)) 
         { }
 
-        // Getters
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+
         const std::string& name() const { return name_; }
         const std::string& parent() const { return parent_; }
         const NodeList<FieldNode>& fields() const { return fields_; }
         const NodeList<MethodNode>& methods() const { return methods_; }
-
-        // Accept visitors
-        std::string accept(Visitor<std::string> const& v) const override { 
-            return v.visit(*this); 
-        }
     };
 
     class FieldNode : public Node {
@@ -146,17 +141,20 @@ namespace Khthon {
         std::string name_;
         Type type_;
     public:
-        // Constructor
-        FieldNode(Khthon::location l) : Node(l) { }
-        FieldNode(Khthon::location l, std::string n, Khthon::Type t) :
-            Node(l), name_(std::move(n)), type_(std::move(t)) { }
-        // Getters
+        FieldNode(
+            Khthon::location l, 
+            std::string n, 
+            Khthon::Type t
+        ) :
+            Node(l), 
+            name_(std::move(n)), 
+            type_(std::move(t)) 
+        { }
+        
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+
         const std::string& name() const { return name_; }
         const Type& type() const { return type_; }
-
-        std::string accept(Visitor<std::string> const& v) const override {
-            return v.visit(*this);
-        }
     };
 
     class MethodNode : public Node {
@@ -164,18 +162,20 @@ namespace Khthon {
         std::string name_;
         Type type_;
     public:
-        // Constructor
-        MethodNode(Khthon::location l) : Node(l) { }
-        MethodNode(Khthon::location l, std::string n, Khthon::Type t) : 
-            Node(l), name_(std::move(n)), type_(std::move(t)) { }
+        MethodNode(
+            Khthon::location l, 
+            std::string n, 
+            Khthon::Type t
+        ) : 
+            Node(l), 
+            name_(std::move(n)), 
+            type_(std::move(t)) 
+        { }
         
-        // Getters
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+
         const std::string& name() const { return name_; }
         const Type& type() const { return type_; }
-
-        std::string accept(Visitor<std::string> const& v) const override {
-            return v.visit(*this);
-        }
     };
 
     /*================================================++
@@ -184,73 +184,13 @@ namespace Khthon {
 
     class PrintVisitor : public Visitor<std::string> {
     private:
-        // For handling both fields and methods.
-        std::string printNodeList(const NodeList<FieldNode>& items) const {
-            std::string result;
-            for (size_t i = 0; i < items.size(); ++i) {
-                if (i > 0)
-                    result += ", ";
-                result += items[i]->accept(*this);
-            }
-            return result;
-        }
-
-        std::string printNodeList(const NodeList<MethodNode>& items) const {
-            std::string result;
-            for (size_t i = 0; i < items.size(); ++i) {
-                if (i > 0)
-                    result += ", ";
-                result += items[i]->accept(*this);
-            }
-            return result;
-        }
-
+        std::string printNodeList(const NodeList<FieldNode>& items) const;
+        std::string printNodeList(const NodeList<MethodNode>& items) const;
     public:
-        std::string visit(const ProgramNode& node) const override {
-            std::string result;
-            const auto& classes = node.classes();
-
-            // Chaining visit to each of the classes
-            for (size_t i = 0; i < classes.size(); ++i) {
-                if (i > 0)
-                    result += ", ";
-                result += classes[i]->accept(*this);
-            }
-            return result;
-        }
-
-        std::string visit(const ClassNode& node) const override {
-            return "Class(" + node.name() + ", " + node.parent() + ", [" +
-                printNodeList(node.fields()) + "], [" + printNodeList(node.methods()) + "])";
-        }
-
-        std::string visit(const FieldNode& node) const override {
-            //! the following is only if no default init expr
-            //todo need to add a case with init expr
-            std::string type;
-            switch (node.type().kind) {
-                case Type::Kind::CUSTOM: type = node.type().custom_name; break;
-                case Type::Kind::INT32:  type = "int32";    break;
-                case Type::Kind::BOOL:   type = "bool";     break;
-                case Type::Kind::STRING: type = "string";   break;
-                case Type::Kind::UNIT:   type = "unit";     break;
-            }
-            return "Field(" + node.name() + ", " + type + ")";
-        }
-
-        std::string visit(const MethodNode& node) const override {
-            //! for now it's been copied from field but afterwards we need to 
-            //! add formals and stuff so it'll be different
-            std::string type;
-            switch (node.type().kind) {
-                case Type::Kind::CUSTOM: type = node.type().custom_name; break;
-                case Type::Kind::INT32:  type = "int32";    break;
-                case Type::Kind::BOOL:   type = "bool";     break;
-                case Type::Kind::STRING: type = "string";   break;
-                case Type::Kind::UNIT:   type = "unit";     break;
-            }
-            return "Method(" + node.name() + ", blablaformals, " + type + ", blabla block)";
-        }
+        std::string visit(const ProgramNode& node) const override;
+        std::string visit(const ClassNode& node) const override;
+        std::string visit(const FieldNode& node) const override;
+        std::string visit(const MethodNode& node) const override;
     };
 }
 
