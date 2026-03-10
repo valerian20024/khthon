@@ -223,7 +223,7 @@ field
 method
     : OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type block 
       {
-        $$ = make_shared<MethodNode>(@$, $1, $6, $3);
+        $$ = make_shared<MethodNode>(@$, $1, $6, $3, $7);
       }
 
 formals
@@ -266,18 +266,6 @@ block
         $$ = std::make_shared<BlockExpr>(@$, std::move($2));
       }
 
-literal
-    : string_literal 
-      {
-        $$ = $1;
-      }
-    ;
-
-string_literal 
-    : STRING_LITERAL
-      {
-        $$ = std::make_shared<StringLiteralExpr>(@$, std::move($1));
-      }
 
 expression_list
     : expression SEMICOLON
@@ -294,6 +282,19 @@ expression
     : literal 
       {
         $$ = $1;
+      }
+
+literal
+    : string_literal 
+      {
+        $$ = $1;
+      }
+    ;
+
+string_literal 
+    : STRING_LITERAL
+      {
+        $$ = std::make_shared<StringLiteralExpr>(@$, std::move($1));
       }
 
 

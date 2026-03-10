@@ -174,17 +174,20 @@ namespace Khthon {
         std::string name_;
         Type type_;
         NodeList<FormalNode> formals_;
+        std::shared_ptr<Expr> body_;
     public:
         MethodNode(
             Khthon::location l, 
             std::string n, 
             Khthon::Type t,
-            NodeList<FormalNode> fs
+            NodeList<FormalNode> fs,
+            std::shared_ptr<Expr> b
         ) : 
             Node(l), 
             name_(std::move(n)), 
             type_(std::move(t)),
-            formals_(std::move(fs))
+            formals_(std::move(fs)),
+            body_(std::move(b))
         { }
         
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
@@ -192,6 +195,7 @@ namespace Khthon {
         const std::string& name() const { return name_; }
         const Type& type() const { return type_; }
         const NodeList<FormalNode>& formals() const { return formals_; }
+        const std::shared_ptr<Expr>& body() const { return body_; }
     };
 
     class FormalNode : public Node {
