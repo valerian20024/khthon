@@ -10,11 +10,13 @@ Notes about the whole file
 
 */
 
+using std::string;
+
 namespace Khthon {
 
     // For handling both fields and methods.
-    std::string PrintVisitor::printNodeList(const NodeList<FieldNode>& items) const {
-        std::string result;
+    string PrintVisitor::printNodeList(const NodeList<FieldNode>& items) const {
+        string result;
         for (size_t i = 0; i < items.size(); ++i) {
             if (i > 0)
                 result += ", ";
@@ -23,8 +25,8 @@ namespace Khthon {
         return result;
     }
 
-    std::string PrintVisitor::printNodeList(const NodeList<MethodNode>& items) const {
-        std::string result;
+    string PrintVisitor::printNodeList(const NodeList<MethodNode>& items) const {
+        string result;
         for (size_t i = 0; i < items.size(); ++i) {
             if (i > 0)
                 result += ", ";
@@ -33,8 +35,8 @@ namespace Khthon {
         return result;
     }
 
-    std::string PrintVisitor::visit(const ProgramNode& node) const {
-        std::string result;
+    string PrintVisitor::visit(const ProgramNode& node) const {
+        string result;
         const auto& classes = node.classes();
 
         // Chaining visit to each of the classes
@@ -46,15 +48,15 @@ namespace Khthon {
         return result;
     }
 
-    std::string PrintVisitor::visit(const ClassNode& node) const {
+    string PrintVisitor::visit(const ClassNode& node) const {
         return "Class(" + node.name() + ", " + node.parent() + ", [" +
             printNodeList(node.fields()) + "], [" + printNodeList(node.methods()) + "])";
     }
 
-    std::string PrintVisitor::visit(const FieldNode& node) const {
+    string PrintVisitor::visit(const FieldNode& node) const {
         //! the following is only if no default init expr
         //todo need to add a case with init expr
-        std::string type;
+        string type;
         switch (node.type().kind) {
             case Type::Kind::CUSTOM: type = node.type().custom_name; break;
             case Type::Kind::INT32:  type = "int32";    break;
@@ -65,10 +67,10 @@ namespace Khthon {
         return "Field(" + node.name() + ", " + type + ")";
     }
 
-    std::string PrintVisitor::visit(const MethodNode& node) const {
+    string PrintVisitor::visit(const MethodNode& node) const {
         //! for now it's been copied from field but afterwards we need to 
         //! add formals and stuff so it'll be different
-        std::string type;
+        string type;
         switch (node.type().kind) {
             case Type::Kind::CUSTOM: type = node.type().custom_name; break;
             case Type::Kind::INT32:  type = "int32";    break;
@@ -79,7 +81,7 @@ namespace Khthon {
         return "Method(" + node.name() + ", blablaformals, " + type + ", blabla block)";
     }
 
-    std::string PrintVisitor::visit(const FormalNode& node) const {
+    string PrintVisitor::visit(const FormalNode& node) const {
         (void) node;
         return "IM A FORMAL NODE";
     }
