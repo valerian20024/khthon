@@ -259,15 +259,7 @@ namespace Khthon {
 
     class PrintVisitor : public Visitor<std::string> {
     private:
-        /*
-        std::string printNodeList(const NodeList<FieldNode>& items) const;
-        std::string printNodeList(const NodeList<MethodNode>& items) const;
-        std::string printNodeList(const NodeList<FormalNode>& items) const;
-        std::string printNodeList(const NodeList<Expr>& items) const;
-        */
-       
-        template<typename T> 
-        std::string printNodeList(const NodeList<T>& items) const {
+        template<typename T> std::string printNodeList(const NodeList<T>& items) const {
             std::string result;
             for (size_t i = 0; i < items.size(); ++i) {
                 if (i > 0) result += ", ";

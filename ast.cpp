@@ -29,51 +29,6 @@ namespace Khthon {
         throw std::runtime_error("Unknown type kind in Type::to_string()");
     }
 
-    //todo: redundant function here, should factorize
-    //todo make a templated version
-    /*
-    string PrintVisitor::printNodeList(const NodeList<FieldNode>& items) const {
-        string result;
-        for (size_t i = 0; i < items.size(); ++i) {
-            if (i > 0)
-                result += ", ";
-            result += items[i]->accept(*this);
-        }
-        return result;
-    }
-
-    string PrintVisitor::printNodeList(const NodeList<MethodNode>& items) const {
-        string result;
-        for (size_t i = 0; i < items.size(); ++i) {
-            if (i > 0)
-                result += ", ";
-            result += items[i]->accept(*this);
-        }
-        return result;
-    }
-
-    string PrintVisitor::printNodeList(const NodeList<FormalNode>& items) const {
-        string result;
-        for (size_t i = 0; i < items.size(); ++i) {
-            if (i > 0)
-                result += ", ";
-            result += items[i]->accept(*this);
-        }
-        return result;
-    }
-
-    string PrintVisitor::printNodeList(const NodeList<Expr>& items) const {
-        string result;
-        for (size_t i = 0; i < items.size(); ++i) {
-            if (i > 0) {
-                result += ", ";
-            }
-            result += items[i]->accept(*this);
-        }
-        return result;
-    }
-    */
-
     string PrintVisitor::visit(const ProgramNode& node) const {
         string result = "";
         const auto& classes = node.classes();
