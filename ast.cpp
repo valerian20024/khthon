@@ -78,9 +78,9 @@ namespace Khthon {
             + node.name() 
             + ", " 
             + node.parent() 
-            + ", [" 
+            + ", \n\t[" 
             + printNodeList(node.fields()) 
-            + "], [" 
+            + "], \n\t[" 
             + printNodeList(node.methods()) 
             + "])";
     }
@@ -97,10 +97,13 @@ namespace Khthon {
     string PrintVisitor::visit(const MethodNode& node) const {
         return "Method("
             + node.name()
-            + ", "
+            + ", ["
             + printNodeList(node.formals())
+            + "], "
             + node.type().to_string()
-            + "blabla block)";
+            + ", \n\t["
+            + "BLOCK"
+            + "])";
     }
 
     string PrintVisitor::visit(const FormalNode& node) const {

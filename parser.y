@@ -215,7 +215,7 @@ field
 
 /*todo missing BLOCK and FORMALS*/
 method
-    : OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type SEMICOLON 
+    : OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type block 
       {
         $$ = make_shared<MethodNode>(@$, $1, $6, $3);
       }
@@ -250,7 +250,11 @@ type
     | STRING          { $$ = Khthon::Type(Khthon::Type::Kind::STRING); }
     | UNIT            { $$ = Khthon::Type(Khthon::Type::Kind::UNIT);   }
 
-
+block
+    : LEFT_BRACE RIGHT_BRACE
+      {
+        
+      }
 
 %%
 

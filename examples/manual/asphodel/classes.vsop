@@ -1,6 +1,7 @@
-class Coucou extends Salam {
-    x : int32;
-    v : List; 
-
-    methodtest(head: int32) : int32;
+class Cons extends List {
+    head : int32;
+    tail : List;
+    init(hd : int32, tl : List) : Cons {
+        
+    }
 }
