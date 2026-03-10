@@ -112,6 +112,8 @@
 %type <std::shared_ptr<FieldNode>> field
 %type <std::shared_ptr<MethodNode>> method
 %type <Khthon::Type> type
+%type <std::vector<std::shared_ptr<FormalNode>>> formals
+%type <std::shared_ptr<FormalNode>> formal
 
 // Precedence : defined in descending order
 %right      ASSIGN                  // 9
@@ -213,9 +215,9 @@ field
 
 /*todo missing BLOCK and FORMALS*/
 method
-    : OBJECT_IDENTIFIER LEFT_PARENTHESIS RIGHT_PARENTHESIS COLON type SEMICOLON 
+    : OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type SEMICOLON 
       {
-        $$ = make_shared<MethodNode>(@$, $1, $5);
+        $$ = make_shared<MethodNode>(@$, $1, $6, $3);
       }
 
 formals
@@ -223,16 +225,17 @@ formals
       {
 
       }
-    | formals formal 
+    | formals COMMA formal 
       {
-
+        $$ = std::move($1);
+        $$.push_back(std::move($3));
       }
     ;
 
 formal
     : OBJECT_IDENTIFIER COLON type
       {
-        
+        $$ = make_shared<FormalNode>(@$, std::move($1), std::move($3));
       }
     ;
 

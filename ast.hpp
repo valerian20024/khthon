@@ -163,11 +163,13 @@ namespace Khthon {
         MethodNode(
             Khthon::location l, 
             std::string n, 
-            Khthon::Type t
+            Khthon::Type t,
+            NodeList<FormalNode> fs
         ) : 
             Node(l), 
             name_(std::move(n)), 
-            type_(std::move(t)) 
+            type_(std::move(t)),
+            formals_(std::move(fs))
         { }
         
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
