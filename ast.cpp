@@ -29,7 +29,7 @@ namespace Khthon {
         throw std::runtime_error("Unknown type kind in Type::to_string()");
     }
 
-    // For handling both fields and methods.
+    //todo: redundant function here, should factorize
     string PrintVisitor::printNodeList(const NodeList<FieldNode>& items) const {
         string result;
         for (size_t i = 0; i < items.size(); ++i) {
@@ -55,6 +55,17 @@ namespace Khthon {
         for (size_t i = 0; i < items.size(); ++i) {
             if (i > 0)
                 result += ", ";
+            result += items[i]->accept(*this);
+        }
+        return result;
+    }
+
+    string PrintVisitor::printNodeList(const NodeList<Expr>& items) const {
+        std::string result;
+        for (size_t i = 0; i < items.size(); ++i) {
+            if (i > 0) {
+                result += ", ";
+            }
             result += items[i]->accept(*this);
         }
         return result;
@@ -87,6 +98,7 @@ namespace Khthon {
 
     string PrintVisitor::visit(const FieldNode& node) const {
         //todo need to handle fields with init expr
+        //todo make a templated version
         return "Field(" 
             + node.name() 
             + ", " 
@@ -102,7 +114,7 @@ namespace Khthon {
             + "], "
             + node.type().to_string()
             + ", \n\t["
-            + "BLOCK"
+            + node.body()->accept(*this)
             + "])";
     }
 
@@ -113,8 +125,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const BlockExpr& node) const {
-        (void) node;
-        return "BLOCKEXPR VISITED";
+        return "BLOCKK([" + printNodeList(node.expressions()) + "])";    
     }
 
     string PrintVisitor::visit(const StringLiteralExpr& node) const {

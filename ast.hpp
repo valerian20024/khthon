@@ -238,7 +238,7 @@ namespace Khthon {
 
     class StringLiteralExpr : public Expr {
     private:
-        std::string value_;  // Escaped as per your lexer/print reqs
+        std::string value_;
     public:
         StringLiteralExpr(
             Khthon::location l, 
@@ -262,6 +262,7 @@ namespace Khthon {
         std::string printNodeList(const NodeList<FieldNode>& items) const;
         std::string printNodeList(const NodeList<MethodNode>& items) const;
         std::string printNodeList(const NodeList<FormalNode>& items) const;
+        std::string printNodeList(const NodeList<Expr>& items) const;
     public:
         std::string visit(const ProgramNode& node) const override;
         std::string visit(const ClassNode& node) const override;
