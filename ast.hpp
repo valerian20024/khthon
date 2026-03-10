@@ -51,6 +51,8 @@ namespace Khthon {
         // Constructor polymorphism allows to construct a new Type conveniently
         explicit Type(Kind k) : kind(k), custom_name("") { }
         explicit Type(std::string name) : kind(Kind::CUSTOM), custom_name(std::move(name)) { }
+
+        std::string to_string() const;
     };
 
     /*================================================++
@@ -206,7 +208,6 @@ namespace Khthon {
 
     class PrintVisitor : public Visitor<std::string> {
     private:
-        std::string type_to_string(const Khthon::Type& type) const;
         std::string printNodeList(const NodeList<FieldNode>& items) const;
         std::string printNodeList(const NodeList<MethodNode>& items) const;
         std::string printNodeList(const NodeList<FormalNode>& items) const;

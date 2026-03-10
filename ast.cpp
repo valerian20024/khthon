@@ -16,17 +16,17 @@ using std::string;
 
 namespace Khthon {
 
-    string PrintVisitor::type_to_string(const Type& type) const {
+    string Type::to_string() const {
         string result;
-        switch (type.kind) {
-            case Type::Kind::CUSTOM: result = type.custom_name; break;
-            case Type::Kind::INT32:  result = "int32";    break;
-            case Type::Kind::BOOL:   result = "bool";     break;
-            case Type::Kind::STRING: result = "string";   break;
-            case Type::Kind::UNIT:   result = "unit";     break;
+        switch (kind) {
+            case Type::Kind::CUSTOM: return custom_name; 
+            case Type::Kind::INT32:  return "int32";
+            case Type::Kind::BOOL:   return "bool";
+            case Type::Kind::STRING: return "string";
+            case Type::Kind::UNIT:   return "unit";
         }
 
-        return result;
+        throw std::runtime_error("Unkwnow type kind in Type::to_string()");
     }
 
     // For handling both fields and methods.
@@ -88,7 +88,6 @@ namespace Khthon {
     string PrintVisitor::visit(const FieldNode& node) const {
         //! the following is only if no default init expr
         //todo need to add a case with init expr
-        //todo refactor the switch into a private mbr fn of printvisitor
         string type;
         switch (node.type().kind) {
             case Type::Kind::CUSTOM: type = node.type().custom_name; break;
