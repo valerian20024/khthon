@@ -127,9 +127,9 @@ namespace Khthon {
 
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
 
-        const std::string& name() const { return name_; }
-        const std::string& parent() const { return parent_; }
-        const NodeList<FieldNode>& fields() const { return fields_; }
+        const std::string&          name() const { return name_; }
+        const std::string&          parent() const { return parent_; }
+        const NodeList<FieldNode>&  fields() const { return fields_; }
         const NodeList<MethodNode>& methods() const { return methods_; }
     };
 
@@ -174,8 +174,9 @@ namespace Khthon {
         
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
 
-        const std::string& name() const { return name_; }
-        const Type& type() const { return type_; }
+        const std::string&          name() const { return name_; }
+        const Type&                 type() const { return type_; }
+        const NodeList<FormalNode>& formals() const { return formals_; }
     };
 
     class FormalNode : public Node {
@@ -205,8 +206,10 @@ namespace Khthon {
 
     class PrintVisitor : public Visitor<std::string> {
     private:
+        std::string type_to_string(const Khthon::Type& type) const;
         std::string printNodeList(const NodeList<FieldNode>& items) const;
         std::string printNodeList(const NodeList<MethodNode>& items) const;
+        std::string printNodeList(const NodeList<FormalNode>& items) const;
     public:
         std::string visit(const ProgramNode& node) const override;
         std::string visit(const ClassNode& node) const override;

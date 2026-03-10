@@ -225,6 +225,10 @@ formals
       {
 
       }
+    | formal
+      {
+        $$.push_back(std::move($1));
+      }
     | formals COMMA formal 
       {
         $$ = std::move($1);

@@ -8,11 +8,26 @@ Notes about the whole file
 
 ? using std::string would be easier to read
 
+todo add some spaces or lf in the AST dump for legibility
+
 */
 
 using std::string;
 
 namespace Khthon {
+
+    string PrintVisitor::type_to_string(const Type& type) const {
+        string result;
+        switch (type.kind) {
+            case Type::Kind::CUSTOM: result = type.custom_name; break;
+            case Type::Kind::INT32:  result = "int32";    break;
+            case Type::Kind::BOOL:   result = "bool";     break;
+            case Type::Kind::STRING: result = "string";   break;
+            case Type::Kind::UNIT:   result = "unit";     break;
+        }
+
+        return result;
+    }
 
     // For handling both fields and methods.
     string PrintVisitor::printNodeList(const NodeList<FieldNode>& items) const {
@@ -26,6 +41,16 @@ namespace Khthon {
     }
 
     string PrintVisitor::printNodeList(const NodeList<MethodNode>& items) const {
+        string result;
+        for (size_t i = 0; i < items.size(); ++i) {
+            if (i > 0)
+                result += ", ";
+            result += items[i]->accept(*this);
+        }
+        return result;
+    }
+
+    string PrintVisitor::printNodeList(const NodeList<FormalNode>& items) const {
         string result;
         for (size_t i = 0; i < items.size(); ++i) {
             if (i > 0)
@@ -49,13 +74,21 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const ClassNode& node) const {
-        return "Class(" + node.name() + ", " + node.parent() + ", [" +
-            printNodeList(node.fields()) + "], [" + printNodeList(node.methods()) + "])";
+        return "Class(" 
+            + node.name() 
+            + ", " 
+            + node.parent() 
+            + ", [" 
+            + printNodeList(node.fields()) 
+            + "], [" 
+            + printNodeList(node.methods()) 
+            + "])";
     }
 
     string PrintVisitor::visit(const FieldNode& node) const {
         //! the following is only if no default init expr
         //todo need to add a case with init expr
+        //todo refactor the switch into a private mbr fn of printvisitor
         string type;
         switch (node.type().kind) {
             case Type::Kind::CUSTOM: type = node.type().custom_name; break;
@@ -68,8 +101,6 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const MethodNode& node) const {
-        //! for now it's been copied from field but afterwards we need to 
-        //! add formals and stuff so it'll be different
         string type;
         switch (node.type().kind) {
             case Type::Kind::CUSTOM: type = node.type().custom_name; break;
@@ -78,11 +109,25 @@ namespace Khthon {
             case Type::Kind::STRING: type = "string";   break;
             case Type::Kind::UNIT:   type = "unit";     break;
         }
-        return "Method(" + node.name() + ", blablaformals, " + type + ", blabla block)";
+        return "Method(" 
+            + node.name() 
+            + ", " 
+            + printNodeList(node.formals()) 
+            + type
+            + "blabla block)";
     }
 
     string PrintVisitor::visit(const FormalNode& node) const {
-        (void) node;
-        return "IM A FORMAL NODE";
+        string type;
+        switch (node.type().kind) {
+            case Type::Kind::CUSTOM: type = node.type().custom_name; break;
+            case Type::Kind::INT32:  type = "int32";    break;
+            case Type::Kind::BOOL:   type = "bool";     break;
+            case Type::Kind::STRING: type = "string";   break;
+            case Type::Kind::UNIT:   type = "unit";     break;
+        }
+        return node.name() 
+            + " : "
+            + type;
     }
 }
