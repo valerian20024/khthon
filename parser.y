@@ -121,7 +121,8 @@
 %left       PLUS MINUS              // 5
 %left       TIMES DIVIDE            // 4
 %right      ISNULL                  // 3. 
-//%right      "Unary MINUS operator"// 3  // comment out inherited from ABK6 parser /*todo remove and check reduce conflicts*/
+/*todo remove and check reduce conflicts*/
+//%right      "Unary MINUS operator"// 3  // comment out inherited from ABK6 parser 
 %right      POWER                   // 2
 %left       DOT                     // 1
 
@@ -217,12 +218,31 @@ method
         $$ = make_shared<MethodNode>(@$, $1, $5);
       }
 
+formals
+    : %empty
+      {
+
+      }
+    | formals formal 
+      {
+
+      }
+    ;
+
+formal
+    : OBJECT_IDENTIFIER COLON type
+      {
+        
+      }
+    ;
+
 type
     : TYPE_IDENTIFIER { $$ = Khthon::Type(std::move($1)); }
     | INT32           { $$ = Khthon::Type(Khthon::Type::Kind::INT32);  }
     | BOOL            { $$ = Khthon::Type(Khthon::Type::Kind::BOOL);   }
     | STRING          { $$ = Khthon::Type(Khthon::Type::Kind::STRING); }
     | UNIT            { $$ = Khthon::Type(Khthon::Type::Kind::UNIT);   }
+
 
 
 %%

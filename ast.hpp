@@ -156,6 +156,7 @@ namespace Khthon {
     private:
         std::string name_;
         Type type_;
+        NodeList<FormalNode> formals_;
     public:
         MethodNode(
             Khthon::location l, 
@@ -171,6 +172,22 @@ namespace Khthon {
 
         const std::string& name() const { return name_; }
         const Type& type() const { return type_; }
+    };
+
+    class FormalNode : public Node {
+    private:
+        std::string name_;
+        Type type_;
+    public:
+        FormalNode(
+            Khthon::location l,
+            std::string n,
+            Type t
+        ) : 
+            Node(l),
+            name_(std::move(n)),
+            type_(std::move(t))
+        { }
     };
 
     /*================================================++
