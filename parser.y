@@ -148,182 +148,176 @@
 %start program;
 
 program 
-    : class_list 
-      {
-        $$ = std::make_shared<ProgramNode>(@$, $1);  // std::move($1) seems to work as well
-        driver.ast_root = $$;
-      }
-    ;
+  : class_list 
+    {
+      $$ = std::make_shared<ProgramNode>(@$, $1);  // std::move($1) seems to work as well
+      driver.ast_root = $$;
+    }
+  ;
 
 class_list
-    : class 
-      {
-        $$.emplace_back(std::move($1));
-      }
-    | class_list class 
-      {
-        $$ = std::move($1);
-        $$.emplace_back(std::move($2));
-      }
-    ;
+  : class 
+    {
+      $$.emplace_back(std::move($1));
+    }
+  | class_list class 
+    {
+      $$ = std::move($1);
+      $$.emplace_back(std::move($2));
+    }
+  ;
 
 class
-    : CLASS TYPE_IDENTIFIER optional_extends class_body 
-      {
-        $$ = std::make_shared<ClassNode>(
-            @$,
-            $2,
-            $3,
-            std::move($4.fields),
-            std::move($4.methods)
-        );
-      }
-    ;
+  : CLASS TYPE_IDENTIFIER optional_extends class_body 
+    {
+      $$ = std::make_shared<ClassNode>(
+          @$,
+          $2,
+          $3,
+          std::move($4.fields),
+          std::move($4.methods)
+      );
+    }
+  ;
 
 optional_extends
-    : %empty 
-      {
-        $$ = "Object";  // Default parent of any class
-      }
-    | EXTENDS TYPE_IDENTIFIER 
-      {
-        $$ = $2;  // works with std::move as well
-      }
-    ;
+  : %empty 
+    {
+      $$ = "Object";  // Default parent of any class
+    }
+  | EXTENDS TYPE_IDENTIFIER 
+    {
+      $$ = $2;  // works with std::move as well
+    }
+  ;
 
 class_body
-    : LEFT_BRACE class_content RIGHT_BRACE 
-      {
-        $$ = $2;
-      }
-    ;
+  : LEFT_BRACE class_content RIGHT_BRACE 
+    {
+      $$ = $2;
+    }
+  ;
 
 class_content
-    : %empty
-      {
-        // Default-constructed => fields and methods of the class are set to "" 
-        $$ = Khthon::ClassMembers();
-      }
-    | class_content field
-      {
-        $$ = std::move($1);
-        $$.fields.push_back(std::move($2));
-      }
-    | class_content method
-      {
-        $$ = std::move($1);
-        $$.methods.push_back(std::move($2));
-      }
-    ;
+  : %empty
+    {
+      // Default-constructed => fields and methods of the class are set to "" 
+      $$ = Khthon::ClassMembers();
+    }
+  | class_content field
+    {
+      $$ = std::move($1);
+      $$.fields.push_back(std::move($2));
+    }
+  | class_content method
+    {
+      $$ = std::move($1);
+      $$.methods.push_back(std::move($2));
+    }
+  ;
 
 /*todo: when expr are started, add the optional init-expr here */ 
 field
-    : OBJECT_IDENTIFIER COLON type SEMICOLON
-      {
-        $$ = make_shared<FieldNode>(@$, $1, $3);
-      }
-    ;
+  : OBJECT_IDENTIFIER COLON type SEMICOLON
+    {
+      $$ = make_shared<FieldNode>(@$, $1, $3);
+    }
+  ;
 
 /*todo missing BLOCK and FORMALS*/
 method
-    : OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type block 
-      {
-        $$ = make_shared<MethodNode>(@$, $1, $6, $3, $7);
-      }
-    ;
+  : OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type block 
+    {
+      $$ = make_shared<MethodNode>(@$, $1, $6, $3, $7);
+    }
+  ;
 
 formals
-    : %empty
-      {
+  : %empty
+    {
 
-      }
-    | formal
-      {
-        $$.push_back(std::move($1));
-      }
-    | formals COMMA formal 
-      {
-        $$ = std::move($1);
-        $$.push_back(std::move($3));
-      }
-    ;
+    }
+  | formal
+    {
+      $$.push_back(std::move($1));
+    }
+  | formals COMMA formal 
+    {
+      $$ = std::move($1);
+      $$.push_back(std::move($3));
+    }
+  ;
 
 formal
-    : OBJECT_IDENTIFIER COLON type
-      {
-        $$ = make_shared<FormalNode>(@$, std::move($1), std::move($3));
-      }
-    ;
+  : OBJECT_IDENTIFIER COLON type
+    {
+      $$ = make_shared<FormalNode>(@$, std::move($1), std::move($3));
+    }
+  ;
 
 type
-    : TYPE_IDENTIFIER { $$ = Khthon::Type(std::move($1)); }
-    | INT32           { $$ = Khthon::Type(Khthon::Type::Kind::INT32);  }
-    | BOOL            { $$ = Khthon::Type(Khthon::Type::Kind::BOOL);   }
-    | STRING          { $$ = Khthon::Type(Khthon::Type::Kind::STRING); }
-    | UNIT            { $$ = Khthon::Type(Khthon::Type::Kind::UNIT);   }
-    ;
+  : TYPE_IDENTIFIER { $$ = Khthon::Type(std::move($1)); }
+  | INT32           { $$ = Khthon::Type(Khthon::Type::Kind::INT32);  }
+  | BOOL            { $$ = Khthon::Type(Khthon::Type::Kind::BOOL);   }
+  | STRING          { $$ = Khthon::Type(Khthon::Type::Kind::STRING); }
+  | UNIT            { $$ = Khthon::Type(Khthon::Type::Kind::UNIT);   }
+  ;
 
 block
-    : LEFT_BRACE RIGHT_BRACE
-      {
-        //$$ = std::make_shared<BlockExpr>($@);  // make it default initialize for empty blocks
-      }
-    | LEFT_BRACE expression_list RIGHT_BRACE
-      {
-        $$ = std::make_shared<BlockExpr>(@$, std::move($2));
-      }
-    ;
+  : LEFT_BRACE RIGHT_BRACE
+    {
+      //$$ = std::make_shared<BlockExpr>($@);  // make it default initialize for empty blocks
+    }
+  | LEFT_BRACE expression_list RIGHT_BRACE
+    {
+      $$ = std::make_shared<BlockExpr>(@$, std::move($2));
+    }
+  ;
 
 
 expression_list
-    : expression SEMICOLON
-      {
-        $$.push_back(std::move($1));
-      }
-    | expression_list expression SEMICOLON
-      {
-        $$ = std::move($1);
-        $$.push_back(std::move($2));
-      }
-    ;
+  : expression SEMICOLON
+    {
+      $$.push_back(std::move($1));
+    }
+  | expression_list expression SEMICOLON
+    {
+      $$ = std::move($1);
+      $$.push_back(std::move($2));
+    }
+  ;
 
 expression
-    : literal 
-      {
-        $$ = $1;
-      }
-    ;
+  : literal 
+    {
+      $$ = $1;
+    }
+  ;
 
 literal
-    : string_literal    { $$ = $1; }
-    | integer_literal   { $$ = $1; }
-    | boolean_literal   { $$ = $1; }
-    ;
+  : string_literal    { $$ = $1; }
+  | integer_literal   { $$ = $1; }
+  | boolean_literal   { $$ = $1; }
+  ;
 
 string_literal 
-    : STRING_LITERAL
-      {
-        $$ = std::make_shared<StringLiteralExpr>(@$, std::move($1));
-      }
-    ;
+  : STRING_LITERAL
+    {
+      $$ = std::make_shared<StringLiteralExpr>(@$, std::move($1));
+    }
+  ;
 
 integer_literal
-    : INTEGER_LITERAL
-      {
-        $$ = std::make_shared<IntegerLiteralExpr>(@$, std::move($1));
-      }
-    ;
+  : INTEGER_LITERAL   
+    {
+      $$ = std::make_shared<IntegerLiteralExpr>(@$, std::move($1));
+    }
+  ;
 
 boolean_literal
-    : TRUE
-      {
-        $$ = std::make_shared<BoolLiteralExpr>(@$, true);
-      }
-    | FALSE
-      {
-        $$ = std::make_shared<BoolLiteralExpr>(@$, false);
-      }
-    ;
+  : TRUE    { $$ = std::make_shared<BoolLiteralExpr>(@$, true);  }
+  | FALSE   { $$ = std::make_shared<BoolLiteralExpr>(@$, false); }
+  ;
 
 
 %%

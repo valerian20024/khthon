@@ -2,9 +2,9 @@ class Cons extends List {
     head : int32;
     tail : List;
     init() : Cons {
-        42;
-        42;
-        "helloww";
+        0x20;
+        32;
+        "hello\nww";
         true;
         false;
     }

@@ -82,7 +82,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const StringLiteralExpr& node) const {
-        return "TESTString(" + node.value() + ")";
+        return node.value();
     }
 
     std::string PrintVisitor::visit(const IntegerLiteralExpr& node) const {
