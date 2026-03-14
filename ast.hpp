@@ -31,6 +31,7 @@ namespace Khthon {
     class StringLiteralExpr;
     class IntegerLiteralExpr;
     class BoolLiteralExpr;
+    class UnitLiteralExpr;
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
@@ -67,14 +68,15 @@ namespace Khthon {
     template <typename R> class Visitor {
     public:
         virtual R visit(const ProgramNode& node) const = 0;
-        virtual R visit(const ClassNode& node) const   = 0;
-        virtual R visit(const FieldNode& node) const   = 0;
-        virtual R visit(const MethodNode& node) const  = 0;
-        virtual R visit(const FormalNode& node) const  = 0;
-        virtual R visit(const BlockExpr& node) const   = 0;
+        virtual R visit(const ClassNode& node) const = 0;
+        virtual R visit(const FieldNode& node) const = 0;
+        virtual R visit(const MethodNode& node) const = 0;
+        virtual R visit(const FormalNode& node) const = 0;
+        virtual R visit(const BlockExpr& node) const = 0;
         virtual R visit(const StringLiteralExpr& node) const = 0;
         virtual R visit(const IntegerLiteralExpr& node) const = 0;
         virtual R visit(const BoolLiteralExpr& node) const = 0;
+        virtual R visit(const UnitLiteralExpr& node) const = 0;
         
         virtual ~Visitor() = default;
     };
@@ -291,15 +293,15 @@ namespace Khthon {
         bool value() const { return value_; }
     };
 
-    //? Would we need a Unit node 
-    /*
+    
+    
     class UnitLiteralExpr : public Expr {
     public:
-        explicit UnitLiteralExpr(Khthon::location l) : Expr(l) {}  // Explicit?
+        explicit UnitLiteralExpr(Khthon::location l) : Expr(l) {}
 
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
     };
-    */
+    
 
 
 
@@ -329,6 +331,7 @@ namespace Khthon {
         std::string visit(const StringLiteralExpr& node) const override;
         std::string visit(const IntegerLiteralExpr& node) const override;
         std::string visit(const BoolLiteralExpr& node) const override;
+        std::string visit(const UnitLiteralExpr& node) const override;
     };
 }
 

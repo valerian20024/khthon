@@ -2,6 +2,6 @@ class Cons extends List {
     head : int32;
     tail : List;
     init() : Cons {
-        0x20;
+        
     }
 }

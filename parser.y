@@ -121,6 +121,7 @@
 %type <std::vector<std::shared_ptr<Expr>>>        expression_list
 %type <std::shared_ptr<IntegerLiteralExpr>>       integer_literal
 %type <std::shared_ptr<BoolLiteralExpr>>          boolean_literal
+%type <std::shared_ptr<UnitLiteralExpr>>          unit_literal
 
 
 
@@ -266,7 +267,7 @@ type
 block
   : LEFT_BRACE RIGHT_BRACE
     {
-      //$$ = std::make_shared<BlockExpr>($@);  // make it default initialize for empty blocks
+      $$ = std::make_shared<BlockExpr>(@$, std::vector<std::shared_ptr<Expr>>{});
     }
   | LEFT_BRACE expression_list RIGHT_BRACE
     {
@@ -303,6 +304,7 @@ literal
   : string_literal    { $$ = $1; }
   | integer_literal   { $$ = $1; }
   | boolean_literal   { $$ = $1; }
+  | unit_literal      { $$ = $1; }
   ;
 
 string_literal 
@@ -317,6 +319,12 @@ boolean_literal
   : TRUE    { $$ = std::make_shared<BoolLiteralExpr>(@$, true);  }
   | FALSE   { $$ = std::make_shared<BoolLiteralExpr>(@$, false); }
   ;
+
+unit_literal
+  : LEFT_PARENTHESIS RIGHT_PARENTHESIS 
+    {
+      $$ = std::make_shared<UnitLiteralExpr>(@$);
+    }
 
 
 %%
