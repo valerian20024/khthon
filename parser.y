@@ -280,7 +280,7 @@ expression_list
   : expression SEMICOLON expression_list
     {
       $$ = std::move($3);
-      $$.insert($$.begin(), std::move($1));
+      $$.insert($$.begin(), std::move($1));  // prepending the new expression
     }
   | expression SEMICOLON
     {
