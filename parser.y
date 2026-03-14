@@ -310,18 +310,18 @@ string_literal
 integer_literal
     : INTEGER_LITERAL
       {
-
+        $$ = std::make_shared<IntegerLiteralExpr>(@$, std::move($1));
       }
     ;
 
 boolean_literal
     : TRUE
       {
-
+        $$ = std::make_shared<BoolLiteralExpr>(@$, true);
       }
     | FALSE
       {
-
+        $$ = std::make_shared<BoolLiteralExpr>(@$, false);
       }
     ;
 
