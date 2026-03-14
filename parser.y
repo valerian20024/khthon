@@ -301,17 +301,11 @@ literal
   ;
 
 string_literal 
-  : STRING_LITERAL
-    {
-      $$ = std::make_shared<StringLiteralExpr>(@$, std::move($1));
-    }
+  : STRING_LITERAL { $$ = std::make_shared<StringLiteralExpr>(@$, std::move($1)); }
   ;
 
 integer_literal
-  : INTEGER_LITERAL   
-    {
-      $$ = std::make_shared<IntegerLiteralExpr>(@$, std::move($1));
-    }
+  : INTEGER_LITERAL { $$ = std::make_shared<IntegerLiteralExpr>(@$, std::move($1)); }
   ;
 
 boolean_literal
