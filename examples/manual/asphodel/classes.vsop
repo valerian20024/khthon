@@ -3,5 +3,7 @@ class Cons extends List {
     tail : List;
     init() : Cons {
         "helloworld";
+        "helloworld";
+        "helloworld";
     }
 }

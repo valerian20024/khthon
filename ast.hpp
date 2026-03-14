@@ -29,6 +29,8 @@ namespace Khthon {
     class FormalNode;
     class BlockExpr;
     class StringLiteralExpr;
+    class IntegerLiteralExpr;
+    class BoolLiteralExpr;
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
@@ -71,6 +73,8 @@ namespace Khthon {
         virtual R visit(const FormalNode& node) const  = 0;
         virtual R visit(const BlockExpr& node) const   = 0;
         virtual R visit(const StringLiteralExpr& node) const = 0;
+        virtual R visit(const IntegerLiteralExpr& node) const = 0;
+        virtual R visit(const BoolLiteralExpr& node) const = 0;
         
         virtual ~Visitor() = default;
     };
@@ -253,6 +257,53 @@ namespace Khthon {
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
     };
 
+    class IntegerLiteralExpr : public Expr {
+    private:
+        int value_;
+    public:
+        IntegerLiteralExpr(
+            Khthon::location l, 
+            int val
+        ) : 
+            Expr(l), 
+            value_(val) 
+        {}
+
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+
+        int value() const { return value_; }
+    };
+
+    class BoolLiteralExpr : public Expr {
+    private:
+        bool value_;
+    public:
+        BoolLiteralExpr(
+            Khthon::location l, 
+            bool val
+        ) : 
+            Expr(l), 
+            value_(val) 
+        {}
+
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+
+        bool value() const { return value_; }
+    };
+
+    //? Would we need a Unit node 
+    /*
+    class UnitLiteralExpr : public Expr {
+    public:
+        explicit UnitLiteralExpr(Khthon::location l) : Expr(l) {}  // Explicit?
+
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+    };
+    */
+
+
+
+
     /*================================================++
     ||               CONCRETE VISITORS                ||
     ++================================================*/
@@ -276,6 +327,8 @@ namespace Khthon {
         std::string visit(const FormalNode& node) const override;
         std::string visit(const BlockExpr& node) const override;
         std::string visit(const StringLiteralExpr& node) const override;
+        std::string visit(const IntegerLiteralExpr& node) const override;
+        std::string visit(const BoolLiteralExpr& node) const override;
     };
 }
 

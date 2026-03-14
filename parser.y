@@ -119,6 +119,10 @@
 %type <std::shared_ptr<Expr>>                     literal
 %type <std::shared_ptr<StringLiteralExpr>>        string_literal
 %type <std::vector<std::shared_ptr<Expr>>>        expression_list
+%type <std::shared_ptr<IntegerLiteralExpr>>       integer_literal
+%type <std::shared_ptr<BoolLiteralExpr>>          boolean_literal
+
+
 
 
 // Precedence : defined in descending order
@@ -218,6 +222,7 @@ field
       {
         $$ = make_shared<FieldNode>(@$, $1, $3);
       }
+    ;
 
 /*todo missing BLOCK and FORMALS*/
 method
@@ -225,6 +230,7 @@ method
       {
         $$ = make_shared<MethodNode>(@$, $1, $6, $3, $7);
       }
+    ;
 
 formals
     : %empty
@@ -255,6 +261,7 @@ type
     | BOOL            { $$ = Khthon::Type(Khthon::Type::Kind::BOOL);   }
     | STRING          { $$ = Khthon::Type(Khthon::Type::Kind::STRING); }
     | UNIT            { $$ = Khthon::Type(Khthon::Type::Kind::UNIT);   }
+    ;
 
 block
     : LEFT_BRACE RIGHT_BRACE
@@ -265,6 +272,7 @@ block
       {
         $$ = std::make_shared<BlockExpr>(@$, std::move($2));
       }
+    ;
 
 
 expression_list
@@ -277,18 +285,19 @@ expression_list
         $$ = std::move($1);
         $$.push_back(std::move($2));
       }
+    ;
 
 expression
     : literal 
       {
         $$ = $1;
       }
+    ;
 
 literal
-    : string_literal 
-      {
-        $$ = $1;
-      }
+    : string_literal    { $$ = $1; }
+    | integer_literal   { $$ = $1; }
+    | boolean_literal   { $$ = $1; }
     ;
 
 string_literal 
@@ -296,7 +305,25 @@ string_literal
       {
         $$ = std::make_shared<StringLiteralExpr>(@$, std::move($1));
       }
+    ;
 
+integer_literal
+    : INTEGER_LITERAL
+      {
+
+      }
+    ;
+
+boolean_literal
+    : TRUE
+      {
+
+      }
+    | FALSE
+      {
+
+      }
+    ;
 
 
 %%
