@@ -67,7 +67,7 @@
 
 
     /* Starting states */
-%x COMMENT STRING
+%x COMMENT_STATE STRING_STATE
 
     /* Basics */
 LOWERCASE_LETTER                [a-z]
@@ -259,7 +259,7 @@ ASSIGN                          "<-"
         string_start_loc = loc;
         
         current_string.clear();
-        BEGIN(STRING);
+        BEGIN(STRING_STATE);
     }
 
     /* Comments */
@@ -267,7 +267,7 @@ ASSIGN                          "<-"
 
     {COMMENT_START} {
         comments_start_loc.push(loc.begin);
-        BEGIN(COMMENT);
+        BEGIN(COMMENT_STATE);
     }
 
     {COMMENT_END} {
@@ -286,7 +286,7 @@ ASSIGN                          "<-"
     |         STRING           |
     +-------------------------*/
 
-<STRING>{
+<STRING_STATE>{
     {STRING_END} {
         string token_value = "\"" + current_string + "\"";
         location start = string_start_loc;
@@ -349,7 +349,7 @@ ASSIGN                          "<-"
     |         COMMENT          |
     +-------------------------*/
 
-<COMMENT>{
+<COMMENT_STATE>{
     {COMMENT_START} {comments_start_loc.push(loc.begin);}
 
     {COMMENT_END} {
