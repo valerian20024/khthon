@@ -3,9 +3,5 @@ class Cons extends List {
     tail : List;
     init() : Cons {
         0x20;
-        32;
-        "hello\nww";
-        true;
-        false;
     }
 }

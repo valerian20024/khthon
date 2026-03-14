@@ -276,14 +276,19 @@ block
 
 
 expression_list
-  : expression SEMICOLON
-    {
-      $$.push_back(std::move($1));
-    }
-  | expression_list expression SEMICOLON
+  : expression_list expression SEMICOLON
     {
       $$ = std::move($1);
       $$.push_back(std::move($2));
+    }
+  | expression SEMICOLON
+    {
+      $$.push_back(std::move($1));
+    }
+/*this allows to write the last expr of a block with or without semicolon*/
+  | expression 
+    {
+      $$.push_back(std::move($1));
     }
   ;
 
