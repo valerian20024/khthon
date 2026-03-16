@@ -122,6 +122,7 @@
 %type <std::shared_ptr<IntegerLiteralExpr>>       integer_literal
 %type <std::shared_ptr<BoolLiteralExpr>>          boolean_literal
 %type <std::shared_ptr<UnitLiteralExpr>>          unit_literal
+%type <std::shared_ptr<IfExpr>>                   if_expr
 
 
 
@@ -297,6 +298,10 @@ expression
     {
       $$ = $1;
     }
+  | if_expr
+    {
+      $$ = $1;
+    }
   ;
 
 literal
@@ -325,6 +330,16 @@ unit_literal
       $$ = std::make_shared<UnitLiteralExpr>(@$);
     }
 
+if_expr
+  : IF expression THEN expression
+    {
+      $$ = std::make_shared<IfExpr>(@$, std::move($2), std::move($4));
+    }
+  | IF expression THEN expression ELSE expression
+    {
+      //$$ = std::make_shared<IfExpr>(@$, std::move($2), std::move($4), std::move($6));
+    }
+  ;
 
 %%
 

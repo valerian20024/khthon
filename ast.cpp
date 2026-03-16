@@ -97,4 +97,20 @@ namespace Khthon {
         (void) node;  /*placeholder to not trigger warning*/
         return "()";
     }
+
+    std::string PrintVisitor::visit(const IfExpr& node) const {
+        std::string s = "If(" 
+            + node.guardian()->accept(*this)
+            + ", " 
+            + node.consequent()->accept(*this);
+
+        /*
+        if (node.alternative().has_value()) {
+            s += ", " + node.alternative().value()->accept(*this);
+        }
+        */
+
+        s += ")";
+        return s;
+    }
 }

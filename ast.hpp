@@ -32,6 +32,7 @@ namespace Khthon {
     class IntegerLiteralExpr;
     class BoolLiteralExpr;
     class UnitLiteralExpr;
+    class IfExpr;
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
@@ -77,6 +78,7 @@ namespace Khthon {
         virtual R visit(const IntegerLiteralExpr& node) const = 0;
         virtual R visit(const BoolLiteralExpr& node) const = 0;
         virtual R visit(const UnitLiteralExpr& node) const = 0;
+        virtual R visit(const IfExpr& node) const = 0;
         
         virtual ~Visitor() = default;
     };
@@ -303,6 +305,31 @@ namespace Khthon {
     };
     
 
+    class IfExpr : public Expr {
+    private:
+        std::shared_ptr<Expr> guardian_;
+        std::shared_ptr<Expr> consequent_;
+        //std::optional<std::shared_ptr<Expr>> alternative_;
+
+    public:
+        IfExpr(
+            Khthon::location l,
+            std::shared_ptr<Expr> g,
+            std::shared_ptr<Expr> c
+            //std::optional<std::shared_ptr<Expr>> a = std::nullopt
+        ) : Expr(l),
+            guardian_(std::move(g)),
+            consequent_(std::move(c))
+            //alternative_(std::move(a))
+        {}
+
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+
+        const auto& guardian()    const { return guardian_;    }
+        const auto& consequent()   const { return consequent_;   }
+        //const auto& alternative()   const { return alternative_;   }
+    };
+
 
 
 
@@ -332,6 +359,7 @@ namespace Khthon {
         std::string visit(const IntegerLiteralExpr& node) const override;
         std::string visit(const BoolLiteralExpr& node) const override;
         std::string visit(const UnitLiteralExpr& node) const override;
+        std::string visit(const IfExpr& node) const override;
     };
 }
 
