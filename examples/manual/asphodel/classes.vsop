@@ -2,6 +2,17 @@ class Cons extends List {
     head : int32;
     tail : List;
     init() : Cons {
-        if "condition" then "ok"        
+        if "condition" then "ok" else "atleast"   
+    }
+}
+
+
+class Test {
+    main() : unit {
+        if true then
+            if false then
+                "inner"
+            else
+                "outer"
     }
 }

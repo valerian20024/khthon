@@ -140,6 +140,10 @@
 %right      POWER                   // 2
 %left       DOT                     // 1
 
+%nonassoc   THEN
+%nonassoc   ELSE
+
+
 %%
 
     /*================================================++
