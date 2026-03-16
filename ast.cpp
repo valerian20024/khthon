@@ -51,12 +51,16 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const FieldNode& node) const {
-        //todo need to handle fields with init expr
-        return "Field(" 
+        std::string res = "Field(" 
             + node.name() 
             + ", " 
             + node.type().to_string() 
             + ")";
+        
+        if (node.has_init())
+            res += ", " + node.initializer().value()->accept(*this);
+        
+        return res;
     }
 
     string PrintVisitor::visit(const MethodNode& node) const {
@@ -104,9 +108,8 @@ namespace Khthon {
             + ", " 
             + node.consequent()->accept(*this);
         
-        if (node.alternative().has_value()) {
+        if (node.alternative().has_value())
             s += ", " + node.alternative().value()->accept(*this);
-        }
 
         s += ")";
         return s;

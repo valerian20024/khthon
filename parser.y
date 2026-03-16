@@ -222,11 +222,14 @@ class_content
     }
   ;
 
-/*todo: when expr are started, add the optional init-expr here */ 
 field
   : OBJECT_IDENTIFIER COLON type SEMICOLON
     {
       $$ = make_shared<FieldNode>(@$, $1, $3);
+    }
+  | OBJECT_IDENTIFIER COLON type ASSIGN expression SEMICOLON
+    {
+      $$ = make_shared<FieldNode>(@$, $1, $3, $5);
     }
   ;
 

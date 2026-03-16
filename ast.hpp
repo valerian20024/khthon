@@ -88,7 +88,6 @@ namespace Khthon {
     private:
         Khthon::location loc_;
     public:
-        // Constructor and destructor
         Node(Khthon::location l) : loc_(l) { }
         virtual ~Node() = default;
 
@@ -160,21 +159,27 @@ namespace Khthon {
     private:
         std::string name_;
         Type type_;
+        std::optional<std::shared_ptr<Expr>> initializer_;
     public:
         FieldNode(
             Khthon::location l, 
             std::string n, 
-            Khthon::Type t
-        ) :
+            Khthon::Type t,
+            std::optional<std::shared_ptr<Expr>> i = std::nullopt
+        ) : 
             Node(l), 
             name_(std::move(n)), 
-            type_(std::move(t)) 
+            type_(std::move(t)),
+            initializer_(std::move(i)) 
         { }
         
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
 
         const std::string& name() const { return name_; }
         const Type& type() const { return type_; }
+        bool has_init() const { return initializer_.has_value(); }
+        const auto& initializer() const { return initializer_; }
+
     };
 
     class MethodNode : public Node {
@@ -317,7 +322,8 @@ namespace Khthon {
             std::shared_ptr<Expr> g,
             std::shared_ptr<Expr> c,
             std::optional<std::shared_ptr<Expr>> a = std::nullopt
-        ) : Expr(l),
+        ) : 
+            Expr(l),
             guardian_(std::move(g)),
             consequent_(std::move(c)),
             alternative_(std::move(a))
