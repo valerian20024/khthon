@@ -114,4 +114,12 @@ namespace Khthon {
         s += ")";
         return s;
     }
+
+    std::string PrintVisitor::visit(const AssignExpr& node) const {
+    return "Assign("
+         + node.name()
+         + ", "
+         + node.value()->accept(*this)
+         + ")";
+    }
 }

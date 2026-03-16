@@ -33,6 +33,7 @@ namespace Khthon {
     class BoolLiteralExpr;
     class UnitLiteralExpr;
     class IfExpr;
+    class AssignExpr;
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
@@ -79,6 +80,7 @@ namespace Khthon {
         virtual R visit(const BoolLiteralExpr& node) const = 0;
         virtual R visit(const UnitLiteralExpr& node) const = 0;
         virtual R visit(const IfExpr& node) const = 0;
+        virtual R visit(const AssignExpr& node) const = 0;
         
         virtual ~Visitor() = default;
     };
@@ -331,12 +333,32 @@ namespace Khthon {
 
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
 
-        const auto& guardian()    const { return guardian_; }
-        const auto& consequent()   const { return consequent_; }
-        const auto& alternative()   const { return alternative_; }
+        const auto& guardian() const { return guardian_; }
+        const auto& consequent() const { return consequent_; }
+        const auto& alternative() const { return alternative_; }
     };
 
 
+    class AssignExpr : public Expr {
+    private:
+        std::string name_;
+        std::shared_ptr<Expr> value_;
+    public:
+        AssignExpr(
+            Khthon::location l,
+            std::string n,
+            std::shared_ptr<Expr> v
+        ) : 
+            Expr(l),
+            name_(n),
+            value_(v)
+        {}
+
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+        
+        const std::string& name() const { return name_; }
+        const auto& value() const { return value_; }
+    };
 
 
     /*================================================++
@@ -366,6 +388,7 @@ namespace Khthon {
         std::string visit(const BoolLiteralExpr& node) const override;
         std::string visit(const UnitLiteralExpr& node) const override;
         std::string visit(const IfExpr& node) const override;
+        std::string visit(const AssignExpr& node) const override;
     };
 }
 

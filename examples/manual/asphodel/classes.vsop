@@ -2,6 +2,6 @@ class Cons extends List {
     head : int32 <- "coucou";
     tail : List <- 34;
     init() : Cons {
-        if "condition" then "ok" else "atleast"   
+        coucou <- "coucou"
     }
 }
