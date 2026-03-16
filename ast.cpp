@@ -103,12 +103,10 @@ namespace Khthon {
             + node.guardian()->accept(*this)
             + ", " 
             + node.consequent()->accept(*this);
-
-        /*
+        
         if (node.alternative().has_value()) {
             s += ", " + node.alternative().value()->accept(*this);
         }
-        */
 
         s += ")";
         return s;

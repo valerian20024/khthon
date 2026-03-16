@@ -309,25 +309,25 @@ namespace Khthon {
     private:
         std::shared_ptr<Expr> guardian_;
         std::shared_ptr<Expr> consequent_;
-        //std::optional<std::shared_ptr<Expr>> alternative_;
+        std::optional<std::shared_ptr<Expr>> alternative_;
 
     public:
         IfExpr(
             Khthon::location l,
             std::shared_ptr<Expr> g,
-            std::shared_ptr<Expr> c
-            //std::optional<std::shared_ptr<Expr>> a = std::nullopt
+            std::shared_ptr<Expr> c,
+            std::optional<std::shared_ptr<Expr>> a = std::nullopt
         ) : Expr(l),
             guardian_(std::move(g)),
-            consequent_(std::move(c))
-            //alternative_(std::move(a))
+            consequent_(std::move(c)),
+            alternative_(std::move(a))
         {}
 
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
 
-        const auto& guardian()    const { return guardian_;    }
-        const auto& consequent()   const { return consequent_;   }
-        //const auto& alternative()   const { return alternative_;   }
+        const auto& guardian()    const { return guardian_; }
+        const auto& consequent()   const { return consequent_; }
+        const auto& alternative()   const { return alternative_; }
     };
 
 

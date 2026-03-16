@@ -337,7 +337,7 @@ if_expr
     }
   | IF expression THEN expression ELSE expression
     {
-      //$$ = std::make_shared<IfExpr>(@$, std::move($2), std::move($4), std::move($6));
+      $$ = std::make_shared<IfExpr>(@$, std::move($2), std::move($4), std::move($6));
     }
   ;
 
