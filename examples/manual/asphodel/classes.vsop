@@ -1,2 +1,3 @@
-class One { }
-class Two { }
+class Test {
+    x : int32 <- 42;
+}

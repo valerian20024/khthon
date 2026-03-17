@@ -77,12 +77,13 @@ namespace Khthon {
         string res = "Field(" 
             + node.name() 
             + ", " 
-            + node.type().to_string() 
-            + ")";
+            + node.type().to_string();
         
         if (node.has_init())
             res += ", " + node.initializer().value()->accept(*this);
         
+        res += ")";
+
         return res;
     }
 
