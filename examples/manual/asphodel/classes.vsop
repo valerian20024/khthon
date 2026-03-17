@@ -2,6 +2,8 @@ class Cons extends List {
     head : int32 <- "coucou";
     tail : List <- 34;
     init() : Cons {
-        coucou <- "coucou"
+        coucou <- "coucou";
+        wow <- 34;
+        0
     }
 }
