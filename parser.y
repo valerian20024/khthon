@@ -138,8 +138,7 @@
 %left       PLUS MINUS              // 5
 %left       TIMES DIVIDE            // 4
 %right      ISNULL                  // 3
-/*todo remove and check reduce conflicts*/
-//%right      "Unary MINUS operator"// 3  // comment out inherited from ABK6 parser 
+%right      UNARY_MINUS             // 3
 %right      POWER                   // 2
 %left       DOT                     // 1
 

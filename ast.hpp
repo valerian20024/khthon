@@ -49,6 +49,7 @@ namespace Khthon {
         ClassMembers() {}
     };
 
+
     // This class holds the possible types of VSOP: both builtin and user-defined
     struct Type {
         // todo: add a DEFAULT case as in UnaryOperation
@@ -73,6 +74,7 @@ namespace Khthon {
         std::string to_string() const;
     };
 
+
     // Class for handling unary operations
     struct UnaryOperation {
         enum class Kind { 
@@ -89,6 +91,7 @@ namespace Khthon {
 
         std::string to_string() const;
     };
+
 
     // Class for handling binary operations
     struct BinaryOperation {
@@ -212,6 +215,7 @@ namespace Khthon {
         const NodeList<MethodNode>& methods() const { return methods_; }
     };
 
+
     class FieldNode : public Node {
     private:
         std::string name_;
@@ -238,6 +242,7 @@ namespace Khthon {
         const auto& initializer() const { return initializer_; }
 
     };
+
 
     class MethodNode : public Node {
     private:
@@ -268,6 +273,7 @@ namespace Khthon {
         const std::shared_ptr<Expr>& body() const { return body_; }
     };
 
+
     class FormalNode : public Node {
     private:
         std::string name_;
@@ -289,6 +295,7 @@ namespace Khthon {
         const Type& type() const { return type_; }
     };
 
+
     class BlockExpr : public Expr {
     private:
         NodeList<Expr> expressions_;
@@ -305,6 +312,7 @@ namespace Khthon {
         
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
     };
+
 
     class StringLiteralExpr : public Expr {
     private:
@@ -323,6 +331,7 @@ namespace Khthon {
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
     };
 
+
     class IntegerLiteralExpr : public Expr {
     private:
         int value_;
@@ -340,6 +349,7 @@ namespace Khthon {
         int value() const { return value_; }
     };
 
+
     class BoolLiteralExpr : public Expr {
     private:
         bool value_;
@@ -356,7 +366,6 @@ namespace Khthon {
 
         bool value() const { return value_; }
     };
-
     
     
     class UnitLiteralExpr : public Expr {
@@ -415,6 +424,7 @@ namespace Khthon {
         const auto& value() const { return value_; }
     };
 
+
     class NewExpr : public Expr {
     private:
         std::string identifier_;
@@ -454,6 +464,7 @@ namespace Khthon {
         const auto& operand() const { return operand_; }
     };
 
+    
     class BinOpExpr : public Expr {
     private:
         BinaryOperation operation_;
