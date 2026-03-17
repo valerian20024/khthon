@@ -137,7 +137,7 @@
 %nonassoc   EQUAL LOWER_EQUAL LOWER // 6
 %left       PLUS MINUS              // 5
 %left       TIMES DIVIDE            // 4
-%right      ISNULL                  // 3. 
+%right      ISNULL                  // 3
 /*todo remove and check reduce conflicts*/
 //%right      "Unary MINUS operator"// 3  // comment out inherited from ABK6 parser 
 %right      POWER                   // 2
@@ -378,15 +378,21 @@ new_expr
 unary_operation_expr
   : NOT expression 
     {
-      $$ = make_shared<UnOpExpr>(@$, UnaryOperation(UnaryOperation::Kind::NOT), std::move($2));
+      $$ = make_shared<UnOpExpr>(
+        @$, UnaryOperation(UnaryOperation::Kind::NOT), std::move($2)
+      );
     }
   | MINUS expression 
     {
-      $$ = make_shared<UnOpExpr>(@$, UnaryOperation(UnaryOperation::Kind::UMINUS), std::move($2));
+      $$ = make_shared<UnOpExpr>(
+        @$, UnaryOperation(UnaryOperation::Kind::UMINUS), std::move($2)
+      );
     }
   | ISNULL expression 
     {
-      $$ = make_shared<UnOpExpr>(@$, UnaryOperation(UnaryOperation::Kind::ISNULL), std::move($2));
+      $$ = make_shared<UnOpExpr>(
+        @$, UnaryOperation(UnaryOperation::Kind::ISNULL), std::move($2)
+      );
     }
   ;
 
@@ -394,82 +400,55 @@ binary_operation_expr
   : expression EQUAL expression
     {
       $$ = make_shared<BinOpExpr>(
-        @$, 
-        BinaryOperation(BinaryOperation::Kind::EQUAL), 
-        std::move($1), 
-        std::move($3)
+        @$, BinaryOperation(BinaryOperation::Kind::EQUAL), std::move($1), std::move($3)
       );
     }
   | expression LOWER expression
     {
       $$ = make_shared<BinOpExpr>(
-        @$, 
-        BinaryOperation(BinaryOperation::Kind::LOWER), 
-        std::move($1), 
-        std::move($3)
+        @$, BinaryOperation(BinaryOperation::Kind::LOWER), std::move($1), std::move($3)
       );
     }
   | expression LOWER_EQUAL expression
     {
       $$ = make_shared<BinOpExpr>(
-        @$, 
-        BinaryOperation(BinaryOperation::Kind::LOWER_EQUAL), 
-        std::move($1), 
-        std::move($3)
+        @$, BinaryOperation(BinaryOperation::Kind::LOWER_EQUAL), std::move($1), std::move($3)
       );
     }
   | expression PLUS expression
     {
       $$ = make_shared<BinOpExpr>(
-        @$, 
-        BinaryOperation(BinaryOperation::Kind::PLUS), 
-        std::move($1), 
-        std::move($3)
+        @$, BinaryOperation(BinaryOperation::Kind::PLUS), std::move($1), std::move($3)
       );
     }
   | expression MINUS expression
     {
       $$ = make_shared<BinOpExpr>(
-        @$, 
-        BinaryOperation(BinaryOperation::Kind::MINUS), 
-        std::move($1), 
-        std::move($3)
+        @$, BinaryOperation(BinaryOperation::Kind::MINUS), std::move($1), std::move($3)
       );
     }
   | expression TIMES expression
     {
       $$ = make_shared<BinOpExpr>(
-        @$, 
-        BinaryOperation(BinaryOperation::Kind::TIMES), 
-        std::move($1), 
-        std::move($3)
+        @$, BinaryOperation(BinaryOperation::Kind::TIMES), std::move($1), std::move($3)
       );
     }
   | expression DIVIDE expression
     {
       $$ = make_shared<BinOpExpr>(
-        @$, 
-        BinaryOperation(BinaryOperation::Kind::DIVIDE), 
-        std::move($1), 
-        std::move($3)
+        @$, BinaryOperation(BinaryOperation::Kind::DIVIDE), std::move($1), std::move($3)
       );
     }
   | expression POWER expression
     {
       $$ = make_shared<BinOpExpr>(
-        @$, 
-        BinaryOperation(BinaryOperation::Kind::POWER), 
-        std::move($1), 
-        std::move($3)
+        @$, BinaryOperation(BinaryOperation::Kind::POWER), std::move($1), std::move($3)
       );
     }
   | expression AND expression
     {
       $$ = make_shared<BinOpExpr>(
-        @$, 
-        BinaryOperation(BinaryOperation::Kind::AND), 
-        std::move($1), 
-        std::move($3)
+        @$, BinaryOperation(BinaryOperation::Kind::AND), std::move($1), std::move($3)
       );
     }
   ;
