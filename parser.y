@@ -125,6 +125,7 @@
 %type <std::shared_ptr<IfExpr>>                   if_expr
 %type <std::shared_ptr<AssignExpr>>               assign_expr
 %type <std::shared_ptr<NewExpr>>                  new_expr
+%type <std::shared_ptr<UnOpExpr>>                 unary_operation_expr
 
 
 
@@ -301,17 +302,18 @@ expression_list
   ;
 
 expression
-  : literal             { $$ = $1; }
-  | if_expr             { $$ = $1; }
-  | assign_expr         { $$ = $1; }
-  | new_expr            { $$ = $1; }
+  : literal               { $$ = $1; }
+  | if_expr               { $$ = $1; }
+  | assign_expr           { $$ = $1; }
+  | new_expr              { $$ = $1; }
+  | unary_operation_expr  { $$ = $1; }
   ;
 
 literal
-  : string_literal      { $$ = $1; }
-  | integer_literal     { $$ = $1; }
-  | boolean_literal     { $$ = $1; }
-  | unit_literal        { $$ = $1; }
+  : string_literal        { $$ = $1; }
+  | integer_literal       { $$ = $1; }
+  | boolean_literal       { $$ = $1; }
+  | unit_literal          { $$ = $1; }
   ;
 
 string_literal 
@@ -347,6 +349,21 @@ assign_expr
 
 new_expr
   : NEW TYPE_IDENTIFIER { $$ = make_shared<NewExpr>(@$, std::move($2)); }
+  ;
+
+unary_operation_expr
+  : NOT expression 
+    {
+      $$ = make_shared<UnOpExpr>(@$, UnaryOperation(UnaryOperation::Kind::NOT), std::move($2));
+    }
+  | MINUS expression 
+    {
+      $$ = make_shared<UnOpExpr>(@$, UnaryOperation(UnaryOperation::Kind::UMINUS), std::move($2));
+    }
+  | ISNULL expression 
+    {
+      $$ = make_shared<UnOpExpr>(@$, UnaryOperation(UnaryOperation::Kind::ISNULL), std::move($2));
+    }
   ;
 
 %%

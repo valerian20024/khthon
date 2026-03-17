@@ -64,7 +64,7 @@ namespace Khthon {
     };
 
     // Class for handling unary operations
-    class UnaryOperation {
+    struct UnaryOperation {
         enum class Kind { NOT, UMINUS, ISNULL, DEFAULT };  // default is not part of the language
 
         Kind kind = Kind::DEFAULT;
