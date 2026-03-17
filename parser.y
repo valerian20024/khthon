@@ -5,10 +5,8 @@
 
 %defines
 
-// Put parser inside a namespace
 %define api.namespace {Khthon}
 
-// Give the name of the parser class
 %define api.parser.class {Parser}
 
 // Force the token kind enum (used by the lexer) and the symbol kind enum
@@ -98,10 +96,10 @@
 ;
 
 // For some symbols, need to store a value
-%token <std::string> TYPE_IDENTIFIER "type-identifier"
-%token <std::string> OBJECT_IDENTIFIER "object-identifier"
-%token <std::string> STRING_LITERAL "string-literal"
-%token <int> INTEGER_LITERAL "integer-literal"
+%token <std::string>  TYPE_IDENTIFIER     "type-identifier"
+%token <std::string>  OBJECT_IDENTIFIER   "object-identifier"
+%token <std::string>  STRING_LITERAL      "string-literal"
+%token <int>          INTEGER_LITERAL     "integer-literal"
 
 // Tell Bison the semantic type of non-terminals. Uses variant support.
 %type <std::shared_ptr<ProgramNode>>              program

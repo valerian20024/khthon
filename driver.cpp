@@ -143,11 +143,7 @@ int Driver::parse()
 
     delete parser;
 
-    if (ast_root) {
-        cout << "=> AST root exists. Number of classes = "
-            << ast_root->classes().size() << "\n";
-    }
-
+    // todo: change the error message when you get to error mngt
     if (res != 0) {
         cerr << "!> Error in parsing" << endl;
         return res;

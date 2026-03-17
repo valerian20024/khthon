@@ -64,7 +64,7 @@ namespace Khthon {
         // Chaining visit to each of the classes
         for (size_t i = 0; i < classes.size(); ++i) {
             if (i > 0)
-                result += ",\n";
+                result += ", \n";
             result += classes[i]->accept(*this);
         }
         return result;

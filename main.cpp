@@ -64,16 +64,13 @@ int main(int argc, char const *argv[])
     case Mode::LEX:
         res = driver.lex();
 
-        //if (res == 0)
-            driver.print_tokens();
+        // Always printing tokens even if there is an error
+        driver.print_tokens();
 
         return res;
 
     case Mode::PARSE:
         res = driver.parse();
-
-        if (res == 0)
-            cout << "Result: " << driver.result << endl;
 
         return res;
     }
