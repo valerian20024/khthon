@@ -139,6 +139,9 @@
 %left       PLUS MINUS                // 5
 %left       TIMES DIVIDE              // 4
 %right      ISNULL UMINUS             // 3 
+
+%nonassoc   IF_EXPR
+
 %right      POWER                     // 2
 %left       DOT                       // 1
 
@@ -376,19 +379,19 @@ new_expr
   ;
 
 unary_operation_expr
-  : NOT expression 
+  : NOT expression
     {
       $$ = make_shared<UnOpExpr>(
         @$, UnaryOperation(UnaryOperation::Kind::NOT), std::move($2)
       );
     }
-  | MINUS expression 
+  | MINUS expression
     {
       $$ = make_shared<UnOpExpr>(
         @$, UnaryOperation(UnaryOperation::Kind::UMINUS), std::move($2)
       );
     }
-  | ISNULL expression 
+  | ISNULL expression
     {
       $$ = make_shared<UnOpExpr>(
         @$, UnaryOperation(UnaryOperation::Kind::ISNULL), std::move($2)

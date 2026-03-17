@@ -179,6 +179,7 @@ namespace Khthon {
             + ", "
             + node.left()->accept(*this)
             + ", "
-            + node.right()->accept(*this);
+            + node.right()->accept(*this)
+            + ")";
     }
 }

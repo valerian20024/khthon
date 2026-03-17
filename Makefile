@@ -29,6 +29,7 @@ SRC_DIR			= src
 ARCHIVE			= vsopcompiler.tar.xz
 ARCHIVE_FILES	= \
 	driver.cpp driver.hpp \
+	ast.hpp ast.cpp \
 	main.cpp \
 	lexer.lex \
 	parser.y \
