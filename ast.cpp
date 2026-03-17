@@ -30,6 +30,8 @@ namespace Khthon {
             case UnaryOperation::Kind::NOT:         return "not";
             case UnaryOperation::Kind::UMINUS:      return "-";
             case UnaryOperation::Kind::ISNULL:      return "isnull";
+            default: 
+                return "DEFAULT";
         }
         return "unknown unary op";
     }
@@ -137,4 +139,10 @@ namespace Khthon {
             + node.identifier()
             + ")";
     }
+
+    std::string PrintVisitor::visit(const UnOpExpr& node) const {
+        (void) node;
+        return "UNOPEXPR IS THERE";
+    }
+
 }

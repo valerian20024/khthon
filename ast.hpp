@@ -35,6 +35,7 @@ namespace Khthon {
     class IfExpr;
     class AssignExpr;
     class NewExpr;
+    class UnOpExpr;
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
@@ -48,15 +49,14 @@ namespace Khthon {
 
     // This class holds the possible types of VSOP: both builtin and user-defined
     struct Type {
-        enum class Kind { CUSTOM, INT32, BOOL, STRING, UNIT };
+        enum class Kind { CUSTOM, INT32, BOOL, STRING, UNIT };  // todo: add a DEFAULT case as in UnaryOperation
 
         Kind kind = Kind::UNIT;
         std::string custom_name;
 
         // Default ctor is required by Bison
-        Type() = default;
-
         // Constructor polymorphism allows to construct a new Type conveniently
+        Type() = default;
         explicit Type(Kind k) : kind(k), custom_name("") { }
         explicit Type(std::string name) : kind(Kind::CUSTOM), custom_name(std::move(name)) { }
 
@@ -65,9 +65,12 @@ namespace Khthon {
 
     // Class for handling unary operations
     class UnaryOperation {
-        enum class Kind { NOT, UMINUS, ISNULL };
+        enum class Kind { NOT, UMINUS, ISNULL, DEFAULT };  // default is not part of the language
 
-        Kind kind;
+        Kind kind = Kind::DEFAULT;
+
+        UnaryOperation() = default;
+        explicit UnaryOperation(Kind k) : kind(k) { }
 
         std::string to_string() const;
     };
@@ -92,7 +95,8 @@ namespace Khthon {
         virtual R visit(const IfExpr& node) const = 0;
         virtual R visit(const AssignExpr& node) const = 0;
         virtual R visit(const NewExpr& node) const = 0;
-        
+        virtual R visit(const UnOpExpr& node) const = 0;
+
         virtual ~Visitor() = default;
     };
 
@@ -388,6 +392,29 @@ namespace Khthon {
         const std::string& identifier() const { return identifier_; }
     };
 
+    
+    class UnOpExpr : public Expr {
+    private:
+        UnaryOperation operation_;
+        std::shared_ptr<Expr> operand_;
+    public:
+        UnOpExpr(
+            Khthon::location l,
+            UnaryOperation operation,
+            std::shared_ptr<Expr> operand
+        ) :
+            Expr(l),
+            operation_(operation),
+            operand_(operand)
+        {}
+
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+        
+        const UnaryOperation& operation() const { return operation_; }
+        const auto& operand() const { return operand_; }
+    };
+    
+
 
     /*================================================++
     ||               CONCRETE VISITORS                ||
@@ -418,6 +445,7 @@ namespace Khthon {
         std::string visit(const IfExpr& node) const override;
         std::string visit(const AssignExpr& node) const override;
         std::string visit(const NewExpr& node) const override;
+        std::string visit(const UnOpExpr& node) const override;
     };
 }
 
