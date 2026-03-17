@@ -126,6 +126,7 @@
 %type <std::shared_ptr<UnOpExpr>>                 unary_operation_expr
 %type <std::shared_ptr<BinOpExpr>>                binary_operation_expr
 %type <std::shared_ptr<Expr>>                     enclosed_expr
+%type <std::shared_ptr<Expr>>                     variable_expr
 
 
 // Precedence : defined in descending order
@@ -310,6 +311,7 @@ expression
   | unary_operation_expr      { $$ = $1; }
   | binary_operation_expr     { $$ = $1; }
   | enclosed_expr             { $$ = $1; }
+  | variable_expr             { $$ = $1; }
   ;
 
 literal
@@ -461,6 +463,12 @@ enclosed_expr
     }
   ;
 
+variable_expr
+  : OBJECT_IDENTIFIER
+    {
+      $$ = make_shared<VariableExpr>(@$, std::move($1));
+    }
+  ;
 
 %%
 

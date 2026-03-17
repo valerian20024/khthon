@@ -38,6 +38,7 @@ namespace Khthon {
     class NewExpr;
     class UnOpExpr;
     class BinOpExpr;
+    class VariableExpr;
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
@@ -139,6 +140,7 @@ namespace Khthon {
         virtual R visit(const NewExpr& node) const = 0;
         virtual R visit(const UnOpExpr& node) const = 0;
         virtual R visit(const BinOpExpr& node) const = 0;
+        virtual R visit(const VariableExpr& node) const = 0;
 
         virtual ~Visitor() = default;
     };
@@ -492,6 +494,24 @@ namespace Khthon {
     };
 
 
+    class VariableExpr : public Expr {
+    private:
+        std::string identifier_;
+    public:
+        VariableExpr(
+            Khthon::location l, 
+            std::string i
+        ) :
+            Expr(l),
+            identifier_(i)
+        {}
+
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+
+        const std::string& identifier() const { return identifier_; }
+    };
+
+
     /*================================================++
     ||               CONCRETE VISITORS                ||
     ++================================================*/
@@ -524,6 +544,7 @@ namespace Khthon {
         std::string visit(const NewExpr& node) const override;
         std::string visit(const UnOpExpr& node) const override;
         std::string visit(const BinOpExpr& node) const override;
+        std::string visit(const VariableExpr& node) const override;
     };
 }
 

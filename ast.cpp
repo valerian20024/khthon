@@ -174,4 +174,10 @@ namespace Khthon {
             + node.right()->accept(*this)
             + ")";
     }
+
+    string PrintVisitor::visit(const VariableExpr& node) const {
+        return node.identifier();
+    }
+
+
 }
