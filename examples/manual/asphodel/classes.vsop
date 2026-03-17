@@ -1,6 +1,2 @@
-class Khthon {
-    test() : Precedence {
-        (1 + 2) * 3;
-        3 * (1 + 2);
-    }
-}
+class One { }
+class Two { }

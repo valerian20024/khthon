@@ -464,7 +464,7 @@ namespace Khthon {
         const auto& operand() const { return operand_; }
     };
 
-    
+
     class BinOpExpr : public Expr {
     private:
         BinaryOperation operation_;
@@ -499,9 +499,10 @@ namespace Khthon {
     class PrintVisitor : public Visitor<std::string> {
     private:
         template<typename T> std::string printNodeList(const NodeList<T>& items) const {
-            std::string result;
+            std::string result = "";
             for (size_t i = 0; i < items.size(); ++i) {
-                if (i > 0) result += ", ";
+                if (i > 0) 
+                    result += ", ";
                 result += items[i]->accept(*this);
             }
             return result;

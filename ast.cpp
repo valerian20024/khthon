@@ -55,19 +55,10 @@ namespace Khthon {
         return "!> Unknown binary op";
     }
 
-
-
     string PrintVisitor::visit(const ProgramNode& node) const {
-        string result = "";
-        const auto& classes = node.classes();
-
-        // Chaining visit to each of the classes
-        for (size_t i = 0; i < classes.size(); ++i) {
-            if (i > 0)
-                result += ", \n";
-            result += classes[i]->accept(*this);
-        }
-        return result;
+        return "[" 
+            + printNodeList(node.classes())
+            + "]";
     }
 
     string PrintVisitor::visit(const ClassNode& node) const {
