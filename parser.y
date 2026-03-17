@@ -126,6 +126,7 @@
 %type <std::shared_ptr<AssignExpr>>               assign_expr
 %type <std::shared_ptr<NewExpr>>                  new_expr
 %type <std::shared_ptr<UnOpExpr>>                 unary_operation_expr
+%type <std::shared_ptr<BinOpExpr>>                binary_operation_expr
 
 
 
@@ -307,6 +308,7 @@ expression
   | assign_expr           { $$ = $1; }
   | new_expr              { $$ = $1; }
   | unary_operation_expr  { $$ = $1; }
+  | binary_operation_expr { $$ = $1; }
   ;
 
 literal
@@ -387,6 +389,19 @@ unary_operation_expr
       $$ = make_shared<UnOpExpr>(@$, UnaryOperation(UnaryOperation::Kind::ISNULL), std::move($2));
     }
   ;
+
+binary_operation_expr
+  : expression EQUAL expression
+    {
+      $$ = make_shared<BinOpExpr>(
+        @$, 
+        BinaryOperation(BinaryOperation::Kind::EQUAL), 
+        std::move($1), 
+        std::move($3)
+      );
+    }
+  ;
+
 
 %%
 

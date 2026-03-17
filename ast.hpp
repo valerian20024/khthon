@@ -50,7 +50,15 @@ namespace Khthon {
 
     // This class holds the possible types of VSOP: both builtin and user-defined
     struct Type {
-        enum class Kind { CUSTOM, INT32, BOOL, STRING, UNIT };  // todo: add a DEFAULT case as in UnaryOperation
+        // todo: add a DEFAULT case as in UnaryOperation
+        // todo: change DEFAULT to __DEFAULT__
+        enum class Kind { 
+            CUSTOM, 
+            INT32, 
+            BOOL, 
+            STRING, 
+            UNIT 
+        };  
 
         Kind kind = Kind::UNIT;
         std::string custom_name;
@@ -66,7 +74,12 @@ namespace Khthon {
 
     // Class for handling unary operations
     struct UnaryOperation {
-        enum class Kind { NOT, UMINUS, ISNULL, DEFAULT };  // default is not part of the language
+        enum class Kind { 
+            NOT, 
+            UMINUS, 
+            ISNULL, 
+            DEFAULT 
+        };  // default is not part of the language
 
         Kind kind = Kind::DEFAULT;
 
@@ -78,7 +91,18 @@ namespace Khthon {
 
     // Class for handling binary operations
     struct BinaryOperation {
-        enum class Kind { DEFAULT };  // default is not part of the language
+        enum class Kind { 
+            EQUAL, 
+            LOWER, 
+            LOWER_EQUAL, 
+            PLUS, 
+            MINUS, 
+            TIMES, 
+            DIVIDE, 
+            POWER, 
+            AND, 
+            DEFAULT 
+        };  // default is not part of the language
 
         Kind kind = Kind::DEFAULT;
 
