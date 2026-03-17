@@ -6,7 +6,6 @@ Notes about the whole file
 ? Is it safe to use a for each loop instead of size_t etc. in printNode methods 
 ?   of FieldNode and MethodNode
 
-todo change std::string to string
 
 */
 
@@ -64,7 +63,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const FieldNode& node) const {
-        std::string res = "Field(" 
+        string res = "Field(" 
             + node.name() 
             + ", " 
             + node.type().to_string() 
@@ -102,21 +101,21 @@ namespace Khthon {
         return node.value();
     }
 
-    std::string PrintVisitor::visit(const IntegerLiteralExpr& node) const {
+    string PrintVisitor::visit(const IntegerLiteralExpr& node) const {
         return std::to_string(node.value());
     }
 
-    std::string PrintVisitor::visit(const BoolLiteralExpr& node) const {
+    string PrintVisitor::visit(const BoolLiteralExpr& node) const {
         return node.value() ? "true" : "false";
     }
 
-    std::string PrintVisitor::visit(const UnitLiteralExpr& node) const {
+    string PrintVisitor::visit(const UnitLiteralExpr& node) const {
         (void) node;  /*placeholder to not trigger warning*/
         return "()";
     }
 
-    std::string PrintVisitor::visit(const IfExpr& node) const {
-        std::string s = "If(" 
+    string PrintVisitor::visit(const IfExpr& node) const {
+        string s = "If(" 
             + node.guardian()->accept(*this)
             + ", " 
             + node.consequent()->accept(*this);
@@ -128,7 +127,7 @@ namespace Khthon {
         return s;
     }
 
-    std::string PrintVisitor::visit(const AssignExpr& node) const {
+    string PrintVisitor::visit(const AssignExpr& node) const {
     return "Assign("
          + node.name()
          + ", "
@@ -136,13 +135,13 @@ namespace Khthon {
          + ")";
     }
 
-    std::string PrintVisitor::visit(const NewExpr& node) const {
+    string PrintVisitor::visit(const NewExpr& node) const {
         return "New("
             + node.identifier()
             + ")";
     }
 
-    std::string PrintVisitor::visit(const UnOpExpr& node) const {
+    string PrintVisitor::visit(const UnOpExpr& node) const {
         string op = node.operation().to_string();
 
         return "UnOp("
