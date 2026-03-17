@@ -123,7 +123,7 @@
 %type <std::shared_ptr<BoolLiteralExpr>>          boolean_literal
 %type <std::shared_ptr<UnitLiteralExpr>>          unit_literal
 %type <std::shared_ptr<IfExpr>>                   if_expr
-
+%type <std::shared_ptr<AssignExpr>>               assign_expr
 
 
 
@@ -301,21 +301,16 @@ expression_list
   ;
 
 expression
-  : literal 
-    {
-      $$ = $1;
-    }
-  | if_expr
-    {
-      $$ = $1;
-    }
+  : literal             { $$ = $1; }
+  | if_expr             { $$ = $1; }
+  | assign_expr         { $$ = $1; }
   ;
 
 literal
-  : string_literal    { $$ = $1; }
-  | integer_literal   { $$ = $1; }
-  | boolean_literal   { $$ = $1; }
-  | unit_literal      { $$ = $1; }
+  : string_literal      { $$ = $1; }
+  | integer_literal     { $$ = $1; }
+  | boolean_literal     { $$ = $1; }
+  | unit_literal        { $$ = $1; }
   ;
 
 string_literal 
@@ -332,10 +327,7 @@ boolean_literal
   ;
 
 unit_literal
-  : LEFT_PARENTHESIS RIGHT_PARENTHESIS 
-    {
-      $$ = std::make_shared<UnitLiteralExpr>(@$);
-    }
+  : LEFT_PARENTHESIS RIGHT_PARENTHESIS { $$ = std::make_shared<UnitLiteralExpr>(@$); }
 
 if_expr
   : IF expression THEN expression
@@ -346,6 +338,10 @@ if_expr
     {
       $$ = std::make_shared<IfExpr>(@$, std::move($2), std::move($4), std::move($6));
     }
+  ;
+
+assign_expr
+  : OBJECT_IDENTIFIER ASSIGN expression { $$ = make_shared<AssignExpr>(@$, std::move($1), std::move($3)); }
   ;
 
 %%
