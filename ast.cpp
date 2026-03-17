@@ -122,4 +122,10 @@ namespace Khthon {
          + node.value()->accept(*this)
          + ")";
     }
+
+    std::string PrintVisitor::visit(const NewExpr& node) const {
+        return "New("
+            + node.identifier()
+            + ")";
+    }
 }

@@ -4,6 +4,6 @@ class Cons extends List {
     init() : Cons {
         coucou <- "coucou";
         wow <- 34;
-        0
+        new List;
     }
 }

@@ -124,6 +124,7 @@
 %type <std::shared_ptr<UnitLiteralExpr>>          unit_literal
 %type <std::shared_ptr<IfExpr>>                   if_expr
 %type <std::shared_ptr<AssignExpr>>               assign_expr
+%type <std::shared_ptr<NewExpr>>                  new_expr
 
 
 
@@ -156,7 +157,7 @@
 program 
   : class_list 
     {
-      $$ = std::make_shared<ProgramNode>(@$, $1);  // std::move($1) seems to work as well
+      $$ = std::make_shared<ProgramNode>(@$, $1);
       driver.ast_root = $$;
     }
   ;
@@ -193,7 +194,7 @@ optional_extends
     }
   | EXTENDS TYPE_IDENTIFIER 
     {
-      $$ = $2;  // works with std::move as well
+      $$ = $2;
     }
   ;
 
@@ -233,7 +234,6 @@ field
     }
   ;
 
-/*todo missing BLOCK and FORMALS*/
 method
   : OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type block 
     {
@@ -304,6 +304,7 @@ expression
   : literal             { $$ = $1; }
   | if_expr             { $$ = $1; }
   | assign_expr         { $$ = $1; }
+  | new_expr            { $$ = $1; }
   ;
 
 literal
@@ -342,6 +343,10 @@ if_expr
 
 assign_expr
   : OBJECT_IDENTIFIER ASSIGN expression { $$ = make_shared<AssignExpr>(@$, std::move($1), std::move($3)); }
+  ;
+
+new_expr
+  : NEW TYPE_IDENTIFIER { $$ = make_shared<NewExpr>(@$, std::move($2)); }
   ;
 
 %%
