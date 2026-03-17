@@ -127,7 +127,8 @@
 %type <std::shared_ptr<BinOpExpr>>                binary_operation_expr
 %type <std::shared_ptr<Expr>>                     enclosed_expr
 %type <std::shared_ptr<Expr>>                     variable_expr
-//%type <std::shared_ptr<Expr>>                     call_expr
+%type <std::shared_ptr<Expr>>                     call_expr
+%type <std::vector<std::shared_ptr<Expr>>>        arg_list
 
 
 // Precedence : defined in descending order
@@ -313,6 +314,7 @@ expression
   | binary_operation_expr     { $$ = $1; }
   | enclosed_expr             { $$ = $1; }
   | variable_expr             { $$ = $1; }
+  | call_expr                 { $$ = $1; }
   ;
 
 literal
@@ -477,6 +479,33 @@ variable_expr
     }
   ;
 
+call_expr
+  : expression DOT OBJECT_IDENTIFIER LEFT_PARENTHESIS arg_list RIGHT_PARENTHESIS
+      {
+        $$ = std::make_shared<CallExpr>(@$, std::move($1), std::move($3), std::move($5));
+      }
+    | OBJECT_IDENTIFIER LEFT_PARENTHESIS arg_list RIGHT_PARENTHESIS
+      {
+        auto self = std::make_shared<SelfExpr>(@$);
+        $$ = std::make_shared<CallExpr>(@$, std::move(self), std::move($1), std::move($3));
+      }
+    ;
+
+arg_list
+    : %empty
+      { 
+
+      }
+    | expression
+      { 
+        $$.push_back(std::move($1)); 
+      }
+    | arg_list COMMA expression
+      { 
+        $$ = std::move($1); 
+        $$.push_back(std::move($3)); 
+      }
+    ;
 
 
 

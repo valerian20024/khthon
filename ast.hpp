@@ -528,7 +528,8 @@ namespace Khthon {
             std::shared_ptr<Expr> r,
             std::string m,
             std::vector<std::shared_ptr<Expr>> as
-        ) : Expr(l),
+        ) : 
+            Expr(l),
             receiver_(std::move(r)),
             method_name_(std::move(m)),
             arguments_(std::move(as))
