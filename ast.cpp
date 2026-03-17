@@ -172,11 +172,13 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const BinOpExpr& node) const {
-        string op = "WAW UNE OPERATION BINARIRE";
+        string op = node.operation().to_string();
 
-        (void) node;
-
-        return "TAS VU CEST BIAIRE";
+        return "BinOp("
+            + op
+            + ", "
+            + node.left()->accept(*this)
+            + ", "
+            + node.right()->accept(*this);
     }
-
 }
