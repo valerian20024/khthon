@@ -317,20 +317,36 @@ literal
   ;
 
 string_literal 
-  : STRING_LITERAL { $$ = std::make_shared<StringLiteralExpr>(@$, std::move($1)); }
+  : STRING_LITERAL 
+    { 
+      $$ = std::make_shared<StringLiteralExpr>(@$, std::move($1)); 
+    }
   ;
 
 integer_literal
-  : INTEGER_LITERAL { $$ = std::make_shared<IntegerLiteralExpr>(@$, std::move($1)); }
+  : INTEGER_LITERAL 
+    { 
+      $$ = std::make_shared<IntegerLiteralExpr>(@$, std::move($1)); 
+    }
   ;
 
 boolean_literal
-  : TRUE    { $$ = std::make_shared<BoolLiteralExpr>(@$, true);  }
-  | FALSE   { $$ = std::make_shared<BoolLiteralExpr>(@$, false); }
+  : TRUE    
+    { 
+      $$ = std::make_shared<BoolLiteralExpr>(@$, true);  
+    }
+  | FALSE   
+    { 
+      $$ = std::make_shared<BoolLiteralExpr>(@$, false); 
+    }
   ;
 
 unit_literal
-  : LEFT_PARENTHESIS RIGHT_PARENTHESIS { $$ = std::make_shared<UnitLiteralExpr>(@$); }
+  : LEFT_PARENTHESIS RIGHT_PARENTHESIS 
+    { 
+      $$ = std::make_shared<UnitLiteralExpr>(@$); 
+    }
+  ;
 
 if_expr
   : IF expression THEN expression
@@ -344,11 +360,17 @@ if_expr
   ;
 
 assign_expr
-  : OBJECT_IDENTIFIER ASSIGN expression { $$ = make_shared<AssignExpr>(@$, std::move($1), std::move($3)); }
+  : OBJECT_IDENTIFIER ASSIGN expression 
+    { 
+      $$ = make_shared<AssignExpr>(@$, std::move($1), std::move($3)); 
+    }
   ;
 
 new_expr
-  : NEW TYPE_IDENTIFIER { $$ = make_shared<NewExpr>(@$, std::move($2)); }
+  : NEW TYPE_IDENTIFIER 
+    { 
+      $$ = make_shared<NewExpr>(@$, std::move($2)); 
+    }
   ;
 
 unary_operation_expr
