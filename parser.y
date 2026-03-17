@@ -473,7 +473,7 @@ variable_expr
     }
   | SELF
     {
-      $$ = make_shared<VariableExpr>(@$, "self");
+      $$ = make_shared<SelfExpr>(@$);
     }
   ;
 
