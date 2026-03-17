@@ -121,8 +121,7 @@ namespace Khthon {
         return node.value() ? "true" : "false";
     }
 
-    string PrintVisitor::visit(const UnitLiteralExpr& node) const {
-        (void) node;  /*placeholder to not trigger warning*/
+    string PrintVisitor::visit(const UnitLiteralExpr&) const {
         return "()";
     }
 
@@ -140,11 +139,11 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const AssignExpr& node) const {
-    return "Assign("
-         + node.name()
-         + ", "
-         + node.value()->accept(*this)
-         + ")";
+        return "Assign("
+            + node.name()
+            + ", "
+            + node.value()->accept(*this)
+            + ")";
     }
 
     string PrintVisitor::visit(const NewExpr& node) const {
@@ -153,6 +152,7 @@ namespace Khthon {
             + ")";
     }
 
+    /*todo refactor without op */
     string PrintVisitor::visit(const UnOpExpr& node) const {
         string op = node.operation().to_string();
 
@@ -187,5 +187,10 @@ namespace Khthon {
             + ", ["
             + printNodeList(node.args())
             + "])";
+    }
+
+
+    string PrintVisitor::visit(const SelfExpr&) const {
+        return "self";
     }
 }
