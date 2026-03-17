@@ -131,16 +131,16 @@
 
 
 // Precedence : defined in descending order
-%right      ASSIGN                  // 9
-%left       AND                     // 8
-%right      NOT                     // 7
-%nonassoc   EQUAL LOWER_EQUAL LOWER // 6
-%left       PLUS MINUS              // 5
-%left       TIMES DIVIDE            // 4
-%right      ISNULL                  // 3
-%right      UNARY_MINUS             // 3
-%right      POWER                   // 2
-%left       DOT                     // 1
+// UMINUS (unary minus) is only defined to override precedence of binary minus
+%right      ASSIGN                    // 9
+%left       AND                       // 8
+%right      NOT                       // 7
+%nonassoc   LOWER LOWER_EQUAL EQUAL   // 6
+%left       PLUS MINUS                // 5
+%left       TIMES DIVIDE              // 4
+%right      ISNULL UMINUS             // 3 
+%right      POWER                     // 2
+%left       DOT                       // 1
 
 %nonassoc   THEN
 %nonassoc   ELSE
