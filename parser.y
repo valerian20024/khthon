@@ -463,10 +463,16 @@ enclosed_expr
     }
   ;
 
+/*todo  there must be something funny going on with the 'self' keyword*/
+/*todo  to be checked during semantics*/
 variable_expr
   : OBJECT_IDENTIFIER
     {
       $$ = make_shared<VariableExpr>(@$, std::move($1));
+    }
+  | SELF
+    {
+      $$ = make_shared<VariableExpr>(@$, "self");
     }
   ;
 
