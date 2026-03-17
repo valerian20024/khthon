@@ -127,6 +127,7 @@
 %type <std::shared_ptr<BinOpExpr>>                binary_operation_expr
 %type <std::shared_ptr<Expr>>                     enclosed_expr
 %type <std::shared_ptr<Expr>>                     variable_expr
+%type <std::shared_ptr<Expr>>                     call_expr
 
 
 // Precedence : defined in descending order
@@ -475,6 +476,9 @@ variable_expr
       $$ = make_shared<VariableExpr>(@$, "self");
     }
   ;
+
+
+
 
 %%
 

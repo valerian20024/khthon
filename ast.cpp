@@ -179,5 +179,13 @@ namespace Khthon {
         return node.identifier();
     }
 
-
+    string PrintVisitor::visit(const CallExpr& node) const {
+        return "Call("
+            + node.receiver()->accept(*this)
+            + ", "
+            + node.name()
+            + ", ["
+            + printNodeList(node.args())
+            + "])";
+    }
 }
