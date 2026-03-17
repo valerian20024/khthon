@@ -25,6 +25,15 @@ namespace Khthon {
         throw std::runtime_error("Unknown type kind in Type::to_string()");
     }
 
+    string UnaryOperation::to_string() const {
+        switch (kind) {
+            case UnaryOperation::Kind::NOT:         return "not";
+            case UnaryOperation::Kind::UMINUS:      return "-";
+            case UnaryOperation::Kind::ISNULL:      return "isnull";
+        }
+        return "unknown unary op";
+    }
+
     string PrintVisitor::visit(const ProgramNode& node) const {
         string result = "";
         const auto& classes = node.classes();

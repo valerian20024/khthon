@@ -63,6 +63,15 @@ namespace Khthon {
         std::string to_string() const;
     };
 
+    // Class for handling unary operations
+    class UnaryOperation {
+        enum class Kind { NOT, UMINUS, ISNULL };
+
+        Kind kind;
+
+        std::string to_string() const;
+    };
+
     /*================================================++
     ||               ABSTRACT CLASSES                 ||
     ++================================================*/
