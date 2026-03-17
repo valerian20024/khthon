@@ -17,6 +17,7 @@ Notes about the whole file
 ? Is it better to keep make_shared or use unique ptr?
 
 ? Visitor<std::string> or PrintVisitor in the methods arguments?
+todo put back const std::string before to_string methods of UnOp, BinOp, Type
 */
 
 namespace Khthon {

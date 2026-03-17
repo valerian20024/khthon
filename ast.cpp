@@ -6,6 +6,7 @@ Notes about the whole file
 ? Is it safe to use a for each loop instead of size_t etc. in printNode methods 
 ?   of FieldNode and MethodNode
 
+? should make a map for eg UnOp and BinOp : Kind -> str
 
 */
 
@@ -34,8 +35,27 @@ namespace Khthon {
             default: 
                 return "DEFAULT";
         }
-        return "unknown unary op";
+        return "!> Unknown unary op";
     }
+
+    string BinaryOperation::to_string() const {
+        switch (kind) {
+            case BinaryOperation::Kind::EQUAL:          return "=";
+            case BinaryOperation::Kind::LOWER:          return "<";
+            case BinaryOperation::Kind::LOWER_EQUAL:    return "<=";
+            case BinaryOperation::Kind::PLUS:           return "+";
+            case BinaryOperation::Kind::MINUS:          return "-";
+            case BinaryOperation::Kind::TIMES:          return "*";
+            case BinaryOperation::Kind::DIVIDE:         return "/";
+            case BinaryOperation::Kind::POWER:          return "^";
+            case BinaryOperation::Kind::AND:            return "and";
+            default: 
+                return "DEFAULT";
+        }
+        return "!> Unknown binary op";
+    }
+
+
 
     string PrintVisitor::visit(const ProgramNode& node) const {
         string result = "";
