@@ -152,4 +152,12 @@ namespace Khthon {
             + ")";
     }
 
+    string PrintVisitor::visit(const BinOpExpr& node) const {
+        string op = "WAW UNE OPERATION BINARIRE";
+
+        (void) node;
+
+        return "TAS VU CEST BIAIRE";
+    }
+
 }

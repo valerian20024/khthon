@@ -36,6 +36,7 @@ namespace Khthon {
     class AssignExpr;
     class NewExpr;
     class UnOpExpr;
+    class BinOpExpr;
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
@@ -75,6 +76,19 @@ namespace Khthon {
         std::string to_string() const;
     };
 
+    // Class for handling binary operations
+    struct BinaryOperation {
+        enum class Kind { DEFAULT };  // default is not part of the language
+
+        Kind kind = Kind::DEFAULT;
+
+        BinaryOperation() = default;
+        explicit BinaryOperation(Kind k) : kind(k) { }
+
+        std::string to_string() const;
+    };
+
+
     /*================================================++
     ||               ABSTRACT CLASSES                 ||
     ++================================================*/
@@ -96,6 +110,7 @@ namespace Khthon {
         virtual R visit(const AssignExpr& node) const = 0;
         virtual R visit(const NewExpr& node) const = 0;
         virtual R visit(const UnOpExpr& node) const = 0;
+        virtual R visit(const BinOpExpr& node) const = 0;
 
         virtual ~Visitor() = default;
     };
@@ -413,7 +428,32 @@ namespace Khthon {
         const UnaryOperation& operation() const { return operation_; }
         const auto& operand() const { return operand_; }
     };
-    
+
+    class BinOpExpr : public Expr {
+    private:
+        BinaryOperation operation_;
+        std::shared_ptr<Expr> left_;
+        std::shared_ptr<Expr> right_;
+
+    public:
+        BinOpExpr(
+            Khthon::location l,
+            BinaryOperation operation,
+            std::shared_ptr<Expr> left,
+            std::shared_ptr<Expr> right
+        ) :
+            Expr(l),
+            operation_(operation),
+            left_(left),
+            right_(right)
+        {}
+
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+        
+        const BinaryOperation& operation() const { return operation_; }
+        const auto& left() const { return left_; }
+        const auto& right() const { return right_; }
+    };
 
 
     /*================================================++
@@ -446,6 +486,7 @@ namespace Khthon {
         std::string visit(const AssignExpr& node) const override;
         std::string visit(const NewExpr& node) const override;
         std::string visit(const UnOpExpr& node) const override;
+        std::string visit(const BinOpExpr& node) const override;
     };
 }
 
