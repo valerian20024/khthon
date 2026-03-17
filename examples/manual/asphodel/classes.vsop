@@ -1,12 +1,5 @@
-class Cons extends List {
-    head : int32 <- "coucou";
-    tail : List <- 34;
-    init() : Cons {
-        "coucou" = "coucou";
-        34 + 7;
-        9 - "yeah";
-        9 and 9;
-        8^0;
-        4 <= "wow ca calque"
+class Khthon {
+    test() : Precedence {
+        (((3 + (4))));
     }
 }

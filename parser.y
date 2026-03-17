@@ -127,7 +127,7 @@
 %type <std::shared_ptr<NewExpr>>                  new_expr
 %type <std::shared_ptr<UnOpExpr>>                 unary_operation_expr
 %type <std::shared_ptr<BinOpExpr>>                binary_operation_expr
-
+%type <std::shared_ptr<Expr>>                     enclosed_expr
 
 
 // Precedence : defined in descending order
@@ -302,19 +302,20 @@ expression_list
   ;
 
 expression
-  : literal               { $$ = $1; }
-  | if_expr               { $$ = $1; }
-  | assign_expr           { $$ = $1; }
-  | new_expr              { $$ = $1; }
-  | unary_operation_expr  { $$ = $1; }
-  | binary_operation_expr { $$ = $1; }
+  : literal                   { $$ = $1; }
+  | if_expr                   { $$ = $1; }
+  | assign_expr               { $$ = $1; }
+  | new_expr                  { $$ = $1; }
+  | unary_operation_expr      { $$ = $1; }
+  | binary_operation_expr     { $$ = $1; }
+  | enclosed_expr             { $$ = $1; }
   ;
 
 literal
-  : string_literal        { $$ = $1; }
-  | integer_literal       { $$ = $1; }
-  | boolean_literal       { $$ = $1; }
-  | unit_literal          { $$ = $1; }
+  : string_literal            { $$ = $1; }
+  | integer_literal           { $$ = $1; }
+  | boolean_literal           { $$ = $1; }
+  | unit_literal              { $$ = $1; }
   ;
 
 string_literal 
@@ -449,6 +450,13 @@ binary_operation_expr
       $$ = make_shared<BinOpExpr>(
         @$, BinaryOperation(BinaryOperation::Kind::AND), std::move($1), std::move($3)
       );
+    }
+  ;
+
+enclosed_expr
+  : LEFT_PARENTHESIS expression RIGHT_PARENTHESIS
+    {
+      $$ = std::move($2);
     }
   ;
 
