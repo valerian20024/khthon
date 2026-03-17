@@ -5,5 +5,9 @@ class Cons extends List {
         coucou <- "coucou";
         wow <- 34;
         new List;
+        not "coucou";
+        isnull 34;
+        -4;
+
     }
 }

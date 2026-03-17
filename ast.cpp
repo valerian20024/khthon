@@ -6,6 +6,8 @@ Notes about the whole file
 ? Is it safe to use a for each loop instead of size_t etc. in printNode methods 
 ?   of FieldNode and MethodNode
 
+todo change std::string to string
+
 */
 
 using std::string;
@@ -141,8 +143,13 @@ namespace Khthon {
     }
 
     std::string PrintVisitor::visit(const UnOpExpr& node) const {
-        (void) node;
-        return "UNOPEXPR IS THERE";
+        string op = node.operation().to_string();
+
+        return "UnOp("
+            + op
+            + ", "
+            + node.operand()->accept(*this)
+            + ")";
     }
 
 }
