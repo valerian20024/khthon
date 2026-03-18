@@ -13,6 +13,8 @@
 #define YY_DECL Khthon::Parser::symbol_type yylex()
 YY_DECL;
 
+using namespace Khthon;
+
 namespace Khthon
 {
     /*
@@ -82,6 +84,10 @@ namespace Khthon
          * @brief Print all the tokens, that is the output of the lexical analysis
          */
         void print_tokens();
+
+
+        void error(const Khthon::location& l, const std::string& m);
+
 
         /**
          * @brief The result of the computation.

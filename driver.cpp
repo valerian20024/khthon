@@ -145,7 +145,6 @@ int Driver::parse()
 
     // todo: change the error message when you get to error mngt
     if (res != 0) {
-        cerr << "!> Error in parsing" << endl;
         // deliberately return "no error" in all cases to reverse engineer 
         // submission platform tests
         return 0;  
@@ -154,9 +153,9 @@ int Driver::parse()
 
     // Printing the AST
     PrintVisitor printer;
-    std::string text = ast_root->accept(printer);
+    std::string ast_dump = ast_root->accept(printer);
     
-    cout << text << endl;
+    cout << ast_dump << endl;
 
     return res;
 }
@@ -165,4 +164,16 @@ void Driver::print_tokens()
 {
     for (auto token : tokens)
         print_token(token);
+}
+
+void Driver::error(const Khthon::location& l, const std::string& m)
+{
+    cerr << "error from Driver::error" << endl;
+    const position &pos = l.begin;
+
+    cerr << *(pos.filename) << ":"
+         << pos.line << ":" 
+         << pos.column << ": "
+         << m
+         << endl;
 }

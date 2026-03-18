@@ -558,13 +558,8 @@ while_loop
     ||                  USER CODE                     ||
     ++================================================*/
 
-void Khthon::Parser::error(const location_type& l, const std::string& m)
+//void Khthon::Parser::error(const location_type& l, const std::string& m)
+void Khthon::Parser::error(const Khthon::location& l, const std::string& m)
 {
-    const position &pos = l.begin;
-
-    cerr << *(pos.filename) << ":"
-         << pos.line << ":" 
-         << pos.column << ": "
-         << m
-         << endl;
+    driver.error(l, m);
 }
