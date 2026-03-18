@@ -556,22 +556,22 @@ namespace Khthon {
     private:
         std::string name_;
         Type type_;
-        std::optional<std::shared_ptr<Expr>> initializer_;
         std::shared_ptr<Expr> scope_;
+        std::optional<std::shared_ptr<Expr>> initializer_;
 
     public:
         LetExpr(
             Khthon::location l,
             std::string n,
             Type t,
-            std::shared_ptr<Expr> i,
-            std::shared_ptr<Expr> s
+            std::shared_ptr<Expr> s,
+            std::optional<std::shared_ptr<Expr>> i = std::nullopt
         ) : 
             Expr(l),
             name_(std::move(n)),
             type_(std::move(t)),
-            initializer_(std::move(i)),
-            scope_(std::move(s)) 
+            scope_(std::move(s)),
+            initializer_(std::move(i))
         {}
 
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }

@@ -129,6 +129,7 @@
 %type <std::shared_ptr<Expr>>                     variable_expr
 %type <std::shared_ptr<Expr>>                     call_expr
 %type <std::vector<std::shared_ptr<Expr>>>        arg_list
+%type <std::shared_ptr<Expr>>                     let_expr
 
 
 // Precedence : defined in descending order
@@ -315,6 +316,7 @@ expression
   | enclosed_expr             { $$ = $1; }
   | variable_expr             { $$ = $1; }
   | call_expr                 { $$ = $1; }
+  | let_expr                  { $$ = $1; }
   ;
 
 literal
@@ -507,7 +509,27 @@ arg_list
       }
     ;
 
-
+let_expr
+  : LET OBJECT_IDENTIFIER COLON type IN expression
+    {
+      $$ = std::make_shared<LetExpr>(
+        @$, 
+        std::move($2), 
+        $4, 
+        std::move($6)
+      );
+    }
+  | LET OBJECT_IDENTIFIER COLON type ASSIGN expression IN expression
+    {
+      $$ = std::make_shared<LetExpr>(
+        @$, 
+        std::move($2), 
+        $4, 
+        std::move($6), 
+        std::move($8)
+      );
+    }
+  ;
 
 %%
 
