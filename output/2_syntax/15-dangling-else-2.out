@@ -1,0 +1,2 @@
+[Class(Test, Object, [],
+   [Method(f, [c1 : bool, c2 : bool], int32, [If(c1, [If(c2, 0)], 1)])])]

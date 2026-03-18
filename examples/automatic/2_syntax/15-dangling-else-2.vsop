@@ -1,0 +1,9 @@
+class Test {
+    f(c1 : bool, c2 : bool) : int32 {
+        if c1 then {
+            if c2 then 0
+            // Missing else branch to be semantically valid, but syntax is OK
+        } else
+            1
+    }
+}
