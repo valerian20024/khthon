@@ -138,10 +138,15 @@
 // UMINUS (unary minus) is only defined to override precedence of binary minus
 %right      ASSIGN                    // 9
 
-%nonassoc LET IN                      // Solving conflicts with LET IN : binary operators
+%nonassoc   LET IN                    // Solving conflicts with LET IN : binary operators
                                       // should have higher precedence than declaring variables
 
-%nonassoc WHILE DO                    // Completely put arbitrarily, certainly wrong.
+%nonassoc   WHILE DO                  // Completely put arbitrarily, certainly wrong.
+
+%nonassoc   IF
+%nonassoc   THEN                      //? What does it mean to have highest precedence
+%nonassoc   ELSE                      //? Should it be %precedence instead?
+
 
 %left       AND                       // 8
 %right      NOT                       // 7
@@ -154,9 +159,6 @@
 
 %right      POWER                     // 2
 %left       DOT                       // 1
-
-%nonassoc   THEN                      //? What does it mean to have highest precedence
-%nonassoc   ELSE                      //? Should it be %precedence instead?
 
 
 
