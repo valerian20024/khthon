@@ -1,0 +1,7 @@
+(* A comment here is OK *)
+class Test {
+    f(n : int32) : int32 {
+        // Mean nothing, but syntax is OK
+        while true do 0
+    }
+}

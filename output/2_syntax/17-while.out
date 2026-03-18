@@ -1,0 +1,1 @@
+[Class(Test, Object, [], [Method(f, [n : int32], int32, [While(true, 0)])])]
