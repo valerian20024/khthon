@@ -1,6 +1,7 @@
 {
     "makefile.configureOnOpen": true,
     "files.associations": {
-        "*.vsop": "java"
+        "*.vsop": "java",
+        "*.out": "diff"
     }
 }
