@@ -135,6 +135,10 @@
 // Precedence : defined in descending order
 // UMINUS (unary minus) is only defined to override precedence of binary minus
 %right      ASSIGN                    // 9
+
+%nonassoc LET IN                      // Solving conflicts with LET IN : binary operators
+                                      // should have higher precedence than declaring variables
+
 %left       AND                       // 8
 %right      NOT                       // 7
 %nonassoc   LOWER LOWER_EQUAL EQUAL   // 6
@@ -149,6 +153,9 @@
 
 %nonassoc   THEN
 %nonassoc   ELSE
+
+
+
 
 
 %%
