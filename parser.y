@@ -296,16 +296,12 @@ block
     }
   ;
 
-
+/*todo add the rule expression SEMICOLON and send a descriptive error*/
 expression_list
   : expression SEMICOLON expression_list
     {
       $$ = std::move($3);
       $$.insert($$.begin(), std::move($1));  // prepending the new expression
-    }
-  | expression SEMICOLON
-    {
-      $$.push_back(std::move($1));
     }
   | expression 
     {
