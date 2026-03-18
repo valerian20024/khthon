@@ -206,4 +206,11 @@ namespace Khthon {
         return s;
     }
 
+    string PrintVisitor::visit(const WhileExpr& node) const {
+        return "While("
+            + node.condition()->accept(*this)
+            + ", "
+            + node.body()->accept(*this)
+            + ")";
+    }
 }

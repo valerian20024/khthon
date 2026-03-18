@@ -48,6 +48,7 @@
     
     using namespace std;
     using namespace Khthon;
+
 }
 
     /*================================================++
@@ -170,6 +171,7 @@
 program 
   : class_list 
     {
+      (void) yynerrs_;  // this avoids to trigger a warning saying it's not used.
       $$ = std::make_shared<ProgramNode>(@$, $1);
       driver.ast_root = $$;
     }

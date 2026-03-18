@@ -19,7 +19,6 @@ Notes about the whole file
 ? Visitor<std::string> or PrintVisitor in the methods arguments?
 todo put back const std::string before to_string methods of UnOp, BinOp, Type
 
-todo try to wrap with "[" "]" directly inside printNodeList
 
 */
 
@@ -45,6 +44,7 @@ namespace Khthon {
     class CallExpr;
     class SelfExpr;
     class LetExpr;
+    class WhileExpr;
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
@@ -150,6 +150,7 @@ namespace Khthon {
         virtual R visit(const CallExpr& node) const = 0;
         virtual R visit(const SelfExpr& node) const = 0;
         virtual R visit(const LetExpr& node) const = 0;
+        virtual R visit(const WhileExpr& node) const = 0;
 
         virtual ~Visitor() = default;
     };
@@ -586,6 +587,28 @@ namespace Khthon {
         const auto& scope() const { return scope_; }
     };
 
+    class WhileExpr : public Expr {
+    private:
+        std::shared_ptr<Expr> condition_;
+        std::shared_ptr<Expr> body_;
+
+    public:
+        WhileExpr(
+            Khthon::location l,
+            std::shared_ptr<Expr> c,
+            std::shared_ptr<Expr> b
+        ) :
+            Expr(l),
+            condition_(c),
+            body_(b)
+        {}
+
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+
+        const auto& condition() const { return condition_; }
+        const auto& body() const { return body_; }        
+    };
+
 
     /*================================================++
     ||               CONCRETE VISITORS                ||
@@ -623,6 +646,7 @@ namespace Khthon {
         std::string visit(const CallExpr& node) const override;
         std::string visit(const SelfExpr&) const override;
         std::string visit(const LetExpr&) const override;
+        std::string visit(const WhileExpr&) const override;
     };
 }
 
