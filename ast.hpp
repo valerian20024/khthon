@@ -18,6 +18,9 @@ Notes about the whole file
 
 ? Visitor<std::string> or PrintVisitor in the methods arguments?
 todo put back const std::string before to_string methods of UnOp, BinOp, Type
+
+todo try to wrap with "[" "]" directly inside printNodeList
+
 */
 
 namespace Khthon {

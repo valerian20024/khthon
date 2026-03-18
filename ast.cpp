@@ -94,9 +94,9 @@ namespace Khthon {
             + printNodeList(node.formals())
             + "], "
             + node.type().to_string()
-            + ", \n\t["
+            + ", \n\t"
             + node.body()->accept(*this)
-            + "])";
+            + ")";
     }
 
     string PrintVisitor::visit(const FormalNode& node) const {
@@ -106,7 +106,9 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const BlockExpr& node) const {
-        return printNodeList(node.expressions());
+        return "["
+            + printNodeList(node.expressions())
+            + "]";
     }
 
     string PrintVisitor::visit(const StringLiteralExpr& node) const {
