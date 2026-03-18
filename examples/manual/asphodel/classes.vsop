@@ -1,7 +1,6 @@
-class Test extends SomeParent {
+class Test {
     method(c : bool) : int32 {
-        let x : int32 <- 42 + 69 in 2 + 3;
-
-        let y : List in 2 + 3;
+        1;
+        { 1; }
     }
 }

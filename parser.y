@@ -151,8 +151,8 @@
 %right      POWER                     // 2
 %left       DOT                       // 1
 
-%nonassoc   THEN
-%nonassoc   ELSE
+%nonassoc   THEN                      //? What does it mean to have highest precedence
+%nonassoc   ELSE                      //? Should it be %precedence instead?
 
 
 
@@ -324,6 +324,7 @@ expression
   | variable_expr             { $$ = $1; }
   | call_expr                 { $$ = $1; }
   | let_expr                  { $$ = $1; }
+  | block                     { $$ = $1; }
   ;
 
 literal
