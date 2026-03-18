@@ -1,5 +1,5 @@
 class Test extends SomeParent {
     method(c : bool) : int32 {
-        xs.func(a, b);
+        func(a, b);
     }
 }

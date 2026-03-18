@@ -41,6 +41,7 @@ namespace Khthon {
     class VariableExpr;
     class CallExpr;
     class SelfExpr;
+    class LetExpr;
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
     
@@ -145,6 +146,7 @@ namespace Khthon {
         virtual R visit(const VariableExpr& node) const = 0;
         virtual R visit(const CallExpr& node) const = 0;
         virtual R visit(const SelfExpr& node) const = 0;
+        virtual R visit(const LetExpr& node) const = 0;
 
         virtual ~Visitor() = default;
     };
@@ -550,6 +552,37 @@ namespace Khthon {
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
     };
 
+    class LetExpr : public Expr {
+    private:
+        std::string name_;
+        Type type_;
+        std::optional<std::shared_ptr<Expr>> initializer_;
+        std::shared_ptr<Expr> scope_;
+
+    public:
+        LetExpr(
+            Khthon::location l,
+            std::string n,
+            Type t,
+            std::shared_ptr<Expr> i,
+            std::shared_ptr<Expr> s
+        ) : 
+            Expr(l),
+            name_(std::move(n)),
+            type_(std::move(t)),
+            initializer_(std::move(i)),
+            scope_(std::move(s)) 
+        {}
+
+        std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+
+        const std::string& name() const { return name_; }
+        const Type& type() const { return type_; }
+        bool has_initializer() const { return initializer_.has_value(); }
+        const auto& initializer() const { return initializer_; }
+        const auto& scope() const { return scope_; }
+    };
+
 
     /*================================================++
     ||               CONCRETE VISITORS                ||
@@ -586,6 +619,7 @@ namespace Khthon {
         std::string visit(const VariableExpr& node) const override;
         std::string visit(const CallExpr& node) const override;
         std::string visit(const SelfExpr&) const override;
+        std::string visit(const LetExpr&) const override;
     };
 }
 

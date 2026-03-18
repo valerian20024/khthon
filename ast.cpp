@@ -189,8 +189,23 @@ namespace Khthon {
             + "])";
     }
 
-
     string PrintVisitor::visit(const SelfExpr&) const {
         return "self";
     }
+
+    string PrintVisitor::visit(const LetExpr& node) const {
+        string s = "Let("
+            + node.name()
+            + ", "
+            + node.type().to_string();
+
+        if (node.has_initializer())
+            s += ", " + node.initializer().value()->accept(*this);
+
+        s += ", "
+            + node.scope()->accept(*this)
+            + ")";
+        return s;
+    }
+
 }
