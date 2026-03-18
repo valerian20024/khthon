@@ -1,0 +1,17 @@
+[Class(Main, Object, [],
+   [Method(factorial, [n : int32], int32,
+      [If(BinOp(<, n, 2), 1,
+         BinOp(*, n, Call(self, factorial, [BinOp(-, n, 1)])))]),
+    Method(main, [], int32,
+      [Call(self, print, ["Enter an integer greater-than or equal to 0: "]),
+       Let(n, int32, Call(self, inputInt32, []),
+         If(BinOp(<, n, 0),
+           [Call(self, print,
+              ["Error: number must be greater-than or equal to 0.\x0a"]),
+            UnOp(-, 1)],
+           [Call(
+              Call(Call(self, print, ["The factorial of "]), printInt32, [n]),
+              print, [" is "]),
+            Call(Call(self, printInt32, [Call(self, factorial, [n])]), print,
+              ["\x0a"]),
+            0]))])])]

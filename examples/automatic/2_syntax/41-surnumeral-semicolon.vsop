@@ -1,0 +1,6 @@
+class C {
+    i : int32 <- {
+        print("Initializing i");
+        42; // A block should not end with a `;`
+    };
+}
