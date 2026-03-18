@@ -168,7 +168,6 @@ void Driver::print_tokens()
 
 void Driver::error(const Khthon::location& l, const std::string& m)
 {
-    cerr << "error from Driver::error" << endl;
     const position &pos = l.begin;
 
     cerr << *(pos.filename) << ":"

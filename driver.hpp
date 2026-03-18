@@ -85,9 +85,10 @@ namespace Khthon
          */
         void print_tokens();
 
-
+        /**
+         * @brief Prints syntax errors.
+         */
         void error(const Khthon::location& l, const std::string& m);
-
 
         /**
          * @brief The result of the computation.
