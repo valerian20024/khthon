@@ -56,9 +56,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const ProgramNode& node) const {
-        return "[" 
-            + printNodeList(node.classes())
-            + "]";
+        return printNodeList(node.classes());
     }
 
     string PrintVisitor::visit(const ClassNode& node) const {
@@ -66,11 +64,11 @@ namespace Khthon {
             + node.name() 
             + ", " 
             + node.parent() 
-            + ", \n\t[" 
+            + ", \n\t" 
             + printNodeList(node.fields()) 
-            + "], \n\t[" 
+            + ", \n\t" 
             + printNodeList(node.methods()) 
-            + "])";
+            + ")";
     }
 
     string PrintVisitor::visit(const FieldNode& node) const {
@@ -90,9 +88,9 @@ namespace Khthon {
     string PrintVisitor::visit(const MethodNode& node) const {
         return "Method("
             + node.name()
-            + ", ["
+            + ", "
             + printNodeList(node.formals())
-            + "], "
+            + ", "
             + node.type().to_string()
             + ", \n\t"
             + node.body()->accept(*this)
@@ -106,9 +104,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const BlockExpr& node) const {
-        return "["
-            + printNodeList(node.expressions())
-            + "]";
+        return printNodeList(node.expressions());
     }
 
     string PrintVisitor::visit(const StringLiteralExpr& node) const {
@@ -186,9 +182,9 @@ namespace Khthon {
             + node.receiver()->accept(*this)
             + ", "
             + node.name()
-            + ", ["
+            + ", "
             + printNodeList(node.args())
-            + "])";
+            + ")";
     }
 
     string PrintVisitor::visit(const SelfExpr&) const {

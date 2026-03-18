@@ -594,13 +594,13 @@ namespace Khthon {
     class PrintVisitor : public Visitor<std::string> {
     private:
         template<typename T> std::string printNodeList(const NodeList<T>& items) const {
-            std::string result = "";
+            std::string result = "[";
             for (size_t i = 0; i < items.size(); ++i) {
                 if (i > 0) 
                     result += ", ";
                 result += items[i]->accept(*this);
             }
-            return result;
+            return result + "]";
         }
 
     public:
