@@ -1,5 +1,7 @@
 class Test extends SomeParent {
     method(c : bool) : int32 {
-        func(a, b);
+        let x : int32 <- 42 in scope;
+
+        let y : List in scope2;
     }
 }

@@ -515,7 +515,7 @@ let_expr
       $$ = std::make_shared<LetExpr>(
         @$, 
         std::move($2), 
-        $4, 
+        $4,
         std::move($6)
       );
     }
@@ -525,8 +525,8 @@ let_expr
         @$, 
         std::move($2), 
         $4, 
-        std::move($6), 
-        std::move($8)
+        std::move($8), 
+        std::move($6)
       );
     }
   ;
