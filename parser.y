@@ -131,6 +131,7 @@
 %type <std::shared_ptr<Expr>>                     call_expr
 %type <std::vector<std::shared_ptr<Expr>>>        arg_list
 %type <std::shared_ptr<Expr>>                     let_expr
+%type <std::shared_ptr<Expr>>                     while_loop
 
 
 // Precedence : defined in descending order
@@ -139,6 +140,8 @@
 
 %nonassoc LET IN                      // Solving conflicts with LET IN : binary operators
                                       // should have higher precedence than declaring variables
+
+%nonassoc WHILE DO                    // Completely put arbitrarily, certainly wrong.
 
 %left       AND                       // 8
 %right      NOT                       // 7
@@ -323,6 +326,7 @@ expression
   | call_expr                 { $$ = $1; }
   | let_expr                  { $$ = $1; }
   | block                     { $$ = $1; }
+  | while_loop                { $$ = $1; }
   ;
 
 literal
@@ -534,6 +538,13 @@ let_expr
         std::move($8), 
         std::move($6)
       );
+    }
+  ;
+
+while_loop
+  : WHILE expression DO expression
+    {
+      $$ = make_shared<WhileExpr>(@$, std::move($2), std::move($4));
     }
   ;
 
