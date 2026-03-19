@@ -143,7 +143,6 @@ int Driver::parse()
 
     delete parser;
 
-    // todo: change the error message when you get to error mngt
     if (res != 0) {
         // deliberately return "no error" in all cases to reverse engineer 
         // submission platform tests

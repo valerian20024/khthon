@@ -51,7 +51,8 @@
 
 }
 
-%define parse.error detailed
+// Allowing parser to tell which character it was expecting
+//%define parse.error detailed
 
     /*================================================++
     ||                 DEFINITIONS                    ||
@@ -200,11 +201,22 @@ class
   : CLASS TYPE_IDENTIFIER optional_extends class_body 
     {
       $$ = std::make_shared<ClassNode>(
-          @$,
-          $2,
-          $3,
-          std::move($4.fields),
-          std::move($4.methods)
+        @$,
+        $2,
+        $3,
+        std::move($4.fields),
+        std::move($4.methods)
+      );
+    }
+  | CLASS OBJECT_IDENTIFIER optional_extends class_body
+    {
+      error(@2, "class names cannot start with a lowercase letter");
+      $$ = std::make_shared<ClassNode>(  // default class to not have a sigsegv
+        @$,
+        $2,
+        $3,
+        std::move($4.fields),
+        std::move($4.methods)
       );
     }
   ;
@@ -253,6 +265,20 @@ field
   | OBJECT_IDENTIFIER COLON type ASSIGN expression SEMICOLON
     {
       $$ = make_shared<FieldNode>(@$, $1, $3, $5);
+    }
+  | OBJECT_IDENTIFIER ASSIGN expression SEMICOLON
+    {
+      error(@2, "field misses a type definition. Type inference is not yet available.");
+      
+      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $3);  // dummy
+    }
+  | TYPE_IDENTIFIER COLON type SEMICOLON
+    {
+
+    }
+  | TYPE_IDENTIFIER ASSIGN expression SEMICOLON
+    {
+      
     }
   ;
 
@@ -311,6 +337,11 @@ expression_list
     {
       $$ = std::move($3);
       $$.insert($$.begin(), std::move($1));  // prepending the new expression
+    }
+  | expression SEMICOLON 
+    {
+      error(@2, "last expression must not include ';'");
+      $$.push_back(std::move($1));
     }
   | expression 
     {
