@@ -54,6 +54,7 @@
      */ 
     #define ERROR(loc, msg)       driver.syntaxError(loc, msg)
     #define WARNING(loc, msg)     driver.syntaxWarning(loc, msg)
+    #define NOTE(loc, msg)        driver.syntaxNote(loc, msg)
 
     using namespace std;
     using namespace Khthon;

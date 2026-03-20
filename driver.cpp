@@ -205,20 +205,29 @@ void Driver::report(std::shared_ptr<Diagnostic> d) {
     diagnostics_.push_back(std::move(d));
 }
 
-void Driver::syntaxError(const location& l, const std::string& reason) {
-    report(std::make_shared<SyntaxDiagnostic>(l, ErrorLevel::Error, reason));
+void Driver::lexicalNote(const location& l, const std::string& reason) {
+    report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Note, reason));
 }
 
 void Driver::lexicalWarning(const location& l, const std::string& reason) {
-    report(std::make_shared<SyntaxDiagnostic>(l, ErrorLevel::Warning, reason));
+    report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Warning, reason));
+}
+
+void Driver::lexicalError(const location& l, const std::string& reason) {
+    report(make_shared<LexicalDiagnostic>(l, ErrorLevel::Error, reason));
+}
+
+void Driver::syntaxNote(const location& l, const std::string& reason) {
+    report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Note, reason));
 }
 
 void Driver::syntaxWarning(const location& l, const std::string& reason) {
-    report(std::make_shared<SyntaxDiagnostic>(l, ErrorLevel::Warning, reason));
+    report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Warning, reason));
 }
 
-
-
+void Driver::syntaxError(const location& l, const std::string& reason) {
+    report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Error, reason));
+}
 
 //todo sort the errors by line and columns
 void Driver::printDiagnostics() const {
