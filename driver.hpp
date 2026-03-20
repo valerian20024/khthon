@@ -17,6 +17,27 @@ using namespace Khthon;
 
 namespace Khthon
 {
+
+    enum class ErrorLevel {
+        Error,
+        Warning,
+        Note
+    };
+
+
+    struct CompilerError {
+        location loc_;
+
+        CompilerError(location l) : loc_(std::move(l)) {}
+        virtual ~CompilerError() = default;
+
+        virtual ErrorLevel level() const = 0;
+        virtual std::string print() const = 0;
+
+        const location& loc() const { return loc_; }
+    };
+
+
     /*
     The Driver class acts as a central coordinator. 
     It manages the input file, stores state (like variables for the calculator),
