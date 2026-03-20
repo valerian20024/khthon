@@ -1,4 +1,4 @@
-%skeleton "lalr1.cc" // -*- C++ -*-
+%skeleton "lalr1.cc"
 %language "c++"
 %require "3.7.5"
 %locations
@@ -24,7 +24,9 @@
 // Add some assertions.
 %define parse.assert
 
-// C++ code put inside parser.hpp
+// Allowing Bison to tell which character it was expecting
+//%define parse.error detailed
+
 %code requires {
     #include <string>
     #include <memory>
@@ -41,18 +43,21 @@
 // Add an argument to the parser constructor
 %parse-param {Khthon::Driver &driver}
 
-// C++ code put inside parser.cpp
 %code {
     #include "driver.hpp"
     #include "ast.hpp"
     
+    /** Not perfect but rules have access to driver whereas in %code
+     ** blocks it's harder to follow Bison's architecture. This is a 
+     ** clean in-between solution to allow to write less code in the 
+     ** rules.
+     */ 
+    #define ERROR(loc, msg)       driver.syntaxError(loc, msg)
+    #define WARNING(loc, msg)     driver.syntaxWarning(loc, msg)
+
     using namespace std;
     using namespace Khthon;
-
 }
-
-// Allowing parser to tell which character it was expecting
-//%define parse.error detailed
 
     /*================================================++
     ||                 DEFINITIONS                    ||
@@ -99,7 +104,7 @@
     ASSIGN                          "<-"
 ;
 
-// For some symbols, need to store a value
+// Some tokens needs to hold a semantic value
 %token <std::string>  TYPE_IDENTIFIER     "type-identifier"
 %token <std::string>  OBJECT_IDENTIFIER   "object-identifier"
 %token <std::string>  STRING_LITERAL      "string-literal"
@@ -137,42 +142,32 @@
 %type <std::shared_ptr<Expr>>                     while_loop
 
 
-// Precedence : defined in descending order
-// UMINUS (unary minus) is only defined to override precedence of binary minus
+/* 
+UMINUS (unary minus) is only defined to override precedence of binary minus
+?  should have higher precedence than declaring variables 
+?  What does it mean to have highest precedence
+?  Should %nonassoc be %precedence instead?
+*/
 %right      ASSIGN                    // 9
-
-%nonassoc   LET IN                    // Solving conflicts with LET IN : binary operators
-                                      // should have higher precedence than declaring variables
-
-%nonassoc   WHILE DO                  // Completely put arbitrarily, certainly wrong.
-
+%nonassoc   LET IN                    
+%nonassoc   WHILE DO
 %nonassoc   IF
-%nonassoc   THEN                      //? What does it mean to have highest precedence
-%nonassoc   ELSE                      //? Should it be %precedence instead?
-
-
+%nonassoc   THEN                      
+%nonassoc   ELSE                      
 %left       AND                       // 8
 %right      NOT                       // 7
 %nonassoc   LOWER LOWER_EQUAL EQUAL   // 6
 %left       PLUS MINUS                // 5
 %left       TIMES DIVIDE              // 4
 %right      ISNULL UMINUS             // 3 
-
-%nonassoc   IF_EXPR
-
 %right      POWER                     // 2
 %left       DOT                       // 1
-
-
-
-
 
 %%
 
     /*================================================++
     ||                 GRAMMAR RULE                   ||
     ++================================================*/
-
 
 %start program;
 
@@ -210,8 +205,8 @@ class
     }
   | CLASS OBJECT_IDENTIFIER optional_extends class_body
     {
-      driver.syntaxError(@2, "class names cannot start with a lowercase letter");
-      $$ = std::make_shared<ClassNode>(  // default class to not have a sigsegv
+      ERROR(@2, "class names cannot start with a lowercase letter");
+      $$ = std::make_shared<ClassNode>(  // dummy
         @$,
         $2,
         $3,
@@ -224,7 +219,7 @@ class
 optional_extends
   : %empty 
     {
-      $$ = "Object";  // Default parent of any class
+      $$ = "Object";
     }
   | EXTENDS TYPE_IDENTIFIER 
     {
@@ -242,7 +237,6 @@ class_body
 class_content
   : %empty
     {
-      // Default-constructed => fields and methods of the class are set to "" 
       $$ = Khthon::ClassMembers();
     }
   | class_content field
@@ -268,17 +262,17 @@ field
     }
   | OBJECT_IDENTIFIER ASSIGN expression SEMICOLON
     {
-      driver.syntaxError(@2, "field misses a type definition. Type inference is not yet available.");
+      ERROR(@2, "field misses a type definition. Type inference is not yet available.");
       $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $3);  // dummy
     }
   | TYPE_IDENTIFIER COLON type SEMICOLON
     {
-      driver.syntaxError(@1, "field identifier must start with a lowercase letter");
+      ERROR(@1, "field identifier must start with a lowercase letter");
       $$ = make_shared<FieldNode>(@$, $1, Khthon::Type());  // dummy
     }
   | TYPE_IDENTIFIER COLON type ASSIGN expression SEMICOLON
     {
-      driver.syntaxError(@1, "field identifier must start with a lowercase letter.");
+      ERROR(@1, "field identifier must start with a lowercase letter.");
       $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $5);  // dummy      
     }
   ;
@@ -340,7 +334,7 @@ expression_list
     }
   | expression SEMICOLON 
     {
-      driver.syntaxWarning(@2, "last expression must not include ';'");
+      WARNING(@2, "last expression must not include ';'");
       $$.push_back(std::move($1));
     }
   | expression 
@@ -513,8 +507,10 @@ enclosed_expr
     }
   ;
 
-/*todo  there must be something funny going on with the 'self' keyword*/
-/*todo  to be checked during semantics*/
+/*
+todo  there must be something funny going on with the 'self' keyword
+todo    -> to be checked during semantics
+*/
 variable_expr
   : OBJECT_IDENTIFIER
     {
@@ -588,7 +584,6 @@ while_loop
     /*================================================++
     ||                  USER CODE                     ||
     ++================================================*/
-
 
 // Useless for now but is declared by Bison.
 void Khthon::Parser::error(const Khthon::location& l, const std::string& m) {
