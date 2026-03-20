@@ -593,5 +593,5 @@ while_loop
 //void Khthon::Parser::error(const location_type& l, const std::string& m)
 void Khthon::Parser::error(const Khthon::location& l, const std::string& m)
 {
-    driver.error(l, m);
+    driver.syntaxError(l, m);
 }

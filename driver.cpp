@@ -163,6 +163,7 @@ void Driver::print_tokens()
         print_token(token);
 }
 
+//! old method for reporting errors
 void Driver::error(const Khthon::location& l, const std::string& m)
 {
     const position &pos = l.begin;
@@ -196,7 +197,6 @@ void Driver::report(std::shared_ptr<CompilerError> diagnostic) {
 
     diagnostics_.push_back(std::move(diagnostic));
 }
-
 
 void Driver::syntaxError(const location& l, const std::string& reason) {
     report(std::make_shared<SyntaxError>(l, reason));
