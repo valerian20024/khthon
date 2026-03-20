@@ -183,7 +183,9 @@ string LexicalDiagnostic::print() const {
         + ":"
         + to_string(pos.column) 
         + ": lexical error: " 
-        + reason;
+        + "\n"
+        + header()
+        + bold(reason);
 }
 
 string SyntaxDiagnostic::print() const {
@@ -196,7 +198,7 @@ string SyntaxDiagnostic::print() const {
         + to_string(pos.column)
         + ": syntax error: " 
         + "\n"
-        + as_error("ERROR: ")
+        + header()
         + bold(reason);
 }
 
@@ -235,12 +237,32 @@ void Driver::syntaxError(const location& l, const std::string& reason) {
 
 //todo sort the errors by line and columns
 void Driver::printDiagnostics() const {
-    for (const auto& e : diagnostics_) {
-        cerr << e->print() << endl;
+    for (const auto& d : diagnostics_) {
+        cerr << d->print() << endl;
     }
 
     if (error_count_ > 0)
         cerr << "There are " << error_count_ << " errors." << endl;
     if (warning_count_ > 0)
         cerr << "There are " << warning_count_ << " warnings." << endl;
+}
+
+
+const string Diagnostic::header() const {
+    string header = "";
+
+    switch (level_) {
+    case ErrorLevel::Error:
+        header = as_error("Error: ");
+        break;
+    case ErrorLevel::Warning:
+        header = as_warning("Warning: ");
+        break;
+    case ErrorLevel::Note:
+        header = as_note("Note: ");        
+    default:
+        break;
+    }
+
+    return header;
 }

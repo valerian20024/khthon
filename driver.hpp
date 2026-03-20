@@ -42,6 +42,7 @@ namespace Khthon
         
         virtual std::string print() const = 0;
 
+        const std::string header() const;
         const location& loc() const { return loc_; }
         const ErrorLevel& level() const { return level_; };
     };
