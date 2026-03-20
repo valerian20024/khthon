@@ -144,8 +144,9 @@ namespace Khthon
 
         /**
          * @brief Prints syntax errors.
+         * @warning Was an old function, not used anymore.
          */
-        void error(const Khthon::location& l, const std::string& m);
+        //void error(const Khthon::location& l, const std::string& m);
 
         /**
          * @brief The result of the computation.
