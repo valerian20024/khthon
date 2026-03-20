@@ -172,6 +172,11 @@ namespace Khthon
          */
         void syntaxError(const location& l, const std::string& reason);
 
+        /**
+         * @brief Prints all the diagnostics.
+         */
+        void printDiagnostics() const;
+
     private:
         /**
          * @brief The source file.

@@ -148,6 +148,8 @@ int Driver::parse()
     std::string ast_dump = ast_root->accept(printer);
     cout << ast_dump << endl;
 
+    printDiagnostics();
+
     if (error_count_ > 0 || warning_count_ > 0) {
         cout << "There are " << error_count_ << " errors." << endl;
         cout << "There are " << warning_count_ << " warnings." << endl;
@@ -200,4 +202,10 @@ void Driver::report(std::shared_ptr<CompilerError> diagnostic) {
 
 void Driver::syntaxError(const location& l, const std::string& reason) {
     report(std::make_shared<SyntaxError>(l, reason));
+}
+
+void Driver::printDiagnostics() const {
+    for (const auto& e : diagnostics_) {
+        std::cerr << e->print() << '\n';  //todo endl?
+    }
 }
