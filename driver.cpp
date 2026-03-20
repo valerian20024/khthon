@@ -9,6 +9,16 @@
 using namespace std;
 using namespace Khthon;
 
+/*
+
+? Should I make a wrapper function for outputting in color?
+    E.g., take an input string and return the same string wrapper in ANSI colors
+    determine if it's better to output directly with cerr << or
+    creating a string then printing. 
+        => Responsability of doing what to which function
+
+*/
+
 /**
  * @brief Map a token type to a string (pretty-print token types).
  */
@@ -143,18 +153,15 @@ int Driver::parse()
 
     delete parser;
 
-    // Printing the AST
-    PrintVisitor printer;
-    std::string ast_dump = ast_root->accept(printer);
-    cout << ast_dump << endl;
-
     printDiagnostics();
 
-    if (error_count_ > 0 || warning_count_ > 0) {
-        cout << "There are " << error_count_ << " errors." << endl;
-        cout << "There are " << warning_count_ << " warnings." << endl;
+    // Printing the AST
+    PrintVisitor printer;
+    string ast_dump = ast_root->accept(printer);
+    cout << ast_dump << endl;
+
+    if (error_count_ > 0 || warning_count_ > 0)
         return 1;
-    }
 
     return res;
 }
@@ -165,30 +172,14 @@ void Driver::print_tokens()
         print_token(token);
 }
 
-//! old method for reporting errors
-/*
-void Driver::error(const Khthon::location& l, const std::string& m)
-{
-    const position &pos = l.begin;
-
-    cerr << *(pos.filename) << ":"
-         << pos.line << ":" 
-         << pos.column << ": "
-         << m
-         << endl;
-
-    error_count_++;
-}
-*/
-
 std::string LexicalError::print() const {
     const position& pos = loc_.begin;
 
     return *pos.filename 
         + ":" 
-        + std::to_string(pos.line) 
+        + to_string(pos.line) 
         + ":"
-        + std::to_string(pos.column) 
+        + to_string(pos.column) 
         + ": lexical error: " 
         + reason;
 }
@@ -198,9 +189,9 @@ std::string SyntaxError::print() const {
 
     return *pos.filename 
         + ":" 
-        + std::to_string(pos.line) 
+        + to_string(pos.line)
         + ":"
-        + std::to_string(pos.column) 
+        + to_string(pos.column)
         + ": syntax error: " 
         + reason;
 }
@@ -221,6 +212,11 @@ void Driver::syntaxError(const location& l, const std::string& reason) {
 //todo sort the errors by line and columns
 void Driver::printDiagnostics() const {
     for (const auto& e : diagnostics_) {
-        std::cerr << e->print() << '\n';  //todo endl?
+        cerr << e->print() << endl;
     }
+
+    if (error_count_ > 0)
+        cerr << "There are " << error_count_ << " errors." << endl;
+    if (warning_count_ > 0)
+        cerr << "There are " << warning_count_ << " warnings." << endl;
 }
