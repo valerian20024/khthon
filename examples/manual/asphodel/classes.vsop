@@ -1,13 +1,3 @@
-class test {
-    i <- 42;
-
-    method(c : bool) : int32 {
-        2;
-        3;
-    }
-}
-
-class C {
-    // Fields should begin with lower-case letter
-    I : int32;
+class MyClass {
+    aField : int32  // Missing semicolon
 }

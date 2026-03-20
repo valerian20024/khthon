@@ -29,8 +29,6 @@ namespace Khthon
         location loc_;
         ErrorLevel level_;
 
-    public:
-        //todo make it protected. Only child classes should be able to create it.
         Diagnostic(
             location location,
             ErrorLevel level
@@ -38,6 +36,8 @@ namespace Khthon
             loc_(std::move(location)), 
             level_(std::move(level)) 
         {}
+
+    public:
         virtual ~Diagnostic() = default;
         
         virtual std::string print() const = 0;

@@ -5,9 +5,11 @@
 #include "driver.hpp"
 #include "parser.hpp"
 #include "ast.hpp"
+#include "colors.hpp"
 
 using namespace std;
 using namespace Khthon;
+using namespace colors;
 
 /*
 
@@ -193,7 +195,9 @@ string SyntaxDiagnostic::print() const {
         + ":"
         + to_string(pos.column)
         + ": syntax error: " 
-        + reason;
+        + "\n"
+        + as_error("ERROR: ")
+        + bold(reason);
 }
 
 void Driver::report(std::shared_ptr<Diagnostic> d) {

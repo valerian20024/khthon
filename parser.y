@@ -274,7 +274,19 @@ field
   | TYPE_IDENTIFIER COLON type ASSIGN expression SEMICOLON
     {
       ERROR(@1, "field identifier must start with a lowercase letter.");
-      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $5);  // dummy      
+      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $5);  // dummy 
+    }
+  | OBJECT_IDENTIFIER COLON type
+    {
+      WARNING(@3, "missing ';' after field declaration.");
+      NOTE(@2, "add ';' before the closing '}'");
+      $$ = make_shared<FieldNode>(@$, $1, $3);  // dummy test 34
+    }
+  | OBJECT_IDENTIFIER COLON type ASSIGN expression
+    {
+      WARNING(@5, "missing ';' after field declaration.");
+      NOTE(@2, "add ';' before the closing '}'");
+      $$ = make_shared<FieldNode>(@$, $1, $3, $5);  // dummy test 34
     }
   ;
 
