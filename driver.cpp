@@ -218,6 +218,7 @@ void Driver::syntaxError(const location& l, const std::string& reason) {
     report(std::make_shared<SyntaxError>(l, reason));
 }
 
+//todo sort the errors by line and columns
 void Driver::printDiagnostics() const {
     for (const auto& e : diagnostics_) {
         std::cerr << e->print() << '\n';  //todo endl?
