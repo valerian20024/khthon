@@ -148,8 +148,9 @@ int Driver::parse()
     std::string ast_dump = ast_root->accept(printer);
     cout << ast_dump << endl;
 
-    if (error_count > 0) {
-        cout << "There are " << error_count << " errors." << endl;
+    if (error_count_ > 0 || warning_count_ > 0) {
+        cout << "There are " << error_count_ << " errors." << endl;
+        cout << "There are " << warning_count_ << " warnings." << endl;
         return 1;
     }
 
@@ -172,7 +173,7 @@ void Driver::error(const Khthon::location& l, const std::string& m)
          << m
          << endl;
 
-    error_count++;
+    error_count_++;
 }
 
 std::string LexicalError::print() const {
@@ -185,4 +186,18 @@ std::string SyntaxError::print() const {
     const position& pos = loc_.begin;
     return *pos.filename + ":" + std::to_string(pos.line) + ":"
            + std::to_string(pos.column) + ": syntax error: " + reason;
+}
+
+void Driver::report(std::shared_ptr<CompilerError> diagnostic) {
+    if (diagnostic->level() == ErrorLevel::Error)
+        error_count_++;
+    if (diagnostic->level() == ErrorLevel::Warning)
+        warning_count_++;
+
+    diagnostics_.push_back(std::move(diagnostic));
+}
+
+
+void Driver::syntaxError(const location& l, const std::string& reason) {
+    report(std::make_shared<SyntaxError>(l, reason));
 }

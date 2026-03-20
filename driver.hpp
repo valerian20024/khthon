@@ -158,10 +158,19 @@ namespace Khthon
         std::shared_ptr<ProgramNode> ast_root;
 
         /**
-         * @brief The total number of errors encountered during compilation.
+         * @brief Adds a new diagnostic to the list.
          */
-        //todo private ? unsigned ?
-        int error_count = 0;
+        void report(std::shared_ptr<CompilerError> error);
+
+        /**
+         * @brief Helper function to add a new lexical error.
+         */
+        void lexicalError(const location& l, const std::string& reason);
+
+        /**
+         * @brief Helper function to add a new syntax error.
+         */
+        void syntaxError(const location& l, const std::string& reason);
 
     private:
         /**
@@ -180,11 +189,24 @@ namespace Khthon
         std::map<std::string, int> variables;
 
         /**
-         * @brief Store the tokens.
+         * @brief Stores the tokens.
          */
-        std::vector<Parser::symbol_type> tokens;
+        std::vector<Parser::symbol_type> tokens;  //todo add a _ after the name
 
-        
+        /**
+         * @brief Stores all the encountered errors and warnings. 
+         */
+        std::vector<std::shared_ptr<CompilerError>> diagnostics_;
+
+        /**
+         * @brief The total number of errors encountered during compilation.
+         */
+        size_t error_count_ = 0;
+
+        /**
+         * @brief The total number of warnings encountered during compilation.
+         */
+        size_t warning_count_ = 0;
 
         /**
          * @brief Start the lexer.
