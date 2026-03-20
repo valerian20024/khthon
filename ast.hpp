@@ -227,7 +227,7 @@ namespace Khthon {
         const NodeList<MethodNode>& methods() const { return methods_; }
     };
 
-
+    
     class FieldNode : public Node {
     private:
         std::string name_;

@@ -269,16 +269,17 @@ field
   | OBJECT_IDENTIFIER ASSIGN expression SEMICOLON
     {
       error(@2, "field misses a type definition. Type inference is not yet available.");
-      
       $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $3);  // dummy
     }
   | TYPE_IDENTIFIER COLON type SEMICOLON
     {
-
+      error(@1, "field identifier must start with a lowercase letter");
+      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type());  // dummy
     }
-  | TYPE_IDENTIFIER ASSIGN expression SEMICOLON
+  | TYPE_IDENTIFIER COLON type ASSIGN expression SEMICOLON
     {
-      
+      error(@1, "field identifier must start with a lowercase letter.");
+      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $5);  // dummy      
     }
   ;
 

@@ -143,18 +143,13 @@ int Driver::parse()
 
     delete parser;
 
-    if (res != 0) {
-        // deliberately return "no error" in all cases to reverse engineer 
-        // submission platform tests
-        return 0;  
-    }
-
-
     // Printing the AST
     PrintVisitor printer;
     std::string ast_dump = ast_root->accept(printer);
     
     cout << ast_dump << endl;
+
+    cout << "result is: " << res << endl;
 
     return res;
 }
