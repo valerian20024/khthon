@@ -172,7 +172,7 @@ void Driver::print_tokens()
         print_token(token);
 }
 
-std::string LexicalError::print() const {
+string LexicalDiagnostic::print() const {
     const position& pos = loc_.begin;
 
     return *pos.filename 
@@ -184,7 +184,7 @@ std::string LexicalError::print() const {
         + reason;
 }
 
-std::string SyntaxError::print() const {
+string SyntaxDiagnostic::print() const {
     const position& pos = loc_.begin;
 
     return *pos.filename 
@@ -196,18 +196,23 @@ std::string SyntaxError::print() const {
         + reason;
 }
 
-void Driver::report(std::shared_ptr<CompilerError> diagnostic) {
-    if (diagnostic->level() == ErrorLevel::Error)
+void Driver::report(std::shared_ptr<Diagnostic> d) {
+    if (d->level() == ErrorLevel::Error)
         error_count_++;
-    if (diagnostic->level() == ErrorLevel::Warning)
+    if (d->level() == ErrorLevel::Warning)
         warning_count_++;
 
-    diagnostics_.push_back(std::move(diagnostic));
+    diagnostics_.push_back(std::move(d));
 }
 
 void Driver::syntaxError(const location& l, const std::string& reason) {
-    report(std::make_shared<SyntaxError>(l, reason));
+    report(std::make_shared<SyntaxDiagnostic>(l, ErrorLevel::Error, reason));
 }
+
+void Driver::lexicalWarning(const location& l, const std::string& reason) {
+    report(std::make_shared<SyntaxDiagnostic>(l, ErrorLevel::Warning, reason));
+}
+
 
 //todo sort the errors by line and columns
 void Driver::printDiagnostics() const {

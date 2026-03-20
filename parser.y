@@ -590,8 +590,12 @@ while_loop
     ||                  USER CODE                     ||
     ++================================================*/
 
-//void Khthon::Parser::error(const location_type& l, const std::string& m)
 void Khthon::Parser::error(const Khthon::location& l, const std::string& m)
 {
     driver.syntaxError(l, m);
+}
+
+void Khthon::Parser::warning(const Khthon::location& l, const std::string& m)
+{
+    driver.syntaxWarning(l, m);
 }

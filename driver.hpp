@@ -24,52 +24,58 @@ namespace Khthon
         Note
     };
 
-
-    class CompilerError {
+    class Diagnostic {
     protected:
         location loc_;
+        ErrorLevel level_;
 
     public:
-    //todo make it protected. Only child classes should be able to create it.
-        CompilerError(location l) : loc_(std::move(l)) {}  
-        virtual ~CompilerError() = default;
-
-        virtual ErrorLevel level() const = 0;
+        //todo make it protected. Only child classes should be able to create it.
+        Diagnostic(
+            location location,
+            ErrorLevel level
+        ) : 
+            loc_(std::move(location)), 
+            level_(std::move(level)) 
+        {}
+        virtual ~Diagnostic() = default;
+        
         virtual std::string print() const = 0;
 
         const location& loc() const { return loc_; }
+        const ErrorLevel& level() const { return level_; };
     };
 
 
-    class LexicalError : public CompilerError {
+    class LexicalDiagnostic : public Diagnostic {
     private:
         std::string reason;
     public:
-        LexicalError(
+        LexicalDiagnostic(
             location l,
+            ErrorLevel e,
             std::string r
         ) : 
-            CompilerError(l),
+            Diagnostic(l, e),
             reason(std::move(r))
         {}
     
-        ErrorLevel level() const override { return ErrorLevel::Error; }
         std::string print() const override;
     };
 
-    class SyntaxError : public CompilerError {
+    class SyntaxDiagnostic : public Diagnostic {
     private:
         std::string reason;
     public:
-        SyntaxError(
+        SyntaxDiagnostic(
             location l,
+            ErrorLevel e,
             std::string r
         ) : 
-            CompilerError(l),
+            Diagnostic(l, e),
             reason(std::move(r))
         {}
     
-        ErrorLevel level() const override { return ErrorLevel::Error; }
         std::string print() const override;
     };
 
@@ -161,7 +167,7 @@ namespace Khthon
         /**
          * @brief Adds a new diagnostic to the list.
          */
-        void report(std::shared_ptr<CompilerError> error);
+        void report(std::shared_ptr<Diagnostic> diagnostic);
 
         /**
          * @brief Helper function to add a new lexical error.
@@ -172,6 +178,16 @@ namespace Khthon
          * @brief Helper function to add a new syntax error.
          */
         void syntaxError(const location& l, const std::string& reason);
+
+        /**
+         * @brief Helper function to add a new syntax error.
+         */
+        void lexicalWarning(const location& l, const std::string& reason);
+
+        /**
+         * @brief Helper function to add a new syntax error.
+         */
+        void syntaxWarning(const location& l, const std::string& reason);
 
         /**
          * @brief Prints all the diagnostics.
@@ -202,7 +218,7 @@ namespace Khthon
         /**
          * @brief Stores all the encountered errors and warnings. 
          */
-        std::vector<std::shared_ptr<CompilerError>> diagnostics_;
+        std::vector<std::shared_ptr<Diagnostic>> diagnostics_;
 
         /**
          * @brief The total number of errors encountered during compilation.
