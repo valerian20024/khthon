@@ -95,7 +95,16 @@ namespace Khthon
          */
         int result;
 
+        /**
+         * @brief The root of the AST. Used as a handle to parse the whole tree.
+         */
         std::shared_ptr<ProgramNode> ast_root;
+
+        /**
+         * @brief The total number of errors encountered during compilation.
+         */
+        //todo private ? unsigned ?
+        int error_count = 0;
 
     private:
         /**

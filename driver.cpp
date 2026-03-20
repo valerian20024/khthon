@@ -146,10 +146,12 @@ int Driver::parse()
     // Printing the AST
     PrintVisitor printer;
     std::string ast_dump = ast_root->accept(printer);
-    
     cout << ast_dump << endl;
 
-    cout << "result is: " << res << endl;
+    if (error_count > 0) {
+        cout << "There are " << error_count << " errors." << endl;
+        return 1;
+    }
 
     return res;
 }
@@ -169,4 +171,6 @@ void Driver::error(const Khthon::location& l, const std::string& m)
          << pos.column << ": "
          << m
          << endl;
+
+    error_count++;
 }
