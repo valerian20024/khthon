@@ -213,6 +213,12 @@ void Driver::lexicalWarning(const location& l, const std::string& reason) {
     report(std::make_shared<SyntaxDiagnostic>(l, ErrorLevel::Warning, reason));
 }
 
+void Driver::syntaxWarning(const location& l, const std::string& reason) {
+    report(std::make_shared<SyntaxDiagnostic>(l, ErrorLevel::Warning, reason));
+}
+
+
+
 
 //todo sort the errors by line and columns
 void Driver::printDiagnostics() const {

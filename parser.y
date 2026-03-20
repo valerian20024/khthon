@@ -210,7 +210,7 @@ class
     }
   | CLASS OBJECT_IDENTIFIER optional_extends class_body
     {
-      error(@2, "class names cannot start with a lowercase letter");
+      driver.syntaxError(@2, "class names cannot start with a lowercase letter");
       $$ = std::make_shared<ClassNode>(  // default class to not have a sigsegv
         @$,
         $2,
@@ -268,17 +268,17 @@ field
     }
   | OBJECT_IDENTIFIER ASSIGN expression SEMICOLON
     {
-      error(@2, "field misses a type definition. Type inference is not yet available.");
+      driver.syntaxError(@2, "field misses a type definition. Type inference is not yet available.");
       $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $3);  // dummy
     }
   | TYPE_IDENTIFIER COLON type SEMICOLON
     {
-      error(@1, "field identifier must start with a lowercase letter");
+      driver.syntaxError(@1, "field identifier must start with a lowercase letter");
       $$ = make_shared<FieldNode>(@$, $1, Khthon::Type());  // dummy
     }
   | TYPE_IDENTIFIER COLON type ASSIGN expression SEMICOLON
     {
-      error(@1, "field identifier must start with a lowercase letter.");
+      driver.syntaxError(@1, "field identifier must start with a lowercase letter.");
       $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $5);  // dummy      
     }
   ;
@@ -332,16 +332,15 @@ block
     }
   ;
 
-/*todo add the rule expression SEMICOLON and send a descriptive error*/
 expression_list
   : expression SEMICOLON expression_list
     {
       $$ = std::move($3);
-      $$.insert($$.begin(), std::move($1));  // prepending the new expression
+      $$.insert($$.begin(), std::move($1));
     }
   | expression SEMICOLON 
     {
-      error(@2, "last expression must not include ';'");
+      driver.syntaxWarning(@2, "last expression must not include ';'");
       $$.push_back(std::move($1));
     }
   | expression 
@@ -590,12 +589,9 @@ while_loop
     ||                  USER CODE                     ||
     ++================================================*/
 
-void Khthon::Parser::error(const Khthon::location& l, const std::string& m)
-{
-    driver.syntaxError(l, m);
-}
 
-void Khthon::Parser::warning(const Khthon::location& l, const std::string& m)
-{
-    driver.syntaxWarning(l, m);
+// Useless for now but is declared by Bison.
+void Khthon::Parser::error(const Khthon::location& l, const std::string& m) {
+    (void) l;
+    (void) m;
 }
