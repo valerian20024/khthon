@@ -25,16 +25,52 @@ namespace Khthon
     };
 
 
-    struct CompilerError {
+    class CompilerError {
+    protected:
         location loc_;
 
-        CompilerError(location l) : loc_(std::move(l)) {}
+    public:
+    //todo make it protected. Only child classes should be able to create it.
+        CompilerError(location l) : loc_(std::move(l)) {}  
         virtual ~CompilerError() = default;
 
         virtual ErrorLevel level() const = 0;
         virtual std::string print() const = 0;
 
         const location& loc() const { return loc_; }
+    };
+
+
+    class LexicalError : public CompilerError {
+    private:
+        std::string reason;
+    public:
+        LexicalError(
+            location l,
+            std::string r
+        ) : 
+            CompilerError(l),
+            reason(std::move(r))
+        {}
+    
+        ErrorLevel level() const override { return ErrorLevel::Error; }
+        std::string print() const override;
+    };
+
+    class SyntaxError : public CompilerError {
+    private:
+        std::string reason;
+    public:
+        SyntaxError(
+            location l,
+            std::string r
+        ) : 
+            CompilerError(l),
+            reason(std::move(r))
+        {}
+    
+        ErrorLevel level() const override { return ErrorLevel::Error; }
+        std::string print() const override;
     };
 
 

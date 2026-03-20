@@ -174,3 +174,15 @@ void Driver::error(const Khthon::location& l, const std::string& m)
 
     error_count++;
 }
+
+std::string LexicalError::print() const {
+    const position& pos = loc_.begin;
+    return *pos.filename + ":" + std::to_string(pos.line) + ":"
+           + std::to_string(pos.column) + ": lexical error: " + reason;
+}
+
+std::string SyntaxError::print() const {
+    const position& pos = loc_.begin;
+    return *pos.filename + ":" + std::to_string(pos.line) + ":"
+           + std::to_string(pos.column) + ": syntax error: " + reason;
+}
