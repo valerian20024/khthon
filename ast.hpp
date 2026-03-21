@@ -284,8 +284,7 @@ namespace Khthon {
 
         static std::shared_ptr<MethodNode> makeDummy(
             Khthon::location location, 
-            std::string name,
-            std::shared_ptr<Expr> body
+            std::string name
         );
 
     };

@@ -5,7 +5,7 @@
 CXX 			= clang++
 CXXFLAGS 		= -Wall -Wextra -g -std=c++17 
 
-BISONFLAGS 		= -d -Wcounterexamples
+BISONFLAGS 		= -d #-Wcounterexamples
 LEXFLAGS		=
 
 

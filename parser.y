@@ -218,21 +218,12 @@ class
   ;
 
 optional_extends
-  : %empty 
-    {
-      $$ = "Object";
-    }
-  | EXTENDS TYPE_IDENTIFIER 
-    {
-      $$ = $2;
-    }
+  : %empty                        { $$ = "Object"; }
+  | EXTENDS TYPE_IDENTIFIER       { $$ = $2; }
   ;
 
 class_body
-  : LEFT_BRACE class_content RIGHT_BRACE 
-    {
-      $$ = $2;
-    }
+  : LEFT_BRACE class_content RIGHT_BRACE    { $$ = $2; }
   ;
 
 class_content
@@ -300,20 +291,27 @@ method
   /* Error test 38 : methods must begin with lowercase */
   | TYPE_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type block 
     {
-      ERROR(@1, "method must start with a lowercase letter.");
+      WARNING(@1, "method must start with a lowercase letter.");
       $$ = make_shared<MethodNode>(@$, $1, $6, $3, $7);
     }
   /* Error test 39 : method has no arguments */
   | OBJECT_IDENTIFIER COLON type block
     {
       ERROR(@4, "method has no arguments.");
-      $$ = MethodNode::makeDummy(@$, $1, $4);
+      $$ = MethodNode::makeDummy(@$, $1);
     }
   /* Error test 40 : method has no type */
   | OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS block
     {
       ERROR(@5, "method has no type.");
-      $$ = MethodNode::makeDummy(@$, $1, $5);
+      $$ = MethodNode::makeDummy(@$, $1);
+    }
+  /* Error test 42 : method has no braces */
+  /*! reduce/reduce conflicts*/
+  | OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type expression
+    {
+      ERROR(@7, "method has no braces");
+      $$ = MethodNode::makeDummy(@$, $1);
     }
   ;
 
@@ -357,6 +355,12 @@ block
     {
       $$ = std::make_shared<BlockExpr>(@$, std::move($2));
     }
+  /*  */
+  | LEFT_BRACE expression_list
+    {
+      ERROR(@1, "missing matching brace.");
+      $$ = std::make_shared<BlockExpr>(@$, std::vector<std::shared_ptr<Expr>>{});
+    }
   ;
 
 expression_list
@@ -365,6 +369,7 @@ expression_list
       $$ = std::move($3);
       $$.insert($$.begin(), std::move($1));
     }
+  /* Error test 41 : must not have semicolon after last expression */
   | expression SEMICOLON 
     {
       WARNING(@2, "last expression must not include ';'");
@@ -406,21 +411,15 @@ string_literal
   ;
 
 integer_literal
-  : INTEGER_LITERAL 
-    { 
+  : INTEGER_LITERAL
+    {
       $$ = std::make_shared<IntegerLiteralExpr>(@$, std::move($1)); 
     }
   ;
 
 boolean_literal
-  : TRUE    
-    { 
-      $$ = std::make_shared<BoolLiteralExpr>(@$, true);  
-    }
-  | FALSE   
-    { 
-      $$ = std::make_shared<BoolLiteralExpr>(@$, false); 
-    }
+  : TRUE    { $$ = std::make_shared<BoolLiteralExpr>(@$, true); }
+  | FALSE   { $$ = std::make_shared<BoolLiteralExpr>(@$, false); }
   ;
 
 unit_literal

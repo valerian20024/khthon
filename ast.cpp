@@ -64,8 +64,7 @@ namespace Khthon {
 
     std::shared_ptr<MethodNode> MethodNode::makeDummy(
         Khthon::location loc, 
-        string name, 
-        std::shared_ptr<Expr> body
+        string name
     ) {
         // Create a dummy formal list
         std::shared_ptr<FormalNode> formal = std::make_shared<FormalNode>(
@@ -76,15 +75,20 @@ namespace Khthon {
         std::vector<std::shared_ptr<FormalNode>> formals;
         formals.push_back(formal);
 
+        // Create a dummy block
+        std::shared_ptr<BlockExpr> body = std::make_shared<BlockExpr>(
+            loc, 
+            std::vector<std::shared_ptr<Expr>>{}
+        );
+
         return std::make_shared<MethodNode>(
             loc,
             std::move(name),
             Khthon::Type(),
             formals,
-            std::move(body)
+            body
         );
     }
-
 
     /*================================================++
     ||                  VISITORS                      ||

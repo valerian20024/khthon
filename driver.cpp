@@ -236,6 +236,7 @@ void Driver::syntaxError(const location& l, const std::string& reason) {
 }
 
 //todo sort the errors by line and columns
+//todo Then also errors, warnings, notes for a same line
 void Driver::printDiagnostics() const {
     for (const auto& d : diagnostics_)
         cerr << d->print() << endl;
