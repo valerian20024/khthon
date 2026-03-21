@@ -303,6 +303,12 @@ method
       ERROR(@1, "methods must start with a lowercase letter.");
       $$ = make_shared<MethodNode>(@$, $1, $6, $3, $7);
     }
+  /* Error test 39 : method has no arguments */
+  | OBJECT_IDENTIFIER COLON type block
+    {
+      ERROR(@4, "methods has no arguments.");
+      $$ = MethodNode::makeDummy(@$, $1, $4);   //todo add $4
+    }
   ;
 
 formals

@@ -283,6 +283,13 @@ namespace Khthon {
         const Type& type() const { return type_; }
         const NodeList<FormalNode>& formals() const { return formals_; }
         const std::shared_ptr<Expr>& body() const { return body_; }
+
+        static std::shared_ptr<MethodNode> makeDummy(
+            Khthon::location location, 
+            std::string name,
+            std::shared_ptr<Expr> body
+        );
+
     };
 
 

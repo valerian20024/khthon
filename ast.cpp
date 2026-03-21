@@ -14,6 +14,10 @@ using std::string;
 
 namespace Khthon {
 
+    /*================================================++
+    ||                  STRUCTURES                    ||
+    ++================================================*/
+
     string Type::to_string() const {
         string result;
         switch (kind) {
@@ -54,6 +58,35 @@ namespace Khthon {
         }
         return "!> Unknown binary op";
     }
+
+    /*================================================++
+    ||                    NODES                       ||
+    ++================================================*/
+
+    std::shared_ptr<MethodNode> MethodNode::makeDummy(
+        Khthon::location loc, 
+        string name, 
+        std::shared_ptr<Expr> body
+    ) {
+
+        std::shared_ptr<FormalNode> formal = std::make_shared<FormalNode>(loc, "test1", Khthon::Type());
+        std::vector<std::shared_ptr<FormalNode>> formals;
+
+        formals.push_back(formal);
+
+        return std::make_shared<MethodNode>(
+            loc,
+            std::move(name),
+            Khthon::Type(Khthon::Type::Kind::UNIT),
+            formals,  // no formals
+            std::move(body)
+        );
+    }
+
+
+    /*================================================++
+    ||                  VISITORS                      ||
+    ++================================================*/
 
     string PrintVisitor::visit(const ProgramNode& node) const {
         return printNodeList(node.classes());
