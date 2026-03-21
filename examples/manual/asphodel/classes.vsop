@@ -1,2 +1,2 @@
-Class (* should be class *) C {
-}
+"Here is a string containing a raw
+ line feed, which is forbidden."

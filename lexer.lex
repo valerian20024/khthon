@@ -1,5 +1,4 @@
 %{
-    /* Includes */
     #include <string>
     #include <stack>
 
@@ -19,16 +18,6 @@
     /* Code to include at the beginning of the lexer file. */
     using namespace std;
     using namespace Khthon;
-
-    // Create a new NUMBER token from the value s.
-    /*todo remove I think it's useless, old calc stuff
-    Parser::symbol_type make_NUMBER(const string &s,
-                                    const location &loc);
-    */
-
-    // Print a lexical error message.
-    static void print_error(const position &pos,
-                            const string &m);
     
     /**
      * @brief Transforms strings of escaped characters into
@@ -46,6 +35,11 @@
      */
     void dump_stack_content(std::stack<position> s);
 
+    /**
+     * @brief This function simply converts a Bison position to a punctual location.
+     */
+    inline location point_location(const position& p);
+
     // Code run each time a pattern is matched.
     #define YY_USER_ACTION  loc.columns(yyleng);
 
@@ -53,7 +47,7 @@
     location loc;
 
     // Stack to track the nested comments number and starting positions.
-    stack<position> comments_start_loc;
+    stack<position> comments_start_pos;
 
     // Storing string contentwhen scanning a string.
     string current_string;
@@ -62,11 +56,9 @@
     location string_start_loc;
 %}
 
-
     /*================================================++
     ||                  DEFINITIONS                   ||
     ++================================================*/
-
 
     /* Starting states */
 %x COMMENT_STATE STRING_STATE
@@ -274,7 +266,7 @@ ASSIGN                          "<-"
     {COMMENT_SL} { /* eats up to a newline */ }
 
     {COMMENT_START} {
-        comments_start_loc.push(loc.begin);
+        comments_start_pos.push(loc.begin);
         BEGIN(COMMENT_STATE);
     }
 
@@ -291,7 +283,7 @@ ASSIGN                          "<-"
 }
 
     /*-------------------------+
-    |         STRING           |
+    |          STRING          |
     +-------------------------*/
 
 <STRING_STATE>{
@@ -336,15 +328,12 @@ ASSIGN                          "<-"
     }
 
     {NEWLINE} {
-        /*todo add a new constructor to lexicalError to handle Bison position as well as location*/
-        print_error(loc.end - 1, "Cannot have a newline inside a string.");
-        //driver.lexicalError(loc - 1, "Cannot have a newline inside a string.");
+        driver.lexicalError(point_location(loc.end - 1), "Cannot have a newline inside a string.");
         return Parser::make_YYerror(loc);
     }
     
     <<EOF>> {
-        /*todo add a new constructor to lexicalError to handle Bison position as well as location*/
-        print_error(string_start_loc.begin, "Cannot have EOF inside an unclosed string.");
+        driver.lexicalError(point_location(string_start_loc.begin), "Cannot have EOF inside an unclosed string.");
         BEGIN(INITIAL);
         return Parser::make_YYerror(loc);
     }
@@ -359,11 +348,11 @@ ASSIGN                          "<-"
     +-------------------------*/
 
 <COMMENT_STATE>{
-    {COMMENT_START} {comments_start_loc.push(loc.begin);}
+    {COMMENT_START} {comments_start_pos.push(loc.begin);}
 
     {COMMENT_END} {
-        comments_start_loc.pop();
-        if (comments_start_loc.empty())
+        comments_start_pos.pop();
+        if (comments_start_pos.empty())
             BEGIN(INITIAL);
     }
 
@@ -377,14 +366,13 @@ ASSIGN                          "<-"
     }
 
     <<EOF>> {
-        if (!comments_start_loc.empty()) {
-            position error = comments_start_loc.top();
-            print_error(error, "Unmatched comment.");
+        if (!comments_start_pos.empty()) {
+            driver.lexicalError(point_location(comments_start_pos.top()), "Unmatched comment.");
             BEGIN(INITIAL);
             return Parser::make_YYerror(loc);
         }
 
-        print_error(comments_start_loc.top(), "EOF cannot happen inside an unclosed comment");
+        driver.lexicalError(point_location(comments_start_pos.top()), "EOF cannot happen inside an unclosed comment");
         BEGIN(INITIAL);
         return Parser::make_YYerror(loc);
     }
@@ -400,16 +388,6 @@ ASSIGN                          "<-"
     /*================================================++
     ||                  USER CODE                     ||
     ++================================================*/
-
-static void print_error(const position &pos, const string &m)
-{
-    cerr << *(pos.filename) << ":"
-         << pos.line << ":"
-         << pos.column << ":"
-         << " lexical error: "
-         << m
-         << endl;
-}
 
 void Driver::scan_begin() 
 {
@@ -461,4 +439,9 @@ void dump_stack_content(std::stack<position> s) {
         s.pop();
     }
     std::cout << "-----------------------------------------------" << std::endl;
+}
+
+
+inline location point_location(const position& p) {
+    return location(p, p);
 }
