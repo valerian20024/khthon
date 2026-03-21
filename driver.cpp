@@ -126,7 +126,7 @@ int Driver::lex()
 
     while (true)
     {
-        Parser::symbol_type token = yylex();
+        Parser::symbol_type token = yylex(*this);
 
         if ((Parser::token_type)token.type_get() == Parser::token::YYEOF)
             break;

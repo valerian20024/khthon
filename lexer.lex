@@ -21,8 +21,10 @@
     using namespace Khthon;
 
     // Create a new NUMBER token from the value s.
+    /*todo remove I think it's useless, old calc stuff
     Parser::symbol_type make_NUMBER(const string &s,
                                     const location &loc);
+    */
 
     // Print a lexical error message.
     static void print_error(const position &pos,
@@ -118,6 +120,9 @@ TRUE                            "true"
 UNIT                            "unit"
 WHILE                           "while"
 
+    /* Wrong keywords : must not start with uppercase letters */
+KEYWORD_E_UPPERCASE             "And"
+
     /* Identifiers */
 TYPE_IDENTIFIER                 {UPPERCASE_LETTER}({LETTER}|{DEC_DIGIT}|_)*
 OBJECT_IDENTIFIER               {LOWERCASE_LETTER}({LETTER}|{DEC_DIGIT}|_)*
@@ -205,6 +210,7 @@ ASSIGN                          "<-"
     {UNIT}                      return Parser::make_UNIT(loc);
     {WHILE}                     return Parser::make_WHILE(loc);
 
+
     /* Operators */
     {LEFT_BRACE}                return Parser::make_LEFT_BRACE(loc);
     {RIGHT_BRACE}               return Parser::make_RIGHT_BRACE(loc);
@@ -235,7 +241,8 @@ ASSIGN                          "<-"
     }
 
     {INT_LIT_HEX_E_INVALID} {
-        print_error(loc.begin, std::string(yytext) + " is not a valid hexadecimal literal");
+        //print_error(loc.begin, std::string(yytext) + " is not a valid hexadecimal literal");
+        driver.lexicalError(loc, "TEST FOR CALLING LEXICALERROR IN LEXER.LEX");
         return Parser::make_YYerror(loc);
     }
 
@@ -245,7 +252,8 @@ ASSIGN                          "<-"
     }
 
     {INT_LIT_DEC_E_INVALID} {
-        print_error(loc.begin, std::string(yytext) + " is not a valid integer literal");
+        //print_error(loc.begin, std::string(yytext) + " is not a valid integer literal");
+        driver.lexicalError(loc, "TEST FOR CALLING LEXICALERROR IN LEXER.LEX");
         return Parser::make_YYerror(loc);
     }
 

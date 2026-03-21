@@ -10,7 +10,7 @@
 #include "ast.hpp"
 
 // Give prototype of yylex() function, then declare it.
-#define YY_DECL Khthon::Parser::symbol_type yylex()
+#define YY_DECL Khthon::Parser::symbol_type yylex(Khthon::Driver &driver)
 YY_DECL;
 
 using namespace Khthon;

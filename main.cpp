@@ -64,6 +64,9 @@ int main(int argc, char const *argv[])
     case Mode::LEX:
         res = driver.lex();
 
+        // Printing errors
+        driver.printDiagnostics();
+
         // Always printing tokens even if there is an error
         driver.print_tokens();
 

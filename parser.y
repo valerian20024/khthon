@@ -43,6 +43,8 @@
 // Add an argument to the parser constructor
 %parse-param {Khthon::Driver &driver}
 
+%lex-param {Khthon::Driver &driver}
+
 %code {
     #include "driver.hpp"
     #include "ast.hpp"
