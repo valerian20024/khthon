@@ -1,9 +1,4 @@
-class MyClass {
-    aField : int32 <- 7 // Missing semicolon
-    
-    bField : int32 <-5;
-    method(b : bool) : bool {
-        4 * 3;
-        3
-    }
+class C {
+    // Methods should begin with lower-case letter
+    MyFun(i : int32) : int32 { i + 1 }
 }

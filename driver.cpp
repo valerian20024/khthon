@@ -237,9 +237,8 @@ void Driver::syntaxError(const location& l, const std::string& reason) {
 
 //todo sort the errors by line and columns
 void Driver::printDiagnostics() const {
-    for (const auto& d : diagnostics_) {
+    for (const auto& d : diagnostics_)
         cerr << d->print() << endl;
-    }
 
     if (error_count_ > 0)
         cerr << underlined(to_string(error_count_) + " error(s).") << endl;

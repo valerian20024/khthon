@@ -297,6 +297,12 @@ method
     {
       $$ = make_shared<MethodNode>(@$, $1, $6, $3, $7);
     }
+  /* Error test 38 : methods must begin with lowercase */
+  | TYPE_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type block 
+    {
+      ERROR(@1, "methods must start with a lowercase letter.");
+      $$ = make_shared<MethodNode>(@$, $1, $6, $3, $7);
+    }
   ;
 
 formals

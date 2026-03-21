@@ -30,6 +30,7 @@ ARCHIVE			= vsopcompiler.tar.xz
 ARCHIVE_FILES	= \
 	driver.cpp driver.hpp \
 	ast.hpp ast.cpp \
+	colors.hpp \
 	main.cpp \
 	lexer.lex \
 	parser.y \
@@ -45,7 +46,7 @@ all: $(EXEC)
 
 main.o: driver.hpp parser.hpp
 
-driver.o: driver.hpp parser.hpp
+driver.o: driver.hpp parser.hpp colors.hpp
 
 parser.o: driver.hpp parser.hpp
 
