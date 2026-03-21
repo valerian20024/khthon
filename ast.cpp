@@ -8,6 +8,7 @@ Notes about the whole file
 
 ? should make a map for eg UnOp and BinOp : Kind -> str
 
+? move into separate files
 */
 
 using std::string;
@@ -21,14 +22,14 @@ namespace Khthon {
     string Type::to_string() const {
         string result;
         switch (kind) {
-            case Type::Kind::CUSTOM: return custom_name; 
-            case Type::Kind::INT32:  return "int32";
-            case Type::Kind::BOOL:   return "bool";
-            case Type::Kind::STRING: return "string";
-            case Type::Kind::UNIT:   return "unit";
+            case Type::Kind::CUSTOM:            return custom_name; 
+            case Type::Kind::INT32:             return "int32";
+            case Type::Kind::BOOL:              return "bool";
+            case Type::Kind::STRING:            return "string";
+            case Type::Kind::UNIT:              return "unit";
+            case Type::Kind::__DEFAULT__:       return "DEFAULT_TYPE";
         }
-
-        throw std::runtime_error("Unknown type kind in Type::to_string()");
+        return "Unknown type kind";
     }
 
     string UnaryOperation::to_string() const {
@@ -36,10 +37,9 @@ namespace Khthon {
             case UnaryOperation::Kind::NOT:         return "not";
             case UnaryOperation::Kind::UMINUS:      return "-";
             case UnaryOperation::Kind::ISNULL:      return "isnull";
-            default: 
-                return "DEFAULT";
+            case UnaryOperation::Kind::__DEFAULT__: return "DEFAULT_UNOP";
         }
-        return "!> Unknown unary op";
+        return "Unknown unary operation";
     }
 
     string BinaryOperation::to_string() const {
@@ -53,10 +53,9 @@ namespace Khthon {
             case BinaryOperation::Kind::DIVIDE:         return "/";
             case BinaryOperation::Kind::POWER:          return "^";
             case BinaryOperation::Kind::AND:            return "and";
-            default: 
-                return "DEFAULT";
+            case BinaryOperation::Kind::__DEFAULT__:    return "DEFAULT_BINOP";
         }
-        return "!> Unknown binary op";
+        return "Unknown binary operation";
     }
 
     /*================================================++
@@ -69,16 +68,18 @@ namespace Khthon {
         std::shared_ptr<Expr> body
     ) {
 
-        std::shared_ptr<FormalNode> formal = std::make_shared<FormalNode>(loc, "test1", Khthon::Type());
+        // Creating dummy formal list
+        std::shared_ptr<FormalNode> formal = std::make_shared<FormalNode>(
+            loc, "dummy_formal", Khthon::Type()
+        );
         std::vector<std::shared_ptr<FormalNode>> formals;
-
         formals.push_back(formal);
 
         return std::make_shared<MethodNode>(
             loc,
             std::move(name),
-            Khthon::Type(Khthon::Type::Kind::UNIT),
-            formals,  // no formals
+            Khthon::Type(),
+            formals,
             std::move(body)
         );
     }

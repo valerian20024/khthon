@@ -59,21 +59,19 @@ namespace Khthon {
 
     // This class holds the possible types of VSOP: both builtin and user-defined
     struct Type {
-        // todo: add a DEFAULT case as in UnaryOperation
-        // todo: change DEFAULT to __DEFAULT__
         enum class Kind { 
             CUSTOM, 
             INT32, 
             BOOL, 
             STRING, 
-            UNIT 
+            UNIT,
+            __DEFAULT__
         };  
 
-        Kind kind = Kind::UNIT;
+        Kind kind = Kind::__DEFAULT__;
         std::string custom_name;
 
         // Default ctor is required by Bison
-        // Constructor polymorphism allows to construct a new Type conveniently
         Type() = default;
         explicit Type(Kind k) : kind(k), custom_name("") { }
         explicit Type(std::string name) : kind(Kind::CUSTOM), custom_name(std::move(name)) { }
@@ -88,10 +86,10 @@ namespace Khthon {
             NOT, 
             UMINUS, 
             ISNULL, 
-            DEFAULT 
-        };  // default is not part of the language
+            __DEFAULT__
+        };
 
-        Kind kind = Kind::DEFAULT;
+        Kind kind = Kind::__DEFAULT__;
 
         UnaryOperation() = default;
         explicit UnaryOperation(Kind k) : kind(k) { }
@@ -112,10 +110,10 @@ namespace Khthon {
             DIVIDE, 
             POWER, 
             AND, 
-            DEFAULT 
-        };  // default is not part of the language
+            __DEFAULT__
+        };
 
-        Kind kind = Kind::DEFAULT;
+        Kind kind = Kind::__DEFAULT__;
 
         BinaryOperation() = default;
         explicit BinaryOperation(Kind k) : kind(k) { }

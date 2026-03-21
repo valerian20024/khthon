@@ -307,7 +307,7 @@ method
   | OBJECT_IDENTIFIER COLON type block
     {
       ERROR(@4, "methods has no arguments.");
-      $$ = MethodNode::makeDummy(@$, $1, $4);   //todo add $4
+      $$ = MethodNode::makeDummy(@$, $1, $4);
     }
   ;
 
