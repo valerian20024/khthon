@@ -309,6 +309,12 @@ method
       ERROR(@4, "methods has no arguments.");
       $$ = MethodNode::makeDummy(@$, $1, $4);
     }
+  /* Error test 40 : method has no type */
+  | OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS block
+    {
+      ERROR(@5, "methods has no type.");
+      $$ = MethodNode::makeDummy(@$, $1, $5);
+    }
   ;
 
 formals

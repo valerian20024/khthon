@@ -67,10 +67,11 @@ namespace Khthon {
         string name, 
         std::shared_ptr<Expr> body
     ) {
-
-        // Creating dummy formal list
+        // Create a dummy formal list
         std::shared_ptr<FormalNode> formal = std::make_shared<FormalNode>(
-            loc, "dummy_formal", Khthon::Type()
+            loc, 
+            "DEFAULT_FORMAL", 
+            Khthon::Type()
         );
         std::vector<std::shared_ptr<FormalNode>> formals;
         formals.push_back(formal);
