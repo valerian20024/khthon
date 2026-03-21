@@ -300,19 +300,19 @@ method
   /* Error test 38 : methods must begin with lowercase */
   | TYPE_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type block 
     {
-      ERROR(@1, "methods must start with a lowercase letter.");
+      ERROR(@1, "method must start with a lowercase letter.");
       $$ = make_shared<MethodNode>(@$, $1, $6, $3, $7);
     }
   /* Error test 39 : method has no arguments */
   | OBJECT_IDENTIFIER COLON type block
     {
-      ERROR(@4, "methods has no arguments.");
+      ERROR(@4, "method has no arguments.");
       $$ = MethodNode::makeDummy(@$, $1, $4);
     }
   /* Error test 40 : method has no type */
   | OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS block
     {
-      ERROR(@5, "methods has no type.");
+      ERROR(@5, "method has no type.");
       $$ = MethodNode::makeDummy(@$, $1, $5);
     }
   ;
