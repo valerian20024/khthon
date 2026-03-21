@@ -1,3 +1,9 @@
 class MyClass {
-    aField : int32  // Missing semicolon
+    aField : int32 <- 7 // Missing semicolon
+    
+    bField : int32 <-5;
+    method(b : bool) : bool {
+        4 * 3;
+        3
+    }
 }

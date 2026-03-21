@@ -252,6 +252,7 @@ class_content
     }
   ;
 
+
 field
   : OBJECT_IDENTIFIER COLON type SEMICOLON
     {
@@ -261,30 +262,33 @@ field
     {
       $$ = make_shared<FieldNode>(@$, $1, $3, $5);
     }
+  /* Error test 36: missing a type definition */
   | OBJECT_IDENTIFIER ASSIGN expression SEMICOLON
     {
       ERROR(@2, "field misses a type definition. Type inference is not yet available.");
-      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $3);  // dummy
+      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $3);
     }
+  /* Error test 37 : field cannot start with lowercase */
   | TYPE_IDENTIFIER COLON type SEMICOLON
     {
       ERROR(@1, "field identifier must start with a lowercase letter");
-      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type());  // dummy
+      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type());
     }
   | TYPE_IDENTIFIER COLON type ASSIGN expression SEMICOLON
     {
       ERROR(@1, "field identifier must start with a lowercase letter.");
-      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $5);  // dummy 
+      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $5);
     }
-  | OBJECT_IDENTIFIER COLON type
+  /* Error test 34 : fields must end with a semicolon */
+  | OBJECT_IDENTIFIER COLON type error
     {
-      WARNING(@3, "missing ';' after field declaration.");
-      $$ = make_shared<FieldNode>(@$, $1, $3);  // dummy test 34
+      WARNING(@4, "missing ';' after field declaration.");
+      $$ = make_shared<FieldNode>(@$, $1, $3);
     }
-  | OBJECT_IDENTIFIER COLON type ASSIGN expression
+  | OBJECT_IDENTIFIER COLON type ASSIGN expression error
     {
-      WARNING(@5, "missing ';' after field declaration.");
-      $$ = make_shared<FieldNode>(@$, $1, $3, $5);  // dummy test 34
+      WARNING(@6, "missing ';' after field declaration.");
+      $$ = make_shared<FieldNode>(@$, $1, $3, $5);
     }
   ;
 
