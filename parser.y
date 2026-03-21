@@ -162,7 +162,8 @@ UMINUS (unary minus) is only defined to override precedence of binary minus
 %nonassoc   LOWER LOWER_EQUAL EQUAL   // 6
 %left       PLUS MINUS                // 5
 %left       TIMES DIVIDE              // 4
-%right      ISNULL UMINUS             // 3 
+%right      ISNULL                    // 3 
+//%right    UMINUS                    // 3
 %right      POWER                     // 2
 %left       DOT                       // 1
 
