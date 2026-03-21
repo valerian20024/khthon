@@ -121,7 +121,7 @@ UNIT                            "unit"
 WHILE                           "while"
 
     /* Wrong keywords : must not start with uppercase letters */
-KEYWORD_E_UPPERCASE             "And"|"Bool"|"Class"|"Do"|"Else"|"Extends"|"False"|"If"|"In"|"Int32"|"Isnull"|"Let"|"New"|"Not"|"Self"|"String"|"Then"|"True"|"Unit"|"While"
+KEYWORD_E_UPPERCASE             "And"|"Bool"|"Class"|"Do"|"Else"|"Extends"|"False"|"If"|"In"|"Int32"|"Isnull"|"Let"|"New"|"Not"|"Self"|"String"|"Unit"|"While"
 
     /* Identifiers */
 TYPE_IDENTIFIER                 {UPPERCASE_LETTER}({LETTER}|{DEC_DIGIT}|_)*
@@ -211,11 +211,7 @@ ASSIGN                          "<-"
     {WHILE}                     return Parser::make_WHILE(loc);
 
     {KEYWORD_E_UPPERCASE} {
-        driver.syntaxError(loc,
-            "\'" 
-            + std::string(yytext) 
-            + "\' keyword should start with a lowercase letter"
-        );
+        driver.syntaxError(loc, "\'" + std::string(yytext) + "\' keyword should start with a lowercase letter");
         return Parser::make_YYerror(loc);
     }
 
@@ -244,7 +240,7 @@ ASSIGN                          "<-"
 
     /*todo think about out range errors and the likes*/
     {INT_LIT_HEX_E_EMPTY} {
-        print_error(loc.begin, std::string(yytext) + " is an incomplete hexadecimal literal (missing digits)");
+        driver.lexicalError(loc, std::string(yytext) + " is an incomplete hexadecimal literal (missing digits)");
         return Parser::make_YYerror(loc);
     }
 
@@ -283,13 +279,13 @@ ASSIGN                          "<-"
     }
 
     {COMMENT_END} {
-        print_error(loc.begin, "closing an unmatched opening comment");
+        driver.lexicalError(loc, "closing an unmatched opening comment");
         return Parser::make_YYerror(loc);
     }
 
     /* Invalid characters */
     . {
-        print_error(loc.begin, "invalid character: " + string(yytext));
+        driver.lexicalError(loc, "invalid character: " + string(yytext));
         return Parser::make_YYerror(loc);
     }
 }
@@ -330,7 +326,7 @@ ASSIGN                          "<-"
         loc.begin = loc.end;
         loc.begin.column -= yyleng;
 
-        print_error(loc.begin, "Unknown escaped sequence.");
+        driver.lexicalError(loc, "Unknown escaped sequence.");
 
         current_string += yytext[1];  // Ignore the \ and add the character to the string
 
@@ -340,20 +336,21 @@ ASSIGN                          "<-"
     }
 
     {NEWLINE} {
+        /*todo add a new constructor to lexicalError to handle Bison position as well as location*/
         print_error(loc.end - 1, "Cannot have a newline inside a string.");
-        //BEGIN(INITIAL);
+        //driver.lexicalError(loc - 1, "Cannot have a newline inside a string.");
         return Parser::make_YYerror(loc);
     }
     
     <<EOF>> {
+        /*todo add a new constructor to lexicalError to handle Bison position as well as location*/
         print_error(string_start_loc.begin, "Cannot have EOF inside an unclosed string.");
-        //print_error(loc.begin, "Cannot have EOF inside an unclosed string.");
         BEGIN(INITIAL);
         return Parser::make_YYerror(loc);
     }
 
     . {
-        print_error(string_start_loc.begin, "Catched an invalid char in string.");
+        driver.lexicalError(string_start_loc, "Catched an invalid char in string.");
     }
 }
 
