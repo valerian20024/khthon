@@ -91,7 +91,7 @@ HEX_DIGIT                       [0-9a-fA-F]
 DEC_DIGIT                       [0-9]
 
 INT_LIT_HEX_E_EMPTY             {HEX_PREFIX}
-    /* todo find the symbols that can be next to an hex lit and add them here vvv*/
+    /* todo find symbols that can be next to an hex lit and add them here vvv*/
 INT_LIT_HEX_E_INVALID           {HEX_PREFIX}{HEX_DIGIT}*[^0-9a-fA-F \t\n\r\f;]
 INT_LIT_HEX                     {HEX_PREFIX}{HEX_DIGIT}+
 
@@ -121,7 +121,7 @@ UNIT                            "unit"
 WHILE                           "while"
 
     /* Wrong keywords : must not start with uppercase letters */
-KEYWORD_E_UPPERCASE             "And"
+KEYWORD_E_UPPERCASE             "And"|"Bool"|"Class"|"Do"|"Else"|"Extends"|"False"|"If"|"In"|"Int32"|"Isnull"|"Let"|"New"|"Not"|"Self"|"String"|"Then"|"True"|"Unit"|"While"
 
     /* Identifiers */
 TYPE_IDENTIFIER                 {UPPERCASE_LETTER}({LETTER}|{DEC_DIGIT}|_)*
@@ -210,6 +210,14 @@ ASSIGN                          "<-"
     {UNIT}                      return Parser::make_UNIT(loc);
     {WHILE}                     return Parser::make_WHILE(loc);
 
+    {KEYWORD_E_UPPERCASE} {
+        driver.syntaxError(loc,
+            "\'" 
+            + std::string(yytext) 
+            + "\' keyword should start with a lowercase letter"
+        );
+        return Parser::make_YYerror(loc);
+    }
 
     /* Operators */
     {LEFT_BRACE}                return Parser::make_LEFT_BRACE(loc);
@@ -241,8 +249,7 @@ ASSIGN                          "<-"
     }
 
     {INT_LIT_HEX_E_INVALID} {
-        //print_error(loc.begin, std::string(yytext) + " is not a valid hexadecimal literal");
-        driver.lexicalError(loc, "TEST FOR CALLING LEXICALERROR IN LEXER.LEX");
+        driver.lexicalError(loc, std::string(yytext) + " is not a valid hexadecimal literal");
         return Parser::make_YYerror(loc);
     }
 
@@ -252,8 +259,7 @@ ASSIGN                          "<-"
     }
 
     {INT_LIT_DEC_E_INVALID} {
-        //print_error(loc.begin, std::string(yytext) + " is not a valid integer literal");
-        driver.lexicalError(loc, "TEST FOR CALLING LEXICALERROR IN LEXER.LEX");
+        driver.lexicalError(loc, std::string(yytext) + " is not a valid integer literal");
         return Parser::make_YYerror(loc);
     }
 
@@ -262,7 +268,6 @@ ASSIGN                          "<-"
         return Parser::make_INTEGER_LITERAL(val, loc);
     }
 
-    /* Beginning strings */
     {STRING_START} {
         string_start_loc = loc;
         
@@ -270,7 +275,6 @@ ASSIGN                          "<-"
         BEGIN(STRING_STATE);
     }
 
-    /* Comments */
     {COMMENT_SL} { /* eats up to a newline */ }
 
     {COMMENT_START} {

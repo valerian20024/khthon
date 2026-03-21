@@ -1,3 +1,2 @@
-class C {
-    0xGG;
+Class (* should be class *) C {
 }
