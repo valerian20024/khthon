@@ -242,9 +242,9 @@ void Driver::printDiagnostics() const {
     }
 
     if (error_count_ > 0)
-        cerr << "There are " << error_count_ << " errors." << endl;
+        cerr << underlined(to_string(error_count_) + " error(s).") << endl;
     if (warning_count_ > 0)
-        cerr << "There are " << warning_count_ << " warnings." << endl;
+        cerr << underlined(to_string(warning_count_) + " warning(s)") << endl;
 }
 
 
