@@ -20,38 +20,36 @@ using namespace std;
 enum class Mode
 {
     LEX,
-    PARSE
+    PARSE,
+    ANALYZE,
+    GENERATE,
+    EXTEND
 };
 
 static const map<string, Mode> flag_to_mode = {
     {"-l", Mode::LEX},
     {"-p", Mode::PARSE},
+    {"-c", Mode::ANALYZE},
+    {"-i", Mode::GENERATE},
+    {"-e", Mode::EXTEND}
 };
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
     Mode mode;
     string source_file;
 
-    // Extract the arguments from the CLI
     // Defaults to parse when no mode is given
-    if (argc == 2)
-    {
+    if (argc == 2) {
         mode = Mode::PARSE;
         source_file = argv[1];
-    }
-    else if (argc == 3)
-    {
-        if (flag_to_mode.count(argv[1]) == 0)
-        {
+    } else if (argc == 3) {
+        if (flag_to_mode.count(argv[1]) == 0) {
             cerr << "Invalid mode: " << argv[1] << endl;
             return -1;
         }
         mode = flag_to_mode.at(argv[1]);
         source_file = argv[2];
-    }
-    else
-    {
+    } else {
         cerr << "Usage: " << argv[0] << " [-l|-p] <source_file>" << endl;
         return -1;
     }
@@ -59,8 +57,7 @@ int main(int argc, char const *argv[])
     Khthon::Driver driver = Khthon::Driver(source_file);
 
     int res;
-    switch (mode)
-    {
+    switch (mode) {
     case Mode::LEX:
         res = driver.lex();
 
@@ -76,6 +73,12 @@ int main(int argc, char const *argv[])
         res = driver.parse();
 
         return res;
+    case Mode::ANALYZE:
+        return -1;
+    case Mode::GENERATE:
+        return -1;
+    case Mode::EXTEND:
+        return -1;
     }
 
     return 0;

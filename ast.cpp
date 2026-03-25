@@ -1,17 +1,12 @@
 #include "ast.hpp"
 
 /*
-Notes about the whole file
-
 ? Is it safe to use a for each loop instead of size_t etc. in printNode methods 
 ?   of FieldNode and MethodNode
 
-? should make a map for eg UnOp and BinOp : Kind -> str
-
-? move into separate files
 */
 
-using std::string;
+using namespace std;
 
 namespace Khthon {
 
@@ -62,31 +57,29 @@ namespace Khthon {
     ||                    NODES                       ||
     ++================================================*/
 
-    std::shared_ptr<MethodNode> MethodNode::makeDummy(
-        Khthon::location loc, 
-        string name
-    ) {
-        // Create a dummy formal list
-        std::shared_ptr<FormalNode> formal = std::make_shared<FormalNode>(
+    shared_ptr<MethodNode> 
+    MethodNode::makeDummy(Khthon::location loc, string name) {
+
+        shared_ptr<FormalNode> dummy_formal = make_shared<FormalNode>(
             loc, 
             "DEFAULT_FORMAL", 
             Khthon::Type()
         );
-        std::vector<std::shared_ptr<FormalNode>> formals;
-        formals.push_back(formal);
 
-        // Create a dummy block
-        std::shared_ptr<BlockExpr> body = std::make_shared<BlockExpr>(
+        vector<shared_ptr<FormalNode>> dummy_formals;
+        dummy_formals.push_back(dummy_formal);
+
+        shared_ptr<BlockExpr> dummy_body = make_shared<BlockExpr>(
             loc, 
-            std::vector<std::shared_ptr<Expr>>{}
+            vector<shared_ptr<Expr>>{}
         );
 
-        return std::make_shared<MethodNode>(
+        return make_shared<MethodNode>(
             loc,
             std::move(name),
             Khthon::Type(),
-            formals,
-            body
+            dummy_formals,
+            dummy_body
         );
     }
 
@@ -151,7 +144,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const IntegerLiteralExpr& node) const {
-        return std::to_string(node.value());
+        return to_string(node.value());
     }
 
     string PrintVisitor::visit(const BoolLiteralExpr& node) const {
@@ -189,7 +182,6 @@ namespace Khthon {
             + ")";
     }
 
-    /*todo refactor without op */
     string PrintVisitor::visit(const UnOpExpr& node) const {
         string op = node.operation().to_string();
 

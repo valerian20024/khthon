@@ -10,13 +10,13 @@
 #include "ast.hpp"
 
 // Give prototype of yylex() function, then declare it.
+// Passing driver as an argument for error reporting.
 #define YY_DECL Khthon::Parser::symbol_type yylex(Khthon::Driver &driver)
 YY_DECL;
 
 using namespace Khthon;
 
-namespace Khthon
-{
+namespace Khthon {
 
     enum class ErrorLevel {
         Error,
@@ -86,8 +86,53 @@ namespace Khthon
     It manages the input file, stores state (like variables for the calculator),
     and bridges the lexer/parser 
     */
-    class Driver
-    {
+    class Driver {
+    private:
+        /**
+         * @brief The source file.
+         */
+        std::string source_file;
+
+        /**
+         * @brief The parser.
+         */
+        Khthon::Parser *parser;
+
+        /**
+         * @brief Store the variables (names + values).
+         */
+        std::map<std::string, int> variables;
+
+        /**
+         * @brief Stores the tokens.
+         */
+        std::vector<Parser::symbol_type> tokens;  //todo add a _ after the name
+
+        /**
+         * @brief Stores all the encountered errors and warnings. 
+         */
+        std::vector<std::shared_ptr<Diagnostic>> diagnostics_;
+
+        /**
+         * @brief The total number of errors encountered during compilation.
+         */
+        size_t error_count_ = 0;
+
+        /**
+         * @brief The total number of warnings encountered during compilation.
+         */
+        size_t warning_count_ = 0;
+
+        /**
+         * @brief Start the lexer.
+         */
+        void scan_begin();
+
+        /**
+         * @brief Stop the lexer.
+         */
+        void scan_end();
+
     public:
         /**
          * @brief Construct a new Driver.
@@ -198,52 +243,6 @@ namespace Khthon
          * @brief Prints all the diagnostics.
          */
         void printDiagnostics() const;
-
-    private:
-        /**
-         * @brief The source file.
-         */
-        std::string source_file;
-
-        /**
-         * @brief The parser.
-         */
-        Khthon::Parser *parser;
-
-        /**
-         * @brief Store the variables (names + values).
-         */
-        std::map<std::string, int> variables;
-
-        /**
-         * @brief Stores the tokens.
-         */
-        std::vector<Parser::symbol_type> tokens;  //todo add a _ after the name
-
-        /**
-         * @brief Stores all the encountered errors and warnings. 
-         */
-        std::vector<std::shared_ptr<Diagnostic>> diagnostics_;
-
-        /**
-         * @brief The total number of errors encountered during compilation.
-         */
-        size_t error_count_ = 0;
-
-        /**
-         * @brief The total number of warnings encountered during compilation.
-         */
-        size_t warning_count_ = 0;
-
-        /**
-         * @brief Start the lexer.
-         */
-        void scan_begin();
-
-        /**
-         * @brief Stop the lexer.
-         */
-        void scan_end();
     };
 }
 

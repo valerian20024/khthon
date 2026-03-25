@@ -9,8 +9,6 @@
 #include "location.hh"  // for Bison location 
 
 /*
-Notes about the whole file
-
 ? Should I put back every scope ?
 ?   that is : Khthon::Type for example
 
@@ -18,7 +16,6 @@ Notes about the whole file
 
 ? Visitor<std::string> or PrintVisitor in the methods arguments?
 todo put back const std::string before to_string methods of UnOp, BinOp, Type
-
 
 */
 
@@ -56,8 +53,6 @@ namespace Khthon {
         ClassMembers() {}
     };
 
-
-    // This class holds the possible types of VSOP: both builtin and user-defined
     struct Type {
         enum class Kind { 
             CUSTOM, 
@@ -79,10 +74,8 @@ namespace Khthon {
         std::string to_string() const;
     };
 
-
-    // Class for handling unary operations
     struct UnaryOperation {
-        enum class Kind { 
+        enum class Kind {
             NOT, 
             UMINUS, 
             ISNULL, 
@@ -97,8 +90,6 @@ namespace Khthon {
         std::string to_string() const;
     };
 
-
-    // Class for handling binary operations
     struct BinaryOperation {
         enum class Kind { 
             EQUAL, 

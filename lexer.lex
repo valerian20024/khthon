@@ -15,6 +15,9 @@
 %option noyywrap nounput noinput batch
 
 %{
+    // Code run each time a pattern is matched.
+    #define YY_USER_ACTION  loc.columns(yyleng);
+
     /* Code to include at the beginning of the lexer file. */
     using namespace std;
     using namespace Khthon;
@@ -39,9 +42,6 @@
      * @brief This function simply converts a Bison position to a punctual location.
      */
     inline location point_location(const position& p);
-
-    // Code run each time a pattern is matched.
-    #define YY_USER_ACTION  loc.columns(yyleng);
 
     // Maintains the current location across the code.
     location loc;
@@ -389,27 +389,23 @@ ASSIGN                          "<-"
     ||                  USER CODE                     ||
     ++================================================*/
 
-void Driver::scan_begin() 
-{
+void Driver::scan_begin() {
     loc.initialize(&source_file);
 
     // When no file is provided, defaults to stdin
     if (source_file.empty() || source_file == "-")
         yyin = stdin;
-    else if (!(yyin = fopen(source_file.c_str(), "r")))
-    {
+    else if (!(yyin = fopen(source_file.c_str(), "r"))) {
         cerr << "cannot open " << source_file << ": " << strerror(errno) << '\n';
         exit(EXIT_FAILURE);
     }
 }
 
-void Driver::scan_end() 
-{
+void Driver::scan_end() {
     fclose(yyin);
 }
 
-static string printable_hex_value(const string& hex_string) 
-{
+static string printable_hex_value(const string& hex_string) {
     // Verify input
     if (hex_string.size() < 4 || hex_string.substr(0, 2) != "\\x") {
         cerr << "error in printable_hex_value: "
@@ -440,7 +436,6 @@ void dump_stack_content(std::stack<position> s) {
     }
     std::cout << "-----------------------------------------------" << std::endl;
 }
-
 
 inline location point_location(const position& p) {
     return location(p, p);

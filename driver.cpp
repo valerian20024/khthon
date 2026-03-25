@@ -75,8 +75,7 @@ static const map<Parser::token_type, string> type_to_string = {
  *
  * @param token the token
  */
-static void print_token(Parser::symbol_type token)
-{
+static void print_token(Parser::symbol_type token) {
     position pos = token.location.begin;
     Parser::token_type type = (Parser::token_type)token.type_get();
 
@@ -85,28 +84,23 @@ static void print_token(Parser::symbol_type token)
          << type_to_string.at(type);
 
     // When token has a value, print it based on its type
-    switch (type)
-    {
-        case Parser::token::INTEGER_LITERAL:
-        {
+    switch (type) {
+        case Parser::token::INTEGER_LITERAL: {
             int value = token.value.as<int>();
             cout << "," << value;
             break;
         }
-        case Parser::token::TYPE_IDENTIFIER:
-        {
+        case Parser::token::TYPE_IDENTIFIER: {
             string id = token.value.as<string>();
             cout << "," << id;
             break;
         }
-        case Parser::token::OBJECT_IDENTIFIER:
-        {
+        case Parser::token::OBJECT_IDENTIFIER: {
             string id = token.value.as<string>();
             cout << "," << id;
             break;
         }
-        case Parser::token::STRING_LITERAL:
-        {
+        case Parser::token::STRING_LITERAL: {
             string id = token.value.as<string>();
             cout << "," << id;
             break;
@@ -114,12 +108,10 @@ static void print_token(Parser::symbol_type token)
         default:
             break;
     }
-
     cout << endl;
 }
 
-int Driver::lex()
-{
+int Driver::lex() {
     scan_begin();
 
     int error = 0;
@@ -144,8 +136,7 @@ int Driver::lex()
     return error;
 }
 
-int Driver::parse()
-{
+int Driver::parse() {
     scan_begin();
 
     parser = new Parser(*this);    
@@ -155,6 +146,8 @@ int Driver::parse()
 
     delete parser;
 
+    // todo put back the printing of diags and ast to the main file.
+    // todo be consistent with lex()
     printDiagnostics();
 
     // Printing the AST
@@ -168,8 +161,7 @@ int Driver::parse()
     return res;
 }
 
-void Driver::print_tokens()
-{
+void Driver::print_tokens() {
     for (auto token : tokens)
         print_token(token);
 }
