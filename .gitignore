@@ -41,6 +41,7 @@
 *.dwo
 
 # Khthon project
+## Source
 vsopc
 lexer.cpp
 location.hh
@@ -51,3 +52,12 @@ vsopcompiler.tar.xz
 .VSCodeCounter/
 
 build/*
+
+
+## Latex
+report/*.aux
+report/*.fdb_latexmk
+report/*.fls
+report/*.log
+report/*.synctex.gz
+report/*.pdf
