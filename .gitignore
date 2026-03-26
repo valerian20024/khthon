@@ -48,4 +48,6 @@ parser.cpp
 parser.hpp
 vsopcompiler.tar.xz
 
+.VSCodeCounter/
+
 build/*
