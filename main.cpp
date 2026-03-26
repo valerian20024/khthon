@@ -26,8 +26,7 @@ static const map<string, Mode> flag_to_mode = {
 
 int main(int argc, char const *argv[]) {
 
-    //todo change default to code generation
-    Mode mode = Mode::PARSE;
+    Mode mode = Mode::GENERATE;
     string source_file;
 
     if (argc < 2 || argc > 3) {
@@ -62,13 +61,13 @@ int main(int argc, char const *argv[]) {
         return driver.parse();
     
     case Mode::ANALYZE:
-        return -1;
+        return driver.analyze();
 
     case Mode::GENERATE:
-        return -1;
+        return driver.generate();
     
     case Mode::EXTEND:
-        cout << "Extended VSOP Mode is not yet supported." << endl;
+        cout << "Extended VSOP mode is not yet supported." << endl;
         return 0;
     
     default:

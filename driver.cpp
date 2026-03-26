@@ -13,12 +13,6 @@ using namespace colors;
 
 /*
 
-? Should I make a wrapper function for outputting in color?
-    E.g., take an input string and return the same string wrapper in ANSI colors
-    determine if it's better to output directly with cerr << or
-    creating a string then printing. 
-        => Responsability of doing what to which function
-
 */
 
 /**
@@ -256,6 +250,8 @@ void Driver::print_diagnostics() const {
 
 
 const string Diagnostic::header() const {
+    //todo Refactor. Use the switch default statement to return an error string
+    //todo Simply return in each case.
     string header = "";
 
     switch (level_) {
