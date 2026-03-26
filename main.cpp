@@ -1,12 +1,4 @@
-/* This flex/bison example is provided to you as a starting point for your
- * assignment. You are free to use its code in your project.
- *
- * This example implements a simple calculator. You can use the '-l' flag to
- * list all the tokens found in the source file, and the '-p' flag (or no flag)
- * to parse the file and to compute the result.
- *
- * Also, if you have any suggestions for improvements, please let us know.
- */
+// Adapted from https://www.gnu.org/software/bison/manual/html_node/A-Complete-C_002b_002b-Example.html
 
 #include <iostream>
 #include <string>
@@ -14,8 +6,6 @@
 #include "driver.hpp"
 
 using namespace std;
-
-// Adapted from https://www.gnu.org/software/bison/manual/html_node/A-Complete-C_002b_002b-Example.html
 
 enum class Mode
 {
@@ -35,51 +25,53 @@ static const map<string, Mode> flag_to_mode = {
 };
 
 int main(int argc, char const *argv[]) {
-    Mode mode;
+
+    //todo change default to code generation
+    Mode mode = Mode::PARSE;
     string source_file;
 
-    // Defaults to parse when no mode is given
+    if (argc < 2 || argc > 3) {
+        cerr << "Usage: " 
+             << argv[0]
+             << " [-l|-p|-c|-i|-e] <source_file>" 
+             << endl;
+        return -1;
+    }
+
+    if (argc == 3 && flag_to_mode.count(argv[1]) == 0) {
+        cerr << "Invalid mode: " 
+             << argv[1] 
+             << endl;
+        return -1;
+    }
+
     if (argc == 2) {
-        mode = Mode::PARSE;
         source_file = argv[1];
-    } else if (argc == 3) {
-        if (flag_to_mode.count(argv[1]) == 0) {
-            cerr << "Invalid mode: " << argv[1] << endl;
-            return -1;
-        }
+    } else {
         mode = flag_to_mode.at(argv[1]);
         source_file = argv[2];
-    } else {
-        cerr << "Usage: " << argv[0] << " [-l|-p] <source_file>" << endl;
-        return -1;
     }
 
     Khthon::Driver driver = Khthon::Driver(source_file);
 
-    int res;
     switch (mode) {
     case Mode::LEX:
-        res = driver.lex();
-
-        // Printing errors
-        driver.printDiagnostics();
-
-        // Always printing tokens even if there is an error
-        driver.print_tokens();
-
-        return res;
+        return driver.lex();
 
     case Mode::PARSE:
-        res = driver.parse();
-
-        return res;
+        return driver.parse();
+    
     case Mode::ANALYZE:
         return -1;
+
     case Mode::GENERATE:
         return -1;
+    
     case Mode::EXTEND:
+        cout << "Extended VSOP Mode is not yet supported." << endl;
+        return 0;
+    
+    default:
         return -1;
     }
-
-    return 0;
 }

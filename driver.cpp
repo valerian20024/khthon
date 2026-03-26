@@ -133,6 +133,12 @@ int Driver::lex() {
 
     scan_end();
 
+    // Printing errors
+    printDiagnostics();
+
+    // Always printing tokens even if there is an error
+    print_tokens();
+
     return error;
 }
 
