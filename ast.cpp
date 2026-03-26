@@ -87,8 +87,19 @@ namespace Khthon {
     ||                  VISITORS                      ||
     ++================================================*/
 
+    template<typename T> string 
+    PrintVisitor::print(const NodeList<T>& items) const {
+            std::string result = "[";
+            for (size_t i = 0; i < items.size(); ++i) {
+                if (i > 0) 
+                    result += ", ";
+                result += items[i]->accept(*this);
+            }
+            return result + "]";
+    }
+
     string PrintVisitor::visit(const ProgramNode& node) const {
-        return printNodeList(node.classes());
+        return print(node.classes());
     }
 
     string PrintVisitor::visit(const ClassNode& node) const {
@@ -97,9 +108,9 @@ namespace Khthon {
             + ", " 
             + node.parent() 
             + ", \n\t" 
-            + printNodeList(node.fields()) 
+            + print(node.fields()) 
             + ", \n\t" 
-            + printNodeList(node.methods()) 
+            + print(node.methods()) 
             + ")";
     }
 
@@ -121,7 +132,7 @@ namespace Khthon {
         return "Method("
             + node.name()
             + ", "
-            + printNodeList(node.formals())
+            + print(node.formals())
             + ", "
             + node.type().to_string()
             + ", \n\t"
@@ -136,7 +147,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const BlockExpr& node) const {
-        return printNodeList(node.expressions());
+        return print(node.expressions());
     }
 
     string PrintVisitor::visit(const StringLiteralExpr& node) const {
@@ -214,7 +225,7 @@ namespace Khthon {
             + ", "
             + node.name()
             + ", "
-            + printNodeList(node.args())
+            + print(node.args())
             + ")";
     }
 

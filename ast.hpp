@@ -611,15 +611,10 @@ namespace Khthon {
 
     class PrintVisitor : public Visitor<std::string> {
     private:
-        template<typename T> std::string printNodeList(const NodeList<T>& items) const {
-            std::string result = "[";
-            for (size_t i = 0; i < items.size(); ++i) {
-                if (i > 0) 
-                    result += ", ";
-                result += items[i]->accept(*this);
-            }
-            return result + "]";
-        }
+        template<typename T> std::string 
+        print(const NodeList<T>& items) const;
+
+
 
     public:
         std::string visit(const ProgramNode& node) const override;
