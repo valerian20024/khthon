@@ -183,16 +183,38 @@ namespace Khthon {
         int lex();
 
         /**
-         * @brief Run the parser on the source file and compute the result.
+         * @brief Run the lexer and the parser on the source file.
+         * @note Requires the lexer to run first.
          *
-         * @return int 0 if no syntax or lexical error.
+         * @return int 0 if no lexical or syntax error.
          */
         int parse();
+
+        /**
+         * @brief Checks semantics on the source file.
+         * @note Requires the lexer and the parser to run first.
+         *
+         * @return int 0 if no lexical, syntax, or semantic error.
+         */
+        int analyze();
+
+        /**
+         * @brief Run the lexer, parser on the source file. Checks semantics and generate intermediate representation.
+         * @note Requires the lexer, parser, and semantic checker to run first.
+         * @return int 0 if no lexical, syntax, or semantic error.
+         */
+        int generate();
 
         /**
          * @brief Print all the tokens, that is the output of the lexical analysis
          */
         void print_tokens();
+
+        /**
+         * @brief Print the abstract syntax tree.
+         * @param annotate: print with or without annotations.
+         */
+        void print_AST(bool annotate);
 
         /**
          * @brief The result of the computation.
@@ -242,7 +264,7 @@ namespace Khthon {
         /**
          * @brief Prints all the diagnostics.
          */
-        void printDiagnostics() const;
+        void print_diagnostics() const;
     };
 }
 

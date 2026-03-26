@@ -111,6 +111,7 @@ static void print_token(Parser::symbol_type token) {
     cout << endl;
 }
 
+//todo use the new error mecanism instead of the one of the old calc 
 int Driver::lex() {
     scan_begin();
 
@@ -134,7 +135,7 @@ int Driver::lex() {
     scan_end();
 
     // Printing errors
-    printDiagnostics();
+    print_diagnostics();
 
     // Always printing tokens even if there is an error
     print_tokens();
@@ -152,14 +153,9 @@ int Driver::parse() {
 
     delete parser;
 
-    // todo put back the printing of diags and ast to the main file.
-    // todo be consistent with lex()
-    printDiagnostics();
+    print_diagnostics();
 
-    // Printing the AST
-    PrintVisitor printer;
-    string ast_dump = ast_root->accept(printer);
-    cout << ast_dump << endl;
+    print_AST(false);
 
     if (error_count_ > 0 || warning_count_ > 0)
         return 1;
@@ -167,9 +163,23 @@ int Driver::parse() {
     return res;
 }
 
+int Driver::analyze() {
+    return 0;
+}
+
+int Driver::generate() {
+    return 0;
+}
+
 void Driver::print_tokens() {
     for (auto token : tokens)
         print_token(token);
+}
+
+void Driver::print_AST(bool annotate) {
+    PrintVisitor printer;
+    string ast_dump = ast_root->accept(printer);
+    cout << ast_dump << endl;
 }
 
 string LexicalDiagnostic::print() const {
@@ -235,7 +245,7 @@ void Driver::syntaxError(const location& l, const std::string& reason) {
 
 //todo sort the errors by line and columns
 //todo Then also errors, warnings, notes for a same line
-void Driver::printDiagnostics() const {
+void Driver::print_diagnostics() const {
     for (const auto& d : diagnostics_)
         cerr << d->print() << endl;
 
