@@ -611,12 +611,14 @@ namespace Khthon {
 
     class PrintVisitor : public Visitor<std::string> {
     private:
+        bool annotate_;
+
         template<typename T> std::string 
         print(const NodeList<T>& items) const;
 
-
-
     public:
+        explicit PrintVisitor(bool annotate = false) : annotate_(annotate) {}
+
         std::string visit(const ProgramNode& node) const override;
         std::string visit(const ClassNode& node) const override;
         std::string visit(const FieldNode& node) const override;

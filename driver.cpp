@@ -170,7 +170,7 @@ void Driver::print_tokens() {
 }
 
 void Driver::print_AST(bool annotate) {
-    PrintVisitor printer;
+    PrintVisitor printer(annotate);
     string ast_dump = ast_root->accept(printer);
     cout << ast_dump << endl;
 }
