@@ -40,7 +40,7 @@ namespace Khthon {
     public:
         virtual ~Diagnostic() = default;
         
-        virtual std::string print() const = 0;
+        virtual std::string to_string() const = 0;
 
         const std::string header() const;
         const location& loc() const { return loc_; }
@@ -61,7 +61,7 @@ namespace Khthon {
             reason(std::move(r))
         {}
     
-        std::string print() const override;
+        std::string to_string() const override;
     };
 
     class SyntaxDiagnostic : public Diagnostic {
@@ -77,7 +77,7 @@ namespace Khthon {
             reason(std::move(r))
         {}
     
-        std::string print() const override;
+        std::string to_string() const override;
     };
 
 

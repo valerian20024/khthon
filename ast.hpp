@@ -159,10 +159,17 @@ namespace Khthon {
 
     // Abstract class for expression nodes.
     class Expr : public Node {
+    protected:
+        Khthon::Type type_ = Type();  //? mutable 
+
     public:
         Expr(Khthon::location l) : Node(l) {}
         virtual ~Expr() = default;
+
         virtual std::string accept(Visitor<std::string> const& v) const = 0;
+
+        const Khthon::Type& type() const { return type_; }
+        void set_type(const Khthon::Type& t) { type_ = t; }
     };
 
     /*================================================++
@@ -614,7 +621,7 @@ namespace Khthon {
         bool annotate_;
 
         template<typename T> std::string 
-        print(const NodeList<T>& items) const;
+        stringify(const NodeList<T>& items) const;
 
     public:
         explicit PrintVisitor(bool annotate = false) : annotate_(annotate) {}

@@ -175,28 +175,28 @@ void Driver::print_AST(bool annotate) {
     cout << ast_dump << endl;
 }
 
-string LexicalDiagnostic::print() const {
+string LexicalDiagnostic::to_string() const {
     const position& pos = loc_.begin;
 
     return *pos.filename 
         + ":" 
-        + to_string(pos.line) 
+        + std::to_string(pos.line) 
         + ":"
-        + to_string(pos.column) 
+        + std::to_string(pos.column) 
         + ": lexical error: " 
         + "\n"
         + header()
         + bold(reason);
 }
 
-string SyntaxDiagnostic::print() const {
+string SyntaxDiagnostic::to_string() const {
     const position& pos = loc_.begin;
 
     return *pos.filename 
         + ":" 
-        + to_string(pos.line)
+        + std::to_string(pos.line)
         + ":"
-        + to_string(pos.column)
+        + std::to_string(pos.column)
         + ": syntax error: " 
         + "\n"
         + header()
@@ -240,7 +240,7 @@ void Driver::syntax_error(const location& l, const std::string& reason) {
 //todo Then also errors, warnings, notes for a same line
 void Driver::print_diagnostics() const {
     for (const auto& d : diagnostics_)
-        cerr << d->print() << endl;
+        cerr << d->to_string() << endl;
 
     if (error_count_ > 0)
         cerr << underlined(to_string(error_count_) + " error(s).") << endl;

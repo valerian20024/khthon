@@ -88,7 +88,7 @@ namespace Khthon {
     ++================================================*/
 
     template<typename T> string 
-    PrintVisitor::print(const NodeList<T>& items) const {
+    PrintVisitor::stringify(const NodeList<T>& items) const {
             std::string result = "[";
             for (size_t i = 0; i < items.size(); ++i) {
                 if (i > 0) 
@@ -99,7 +99,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const ProgramNode& node) const {
-        return print(node.classes());
+        return stringify(node.classes());
     }
 
     string PrintVisitor::visit(const ClassNode& node) const {
@@ -108,9 +108,9 @@ namespace Khthon {
             + ", " 
             + node.parent() 
             + ", \n\t" 
-            + print(node.fields()) 
+            + stringify(node.fields()) 
             + ", \n\t" 
-            + print(node.methods()) 
+            + stringify(node.methods()) 
             + ")";
     }
 
@@ -132,7 +132,7 @@ namespace Khthon {
         return "Method("
             + node.name()
             + ", "
-            + print(node.formals())
+            + stringify(node.formals())
             + ", "
             + node.type().to_string()
             + ", \n\t"
@@ -147,7 +147,7 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const BlockExpr& node) const {
-        return print(node.expressions());
+        return stringify(node.expressions());
     }
 
     string PrintVisitor::visit(const StringLiteralExpr& node) const {
@@ -155,7 +155,12 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const IntegerLiteralExpr& node) const {
-        return to_string(node.value());
+        string res = to_string(node.value());
+
+        if (annotate_)
+            res += " : " + node.type().to_string();
+        
+        return res;
     }
 
     string PrintVisitor::visit(const BoolLiteralExpr& node) const {
@@ -225,7 +230,7 @@ namespace Khthon {
             + ", "
             + node.name()
             + ", "
-            + print(node.args())
+            + stringify(node.args())
             + ")";
     }
 
