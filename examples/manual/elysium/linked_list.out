@@ -1,0 +1,34 @@
+[Class(List, Object, [],
+    [Method(isNil, [], bool, [true : bool] : bool),
+     Method(length, [], int32, [0 : int32] : int32)]),
+     
+ Class(Nil, List, [], []),
+
+ Class(Cons, List, [Field(head, int32), Field(tail, List)],
+    [Method(init, [hd : int32, tl : List], Cons,
+        [Assign(head, hd : int32) : int32, Assign(tail, tl : List) : List, self: Cons]
+    : Cons),
+     Method(head, [], int32, [head : int32] : int32),
+     Method(isNil, [], bool, [false : bool] : bool),
+     Method(length, [], int32,
+        [BinOp(+, 1 : int32, Call(tail : List, length, []) : int32) : int32]
+        : int32)]),
+
+Class(Main, Object, [],
+    [Method(main, [], int32,
+        [Let(xs, List,
+            Call(New(Cons) : Cons, init,
+                [0 : int32,
+                 Call(New(Cons) : Cons, init,
+                    [1 : int32,
+                     Call(New(Cons) : Cons, init, [2 : int32, New(Nil) : Nil])
+                    : Cons])
+                : Cons])
+            : Cons,
+            [Call(self : Main, print, ["List has length " : string]) : Object,
+             Call(self : Main, printInt32, [Call(xs : List, length, []) : int32])
+            : Object, Call(self : Main, print, ["\x0a" : string]) : Object, 0
+            : int32]
+        : int32)
+    : int32]
+: int32)])]
