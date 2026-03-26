@@ -623,6 +623,11 @@ namespace Khthon {
         template<typename T> std::string 
         stringify(const NodeList<T>& items) const;
 
+        /**
+         * @brief If needed, returns an annotated version of an expression node.
+        */
+        std::string annotate(std::string s, const Expr& node) const;
+
     public:
         explicit PrintVisitor(bool annotate = false) : annotate_(annotate) {}
 

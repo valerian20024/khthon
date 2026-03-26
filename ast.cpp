@@ -98,6 +98,12 @@ namespace Khthon {
             return result + "]";
     }
 
+    string PrintVisitor::annotate(string s, const Expr& node) const {
+        if (annotate_)
+            s += " : " + node.type().to_string();
+        return s;
+    }
+
     string PrintVisitor::visit(const ProgramNode& node) const {
         return stringify(node.classes());
     }
@@ -147,117 +153,122 @@ namespace Khthon {
     }
 
     string PrintVisitor::visit(const BlockExpr& node) const {
-        return stringify(node.expressions());
+        return annotate(stringify(node.expressions()), node);
     }
 
     string PrintVisitor::visit(const StringLiteralExpr& node) const {
-        return node.value();
+        return annotate(node.value(), node);
     }
 
     string PrintVisitor::visit(const IntegerLiteralExpr& node) const {
-        string res = to_string(node.value());
-
-        if (annotate_)
-            res += " : " + node.type().to_string();
-        
-        return res;
+        return annotate(to_string(node.value()), node);
     }
 
     string PrintVisitor::visit(const BoolLiteralExpr& node) const {
-        return node.value() ? "true" : "false";
+        string value = node.value() ? "true" : "false";
+        return annotate(value, node);
     }
 
-    string PrintVisitor::visit(const UnitLiteralExpr&) const {
-        return "()";
+    string PrintVisitor::visit(const UnitLiteralExpr& node) const {
+        return annotate("()", node);
     }
 
     string PrintVisitor::visit(const IfExpr& node) const {
-        string s = "If(" 
+        string res = "If(" 
             + node.guardian()->accept(*this)
             + ", " 
             + node.consequent()->accept(*this);
         
         if (node.alternative().has_value())
-            s += ", " + node.alternative().value()->accept(*this);
+            res += ", " + node.alternative().value()->accept(*this);
+        res += ")";
 
-        s += ")";
-        return s;
+        return annotate(res, node);
     }
 
     string PrintVisitor::visit(const AssignExpr& node) const {
-        return "Assign("
+        string res = "Assign("
             + node.name()
             + ", "
             + node.value()->accept(*this)
             + ")";
+
+        return annotate(res, node);
     }
 
     string PrintVisitor::visit(const NewExpr& node) const {
-        return "New("
+        string res = "New("
             + node.identifier()
             + ")";
+        
+        return annotate(res, node);
     }
 
     string PrintVisitor::visit(const UnOpExpr& node) const {
-        string op = node.operation().to_string();
-
-        return "UnOp("
-            + op
+        string res = "UnOp("
+            + node.operation().to_string()
             + ", "
             + node.operand()->accept(*this)
             + ")";
+        
+        return annotate(res, node);
     }
 
     string PrintVisitor::visit(const BinOpExpr& node) const {
-        string op = node.operation().to_string();
-
-        return "BinOp("
-            + op
+        string res = "BinOp("
+            + node.operation().to_string()
             + ", "
             + node.left()->accept(*this)
             + ", "
             + node.right()->accept(*this)
             + ")";
+        
+        return annotate(res, node);
     }
 
     string PrintVisitor::visit(const VariableExpr& node) const {
-        return node.identifier();
+        return annotate(node.identifier(), node);
     }
 
     string PrintVisitor::visit(const CallExpr& node) const {
-        return "Call("
+        string res = "Call("
             + node.receiver()->accept(*this)
             + ", "
             + node.name()
             + ", "
             + stringify(node.args())
             + ")";
+        
+        return annotate(res, node);
     }
 
-    string PrintVisitor::visit(const SelfExpr&) const {
-        return "self";
+    string PrintVisitor::visit(const SelfExpr& node) const {
+        return annotate("self", node);
     }
 
     string PrintVisitor::visit(const LetExpr& node) const {
-        string s = "Let("
+        string res = "Let("
             + node.name()
             + ", "
             + node.type().to_string();
 
         if (node.has_initializer())
-            s += ", " + node.initializer().value()->accept(*this);
+            res += ", " + node.initializer().value()->accept(*this);
 
-        s += ", "
+        res += ", "
             + node.scope()->accept(*this)
             + ")";
-        return s;
+
+        return annotate(res, node);
     }
 
     string PrintVisitor::visit(const WhileExpr& node) const {
-        return "While("
+        string res = "While("
             + node.condition()->accept(*this)
             + ", "
             + node.body()->accept(*this)
             + ")";
+        
+        return annotate(res, node);
     }
 }

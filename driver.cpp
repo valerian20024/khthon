@@ -157,7 +157,23 @@ int Driver::parse() {
 }
 
 int Driver::analyze() {
-    return 0;
+    scan_begin();
+
+    parser = new Parser(*this);    
+    int res = parser->parse();
+
+    scan_end();
+
+    delete parser;
+
+    print_diagnostics();
+
+    print_AST(true);
+
+    if (error_count_ > 0 || warning_count_ > 0)
+        return 1;
+
+    return res;
 }
 
 int Driver::generate() {
