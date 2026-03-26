@@ -111,10 +111,10 @@ static void print_token(Parser::symbol_type token) {
     cout << endl;
 }
 
-//todo use the new error mecanism instead of the one of the old calc 
 int Driver::lex() {
     scan_begin();
 
+    //todo use the new error mecanism instead of the one of the old calc 
     int error = 0;
 
     while (true)
@@ -134,7 +134,6 @@ int Driver::lex() {
 
     scan_end();
 
-    // Printing errors
     print_diagnostics();
 
     // Always printing tokens even if there is an error
@@ -219,27 +218,27 @@ void Driver::report(std::shared_ptr<Diagnostic> d) {
     diagnostics_.push_back(std::move(d));
 }
 
-void Driver::lexicalNote(const location& l, const std::string& reason) {
+void Driver::lexical_note(const location& l, const std::string& reason) {
     report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Note, reason));
 }
 
-void Driver::lexicalWarning(const location& l, const std::string& reason) {
+void Driver::lexical_warning(const location& l, const std::string& reason) {
     report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Warning, reason));
 }
 
-void Driver::lexicalError(const location& l, const std::string& reason) {
+void Driver::lexical_error(const location& l, const std::string& reason) {
     report(make_shared<LexicalDiagnostic>(l, ErrorLevel::Error, reason));
 }
 
-void Driver::syntaxNote(const location& l, const std::string& reason) {
+void Driver::syntax_note(const location& l, const std::string& reason) {
     report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Note, reason));
 }
 
-void Driver::syntaxWarning(const location& l, const std::string& reason) {
+void Driver::syntax_warning(const location& l, const std::string& reason) {
     report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Warning, reason));
 }
 
-void Driver::syntaxError(const location& l, const std::string& reason) {
+void Driver::syntax_error(const location& l, const std::string& reason) {
     report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Error, reason));
 }
 

@@ -234,32 +234,32 @@ namespace Khthon {
         /**
          * @brief Helper function to add a new lexical note.
          */
-        void lexicalNote(const location& l, const std::string& reason);
+        void lexical_note(const location& l, const std::string& reason);
 
         /**
          * @brief Helper function to add a new lexical warning.
          */
-        void lexicalWarning(const location& l, const std::string& reason);
+        void lexical_warning(const location& l, const std::string& reason);
 
         /**
          * @brief Helper function to add a new lexical error.
          */
-        void lexicalError(const location& l, const std::string& reason);
+        void lexical_error(const location& l, const std::string& reason);
 
         /**
          * @brief Helper function to add a new syntax note.
          */
-        void syntaxNote(const location& l, const std::string& reason);
+        void syntax_note(const location& l, const std::string& reason);
 
         /**
          * @brief Helper function to add a new syntax warning.
          */
-        void syntaxWarning(const location& l, const std::string& reason);
+        void syntax_warning(const location& l, const std::string& reason);
 
         /**
          * @brief Helper function to add a new syntax error.
          */
-        void syntaxError(const location& l, const std::string& reason);
+        void syntax_error(const location& l, const std::string& reason);
         
         /**
          * @brief Prints all the diagnostics.

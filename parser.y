@@ -54,9 +54,9 @@
      ** clean in-between solution to allow to write less code in the 
      ** rules.
      */ 
-    #define ERROR(loc, msg)       driver.syntaxError(loc, msg)
-    #define WARNING(loc, msg)     driver.syntaxWarning(loc, msg)
-    #define NOTE(loc, msg)        driver.syntaxNote(loc, msg)
+    #define ERROR(loc, msg)       driver.syntax_error(loc, msg)
+    #define WARNING(loc, msg)     driver.syntax_warning(loc, msg)
+    #define NOTE(loc, msg)        driver.syntax_note(loc, msg)
 
     using namespace std;
     using namespace Khthon;

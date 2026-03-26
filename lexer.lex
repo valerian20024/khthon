@@ -203,7 +203,7 @@ ASSIGN                          "<-"
     {WHILE}                     return Parser::make_WHILE(loc);
 
     {KEYWORD_E_UPPERCASE} {
-        driver.syntaxError(loc, "\'" + std::string(yytext) + "\' keyword should start with a lowercase letter");
+        driver.syntax_error(loc, "\'" + std::string(yytext) + "\' keyword should start with a lowercase letter");
         return Parser::make_YYerror(loc);
     }
 
@@ -232,12 +232,12 @@ ASSIGN                          "<-"
 
     /*todo think about out range errors and the likes*/
     {INT_LIT_HEX_E_EMPTY} {
-        driver.lexicalError(loc, std::string(yytext) + " is an incomplete hexadecimal literal (missing digits)");
+        driver.lexical_error(loc, std::string(yytext) + " is an incomplete hexadecimal literal (missing digits)");
         return Parser::make_YYerror(loc);
     }
 
     {INT_LIT_HEX_E_INVALID} {
-        driver.lexicalError(loc, std::string(yytext) + " is not a valid hexadecimal literal");
+        driver.lexical_error(loc, std::string(yytext) + " is not a valid hexadecimal literal");
         return Parser::make_YYerror(loc);
     }
 
@@ -247,7 +247,7 @@ ASSIGN                          "<-"
     }
 
     {INT_LIT_DEC_E_INVALID} {
-        driver.lexicalError(loc, std::string(yytext) + " is not a valid integer literal");
+        driver.lexical_error(loc, std::string(yytext) + " is not a valid integer literal");
         return Parser::make_YYerror(loc);
     }
 
@@ -271,13 +271,13 @@ ASSIGN                          "<-"
     }
 
     {COMMENT_END} {
-        driver.lexicalError(loc, "closing an unmatched opening comment");
+        driver.lexical_error(loc, "closing an unmatched opening comment");
         return Parser::make_YYerror(loc);
     }
 
     /* Invalid characters */
     . {
-        driver.lexicalError(loc, "invalid character: " + string(yytext));
+        driver.lexical_error(loc, "invalid character: " + string(yytext));
         return Parser::make_YYerror(loc);
     }
 }
@@ -318,7 +318,7 @@ ASSIGN                          "<-"
         loc.begin = loc.end;
         loc.begin.column -= yyleng;
 
-        driver.lexicalError(loc, "Unknown escaped sequence.");
+        driver.lexical_error(loc, "Unknown escaped sequence.");
 
         current_string += yytext[1];  // Ignore the \ and add the character to the string
 
@@ -328,18 +328,18 @@ ASSIGN                          "<-"
     }
 
     {NEWLINE} {
-        driver.lexicalError(point_location(loc.end - 1), "Cannot have a newline inside a string.");
+        driver.lexical_error(point_location(loc.end - 1), "Cannot have a newline inside a string.");
         return Parser::make_YYerror(loc);
     }
     
     <<EOF>> {
-        driver.lexicalError(point_location(string_start_loc.begin), "Cannot have EOF inside an unclosed string.");
+        driver.lexical_error(point_location(string_start_loc.begin), "Cannot have EOF inside an unclosed string.");
         BEGIN(INITIAL);
         return Parser::make_YYerror(loc);
     }
 
     . {
-        driver.lexicalError(string_start_loc, "Catched an invalid char in string.");
+        driver.lexical_error(string_start_loc, "Catched an invalid char in string.");
     }
 }
 
@@ -367,12 +367,12 @@ ASSIGN                          "<-"
 
     <<EOF>> {
         if (!comments_start_pos.empty()) {
-            driver.lexicalError(point_location(comments_start_pos.top()), "Unmatched comment.");
+            driver.lexical_error(point_location(comments_start_pos.top()), "Unmatched comment.");
             BEGIN(INITIAL);
             return Parser::make_YYerror(loc);
         }
 
-        driver.lexicalError(point_location(comments_start_pos.top()), "EOF cannot happen inside an unclosed comment");
+        driver.lexical_error(point_location(comments_start_pos.top()), "EOF cannot happen inside an unclosed comment");
         BEGIN(INITIAL);
         return Parser::make_YYerror(loc);
     }
