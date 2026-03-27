@@ -1,8 +1,0 @@
-Tests run on Sat Feb 21 08:29:26 UTC 2026
-
-Decompressing your archive...
-Entering vsopcompiler folder...
-/vagrant/HeOo2Ew/script.sh: 258: cd: can't cd to vsopcompiler
-Error: could not cd into vsopcompiler!
-       Ensure your archive contains a vsopcompiler folder.
-This is a fatal error, aborting other tests.
