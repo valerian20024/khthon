@@ -152,8 +152,9 @@ namespace Khthon {
         Node(Khthon::location l) : loc_(l) { }
         virtual ~Node() = default;
 
-        virtual std::string accept(Visitor<std::string> const& v) const = 0;
-        
+        virtual std::string accept(Visitor<std::string> const& print_visitor) const = 0;
+        virtual void accept(Visitor<void> const& classes_visitor) const = 0;
+
         Khthon::location location() const { return loc_; }
     };
 
@@ -166,7 +167,8 @@ namespace Khthon {
         Expr(Khthon::location l) : Node(l) {}
         virtual ~Expr() = default;
 
-        virtual std::string accept(Visitor<std::string> const& v) const = 0;
+        virtual std::string accept(Visitor<std::string> const& print_visitor) const = 0;
+        virtual void accept(Visitor<void> const& classes_visitor) const = 0;
 
         const Khthon::Type& type() const { return type_; }
         void set_type(const Khthon::Type& t) { type_ = t; }
@@ -189,7 +191,8 @@ namespace Khthon {
         { }
 
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
-        
+        void accept(Visitor<void> const& v) const override { return v.visit(*this); }
+
         const NodeList<ClassNode>& classes() const { return classes_; }        
     };
 
@@ -216,6 +219,7 @@ namespace Khthon {
         { }
 
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+        void accept(Visitor<void> const& v) const override { return v.visit(*this); }
 
         const std::string& name() const { return name_; }
         const std::string& parent() const { return parent_; }
@@ -322,9 +326,9 @@ namespace Khthon {
             expressions_(std::move(es)) 
         {}
 
-        const NodeList<Expr>& expressions() const { return expressions_; }
-        
         std::string accept(Visitor<std::string> const& v) const override { return v.visit(*this); }
+
+        const NodeList<Expr>& expressions() const { return expressions_; }
     };
 
 
