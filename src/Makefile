@@ -1,0 +1,87 @@
+# -----------------------------------------------------------------------------
+#  Compiler / Tools
+# -----------------------------------------------------------------------------
+
+CXX 			= clang++
+CXXFLAGS 		= -Wall -Wextra -g -std=c++17 
+
+BISONFLAGS 		= -d #-Wcounterexamples
+LEXFLAGS		=
+
+# -----------------------------------------------------------------------------
+#  Paths & Names
+# -----------------------------------------------------------------------------
+
+EXEC			= vsopc
+
+SRC				= main.cpp \
+				  driver.cpp \
+				  ast.cpp \
+				  parser.cpp \
+				  lexer.cpp
+
+OBJ	  			= $(SRC:.cpp=.o)
+
+BUILD_DIR		= build
+SRC_DIR			= src
+
+ARCHIVE			= vsopcompiler.tar.xz
+ARCHIVE_FILES	= \
+	driver.cpp driver.hpp \
+	ast.hpp ast.cpp \
+	colors.hpp \
+	main.cpp \
+	lexer.lex \
+	parser.y \
+	Makefile
+
+# -----------------------------------------------------------------------------
+#  Main targets
+# -----------------------------------------------------------------------------
+
+all: $(EXEC)
+
+main.o: driver.hpp parser.hpp
+
+driver.o: driver.hpp parser.hpp colors.hpp
+
+parser.o: driver.hpp parser.hpp
+
+lexer.o: driver.hpp parser.hpp
+
+ast.o: ast.hpp location.hh 
+
+$(EXEC): $(OBJ)
+	$(CXX) -o $@ $(LDFLAGS) $(OBJ)
+
+parser.cpp: parser.y
+	bison $(BISONFLAGS) -o parser.cpp $^
+
+parser.hpp: parser.y
+	bison $(BISONFLAGS) -o parser.cpp $^
+
+lexer.cpp: lexer.lex
+	flex $(LEXFLAGS) -o lexer.cpp $^
+
+# -----------------------------------------------------------------------------
+#  Utility targets
+# -----------------------------------------------------------------------------
+
+debug:
+	@echo "OBJ: " $(OBJ)
+
+# Add a root directory called vscompiler in the archive
+archive: $(ARCHIVE_FILES)
+	tar -cJf $(ARCHIVE) --transform='s,^,vsopcompiler/,' $^
+
+install-tools: 
+	@:
+
+clean:
+	@rm -f $(EXEC)
+	@rm -f $(OBJ)
+	@rm -f lexer.cpp
+	@rm -f parser.cpp parser.hpp location.hh
+	@rm -f vsopcompiler.tar.xz
+
+.PHONY: clean install-tools archive debug

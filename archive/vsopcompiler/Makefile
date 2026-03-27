@@ -82,6 +82,19 @@ $(BUILD_DIR)/ast.o:    $(SRC_DIR)/ast.cpp    $(SRC_DIR)/ast.hpp    $(SRC_DIR)/lo
 #  Utility targets
 # -----------------------------------------------------------------------------
 
+#archive:
+#	tar -cJf $(ARCHIVE) \
+#	    --transform='s,^$(SRC_DIR)/,vsopcompiler/,' \
+#	    $(addprefix $(SRC_DIR)/, \
+#	        driver.cpp driver.hpp \
+#	        ast.hpp ast.cpp \
+#	        colors.hpp \
+#	        main.cpp \
+#	        lexer.lex \
+#	        parser.y) \
+#	    --transform='s,^,vsopcompiler/,' \
+#	    Makefile
+
 # Add a root directory called vscompiler in the archive
 archive: $(ARCHIVE_FILES)
 	tar -cJf $(ARCHIVE) --transform='s,^,vsopcompiler/,' $^
