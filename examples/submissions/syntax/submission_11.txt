@@ -1,0 +1,17 @@
+Tests run on Sat Mar 21 13:47:54 UTC 2026
+
+Decompressing your archive...
+Entering vsopcompiler folder...
+Installing build tools...
+If this fails because of an invalid Realease file in the future, please tell us about it !
+Building your VSOP compiler...
+bison -d -Wcounterexamples -o parser.cpp parser.y
+clang++ -Wall -Wextra -g -std=c++17    -c -o main.o main.cpp
+clang++ -Wall -Wextra -g -std=c++17    -c -o driver.o driver.cpp
+driver.cpp:8:10: fatal error: 'colors.hpp' file not found
+#include "colors.hpp"
+         ^~~~~~~~~~~~
+1 error generated.
+make: *** [<builtin>: driver.o] Error 1
+Error: could not build the compiler!
+This is a fatal error, aborting other tests.
