@@ -80,6 +80,24 @@ namespace Khthon {
         std::string to_string() const override;
     };
 
+    
+    class SemanticDiagnostic : public Diagnostic {
+    private:
+        std::string reason;
+    public:
+        SemanticDiagnostic(
+            location l,
+            ErrorLevel e,
+            std::string r
+        ) : 
+            Diagnostic(l, e),
+            reason(std::move(r))
+        {}
+    
+        std::string to_string() const override;
+    };
+    
+
 
     /*
     The Driver class acts as a central coordinator. 
@@ -260,6 +278,21 @@ namespace Khthon {
          * @brief Helper function to add a new syntax error.
          */
         void syntax_error(const location& l, const std::string& reason);
+
+        /**
+         * @brief Helper function to add a new semantic note.
+         */
+        void semantic_note(const location& l, const std::string& reason);
+
+        /**
+         * @brief Helper function to add a new semantic warning.
+         */
+        void semantic_warning(const location& l, const std::string& reason);
+
+        /**
+         * @brief Helper function to add a new semantic error.
+         */
+        void semantic_error(const location& l, const std::string& reason);        
         
         /**
          * @brief Prints all the diagnostics.

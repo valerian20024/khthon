@@ -1,5 +1,5 @@
 #include "semantics.hpp"
-
+/*
 void ClassesVisitor::visit(const ProgramNode& node) const {
     for (const auto& c : node.classes())
         c->accept(*this);
@@ -19,3 +19,4 @@ void ClassesVisitor::visit(const ClassNode& node) const {
 
     //todo collect fields and methods
 }
+*/

@@ -6,6 +6,11 @@
 
 namespace Khthon {
 
+
+    /*================================================++
+    ||                  STRUCTURES                    ||
+    ++================================================*/
+
     struct MethodInfo {
         Khthon::Type return_type;
 
@@ -22,6 +27,10 @@ namespace Khthon {
         std::map<std::string, MethodInfo> methods;
     };
  
+    /*================================================++
+    ||                     CORE                       ||
+    ++================================================*/
+
 
     class SemanticChecker {
     private:
@@ -34,6 +43,10 @@ namespace Khthon {
         explicit SemanticChecker(Driver& d) : driver_(d) {}
         bool analyze(const std::shared_ptr<ProgramNode>& root);
     };
+
+    /*================================================++
+    ||                   VISITORS                     ||
+    ++================================================*/
 
     class ClassesVisitor : public Visitor<void> {
     private:

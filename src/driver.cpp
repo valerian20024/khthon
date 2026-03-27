@@ -219,6 +219,20 @@ string SyntaxDiagnostic::to_string() const {
         + bold(reason);
 }
 
+string SemanticDiagnostic::to_string() const {
+    const position& pos = loc_.begin;
+
+    return *pos.filename 
+        + ":" 
+        + std::to_string(pos.line)
+        + ":"
+        + std::to_string(pos.column)
+        + ": semantic error: " 
+        + "\n"
+        + header()
+        + bold(reason);
+}
+
 void Driver::report(std::shared_ptr<Diagnostic> d) {
     if (d->level() == ErrorLevel::Error)
         error_count_++;
@@ -250,6 +264,18 @@ void Driver::syntax_warning(const location& l, const std::string& reason) {
 
 void Driver::syntax_error(const location& l, const std::string& reason) {
     report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Error, reason));
+}
+
+void Driver::semantic_note(const location& l, const std::string& reason) {
+    report(make_shared<SemanticDiagnostic>(l, ErrorLevel::Note, reason));
+}
+
+void Driver::semantic_warning(const location& l, const std::string& reason) {
+    report(make_shared<SemanticDiagnostic>(l, ErrorLevel::Warning, reason));
+}
+
+void Driver::semantic_error(const location& l, const std::string& reason) {
+    report(make_shared<SemanticDiagnostic>(l, ErrorLevel::Error, reason));
 }
 
 //todo sort the errors by line and columns
