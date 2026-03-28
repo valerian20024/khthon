@@ -69,7 +69,7 @@ all: $(EXEC)
 
 # Link
 $(EXEC): $(OBJ)
-	@echo -e $(C_SALMON)"Linking..."$(C_END);
+	@echo -e $(C_LAVANDER)"Linking..."$(C_END);
 	$(CXX) -o $@ $(LDFLAGS) $(OBJ)
 
 # Compile (generic rule for all .cpp -> build/*.o)
@@ -90,7 +90,7 @@ $(SRC_DIR)/parser.cpp $(SRC_DIR)/parser.hpp: $(SRC_DIR)/parser.y
 	bison $(BISONFLAGS) -o $(SRC_DIR)/parser.cpp $^
 
 $(SRC_DIR)/lexer.cpp: $(SRC_DIR)/lexer.lex
-	@echo -e $(C_GOLDEN)"Flex..."$(C_END);
+	@echo -e $(C_PEACH)"Flex..."$(C_END);
 	flex $(FLEXFLAGS) -o $(SRC_DIR)/lexer.cpp $^
 
 # -----------------------------------------------------------------------------
