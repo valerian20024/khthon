@@ -18,7 +18,6 @@
 ? Visitor<std::string> or PrintVisitor in the methods arguments?
 todo put back const std::string before to_string methods of UnOp, BinOp, Type
 
-! remove __DEFAULT__, names cannot start with __=> default
 */
 
 namespace Khthon {
@@ -119,7 +118,12 @@ namespace Khthon {
     ||               ABSTRACT CLASSES                 ||
     ++================================================*/
 
+
     // Abstract class for visitors.
+    //* While the visit methods are declared const member functions, the 
+    //* classes extending Visitor can still implement them to have side
+    //* effects. E.g., by modifying a reference to a variable owned by a
+    //* different class.
     template <typename R> class Visitor {
     public:
         virtual R visit(const ProgramNode&) const           { return R{}; }
@@ -176,9 +180,11 @@ namespace Khthon {
         void set_type(const Khthon::Type& t) { type_ = t; }
     };
 
+
     /*================================================++
     ||                CONCRETE NODES                  ||
     ++================================================*/
+
 
     class ProgramNode : public Node {
     private:

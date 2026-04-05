@@ -26,9 +26,11 @@ namespace Khthon {
         std::map<std::string, MethodInfo> methods;
     };
  
+
     /*================================================++
     ||                     CORE                       ||
     ++================================================*/
+
 
     // Orchestrator for diverse passes of semantic analysis.
     class SemanticChecker {
@@ -43,9 +45,11 @@ namespace Khthon {
         bool analyze(const std::shared_ptr<ProgramNode>& root);
     };
 
+
     /*================================================++
     ||                   VISITORS                     ||
     ++================================================*/
+
 
     class ClassesVisitor : public Visitor<void> {
     private:
@@ -62,6 +66,7 @@ namespace Khthon {
         {}
 
         void visit(const ProgramNode& node) const override;
+        // Modifying SemanticChecker state.
         void visit(const ClassNode& node) const override;
 
     };

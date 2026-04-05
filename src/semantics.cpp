@@ -28,7 +28,6 @@ void ClassesVisitor::visit(const ClassNode& node) const {
     //todo collect fields and methods
 }
 
-
 bool SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
     if (!root)
         return false;
