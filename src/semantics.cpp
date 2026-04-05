@@ -30,6 +30,11 @@ void ClassesVisitor::visit(const ClassNode& node) const {
 
 
 bool SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
-    (void) root;
+    if (!root)
+        return false;
+    
+    ClassesVisitor cv = ClassesVisitor(driver_, class_table_);
+    root->accept(cv);
+
     return true;
 }

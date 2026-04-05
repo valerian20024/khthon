@@ -122,26 +122,26 @@ namespace Khthon {
     // Abstract class for visitors.
     template <typename R> class Visitor {
     public:
-        virtual R visit(const ProgramNode& node) const = 0;
-        virtual R visit(const ClassNode& node) const = 0;
-        virtual R visit(const FieldNode& node) const = 0;
-        virtual R visit(const MethodNode& node) const = 0;
-        virtual R visit(const FormalNode& node) const = 0;
-        virtual R visit(const BlockExpr& node) const = 0;
-        virtual R visit(const StringLiteralExpr& node) const = 0;
-        virtual R visit(const IntegerLiteralExpr& node) const = 0;
-        virtual R visit(const BoolLiteralExpr& node) const = 0;
-        virtual R visit(const UnitLiteralExpr& node) const = 0;
-        virtual R visit(const IfExpr& node) const = 0;
-        virtual R visit(const AssignExpr& node) const = 0;
-        virtual R visit(const NewExpr& node) const = 0;
-        virtual R visit(const UnOpExpr& node) const = 0;
-        virtual R visit(const BinOpExpr& node) const = 0;
-        virtual R visit(const VariableExpr& node) const = 0;
-        virtual R visit(const CallExpr& node) const = 0;
-        virtual R visit(const SelfExpr& node) const = 0;
-        virtual R visit(const LetExpr& node) const = 0;
-        virtual R visit(const WhileExpr& node) const = 0;
+        virtual R visit(const ProgramNode&) const           { return R{}; }
+        virtual R visit(const ClassNode&) const             { return R{}; }
+        virtual R visit(const FieldNode&) const             { return R{}; }
+        virtual R visit(const MethodNode&) const            { return R{}; }
+        virtual R visit(const FormalNode&) const            { return R{}; }
+        virtual R visit(const BlockExpr&) const             { return R{}; }
+        virtual R visit(const StringLiteralExpr&) const     { return R{}; }
+        virtual R visit(const IntegerLiteralExpr&) const    { return R{}; }
+        virtual R visit(const BoolLiteralExpr&) const       { return R{}; }
+        virtual R visit(const UnitLiteralExpr&) const       { return R{}; }
+        virtual R visit(const IfExpr&) const                { return R{}; }
+        virtual R visit(const AssignExpr&) const            { return R{}; }
+        virtual R visit(const NewExpr&) const               { return R{}; }
+        virtual R visit(const UnOpExpr&) const              { return R{}; }
+        virtual R visit(const BinOpExpr&) const             { return R{}; }
+        virtual R visit(const VariableExpr&) const          { return R{}; }
+        virtual R visit(const CallExpr&) const              { return R{}; }
+        virtual R visit(const SelfExpr&) const              { return R{}; }
+        virtual R visit(const LetExpr&) const               { return R{}; }
+        virtual R visit(const WhileExpr&) const             { return R{}; }
 
         virtual ~Visitor() = default;
     };
