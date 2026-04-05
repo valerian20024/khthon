@@ -104,7 +104,8 @@ $(BUILD_DIR)/driver.o:		$(SRC_DIR)/driver.cpp \
 							$(SRC_DIR)/driver.hpp \
 							$(SRC_DIR)/parser.hpp \
 							$(SRC_DIR)/ast.hpp \
-							$(SRC_DIR)/colors.hpp
+							$(SRC_DIR)/colors.hpp \
+							$(SRC_DIR)/semantics.hpp
 $(BUILD_DIR)/parser.o:		$(SRC_DIR)/parser.cpp \
 							$(SRC_DIR)/driver.hpp \
 							$(SRC_DIR)/parser.hpp

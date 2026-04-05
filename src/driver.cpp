@@ -6,13 +6,14 @@
 #include "parser.hpp"
 #include "ast.hpp"
 #include "colors.hpp"
+#include "semantics.hpp"
 
 using namespace std;
 using namespace Khthon;
 using namespace colors;
 
 /*
-
+todo  Remove old school new and delete
 */
 
 /**
@@ -147,7 +148,6 @@ int Driver::parse() {
     delete parser;
 
     print_diagnostics();
-
     print_AST(false);
 
     if (error_count_ > 0 || warning_count_ > 0)
@@ -159,15 +159,17 @@ int Driver::parse() {
 int Driver::analyze() {
     scan_begin();
 
-    parser = new Parser(*this);    
+    parser = new Parser(*this);
     int res = parser->parse();
 
     scan_end();
 
     delete parser;
 
-    print_diagnostics();
+    SemanticChecker checker = SemanticChecker(*this);
+    res = checker.analyze(ast_root);
 
+    print_diagnostics();
     print_AST(true);
 
     if (error_count_ > 0 || warning_count_ > 0)

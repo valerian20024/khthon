@@ -270,7 +270,6 @@ namespace Khthon {
         const Type& type() const { return type_; }
         bool has_init() const { return initializer_.has_value(); }
         const auto& initializer() const { return initializer_; }
-
     };
 
 

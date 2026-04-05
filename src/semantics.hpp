@@ -30,7 +30,7 @@ namespace Khthon {
     ||                     CORE                       ||
     ++================================================*/
 
-
+    // Orchestrator for diverse passes of semantic analysis.
     class SemanticChecker {
     private:
         Driver& driver_;

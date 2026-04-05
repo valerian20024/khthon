@@ -1,0 +1,8 @@
+class List {
+    isNil() : bool { true }
+    length() : int32 { 0 }
+}
+
+class List {
+    isNil() : bool { false }
+}
