@@ -17,12 +17,12 @@ namespace Khthon {
     string Type::to_string() const {
         string result;
         switch (kind) {
-            case Type::Kind::CUSTOM:            return custom_name; 
-            case Type::Kind::INT32:             return "int32";
-            case Type::Kind::BOOL:              return "bool";
-            case Type::Kind::STRING:            return "string";
-            case Type::Kind::UNIT:              return "unit";
-            case Type::Kind::__DEFAULT__:       return "DEFAULT_TYPE";
+            case Type::Kind::CUSTOM:        return custom_name; 
+            case Type::Kind::INT32:         return "int32";
+            case Type::Kind::BOOL:          return "bool";
+            case Type::Kind::STRING:        return "string";
+            case Type::Kind::UNIT:          return "unit";
+            case Type::Kind::DEFAULT:       return "DEFAULT_TYPE";
         }
         return "Unknown type kind";
     }
@@ -32,7 +32,7 @@ namespace Khthon {
             case UnaryOperation::Kind::NOT:         return "not";
             case UnaryOperation::Kind::UMINUS:      return "-";
             case UnaryOperation::Kind::ISNULL:      return "isnull";
-            case UnaryOperation::Kind::__DEFAULT__: return "DEFAULT_UNOP";
+            case UnaryOperation::Kind::DEFAULT:     return "DEFAULT_UNOP";
         }
         return "Unknown unary operation";
     }
@@ -48,7 +48,7 @@ namespace Khthon {
             case BinaryOperation::Kind::DIVIDE:         return "/";
             case BinaryOperation::Kind::POWER:          return "^";
             case BinaryOperation::Kind::AND:            return "and";
-            case BinaryOperation::Kind::__DEFAULT__:    return "DEFAULT_BINOP";
+            case BinaryOperation::Kind::DEFAULT:        return "DEFAULT_BINOP";
         }
         return "Unknown binary operation";
     }
@@ -89,7 +89,7 @@ namespace Khthon {
 
     template<typename T> string 
     PrintVisitor::stringify(const NodeList<T>& items) const {
-            std::string result = "[";
+            string result = "[";
             for (size_t i = 0; i < items.size(); ++i) {
                 if (i > 0) 
                     result += ", ";

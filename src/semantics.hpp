@@ -13,7 +13,6 @@ namespace Khthon {
 
     struct MethodInfo {
         Khthon::Type return_type;
-
     };
 
     struct FieldInfo {

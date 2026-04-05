@@ -3,14 +3,16 @@
 void ClassesVisitor::visit(const ProgramNode& node) const {
     for (const auto& c : node.classes())
         c->accept(*this);
-    
 }
 
 void ClassesVisitor::visit(const ClassNode& node) const {
     const std::string& name = node.name();
 
     if (class_table_.count(name)) {
-        //driver_.semantic_error(node.location(), "class '" + name + "' is defined more than once");
+        driver_.semantic_error(
+            node.location(), 
+            "class '" + name + "' is defined more than once"
+        );
         return;
     }
 

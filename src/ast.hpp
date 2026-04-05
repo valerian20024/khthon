@@ -18,6 +18,7 @@
 ? Visitor<std::string> or PrintVisitor in the methods arguments?
 todo put back const std::string before to_string methods of UnOp, BinOp, Type
 
+! remove __DEFAULT__, names cannot start with __=> default
 */
 
 namespace Khthon {
@@ -61,10 +62,10 @@ namespace Khthon {
             BOOL, 
             STRING, 
             UNIT,
-            __DEFAULT__
+            DEFAULT
         };  
 
-        Kind kind = Kind::__DEFAULT__;
+        Kind kind = Kind::DEFAULT;
         std::string custom_name;
 
         // Default ctor is required by Bison
@@ -80,10 +81,10 @@ namespace Khthon {
             NOT, 
             UMINUS, 
             ISNULL, 
-            __DEFAULT__
+            DEFAULT
         };
 
-        Kind kind = Kind::__DEFAULT__;
+        Kind kind = Kind::DEFAULT;
 
         UnaryOperation() = default;
         explicit UnaryOperation(Kind k) : kind(k) { }
@@ -102,10 +103,10 @@ namespace Khthon {
             DIVIDE, 
             POWER, 
             AND, 
-            __DEFAULT__
+            DEFAULT
         };
 
-        Kind kind = Kind::__DEFAULT__;
+        Kind kind = Kind::DEFAULT;
 
         BinaryOperation() = default;
         explicit BinaryOperation(Kind k) : kind(k) { }
