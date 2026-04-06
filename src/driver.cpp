@@ -194,43 +194,22 @@ void Driver::print_AST(bool annotate) {
 }
 
 string LexicalDiagnostic::to_string() const {
-    const position& pos = loc_.begin;
-
-    return *pos.filename 
-        + ":" 
-        + std::to_string(pos.line) 
-        + ":"
-        + std::to_string(pos.column) 
-        + ": lexical error: " 
-        + "\n"
+    return format_location()
+        + ": lexical error: \n"
         + header()
         + bold(reason);
 }
 
 string SyntaxDiagnostic::to_string() const {
-    const position& pos = loc_.begin;
-
-    return *pos.filename 
-        + ":" 
-        + std::to_string(pos.line)
-        + ":"
-        + std::to_string(pos.column)
-        + ": syntax error: " 
-        + "\n"
+    return format_location()
+        + ": syntax error: \n" 
         + header()
         + bold(reason);
 }
 
 string SemanticDiagnostic::to_string() const {
-    const position& pos = loc_.begin;
-
-    return *pos.filename 
-        + ":" 
-        + std::to_string(pos.line)
-        + ":"
-        + std::to_string(pos.column)
-        + ": semantic error: " 
-        + "\n"
+    return format_location()
+        + ": semantic error: \n"
         + header()
         + bold(reason);
 }
@@ -292,6 +271,18 @@ void Driver::print_diagnostics() const {
         cerr << underlined(to_string(warning_count_) + " warning(s)") << endl;
 }
 
+string Diagnostic::format_location() const {
+    const position& pos = loc_.begin;
+    string filename = (pos.filename && !pos.filename->empty())
+        ? *pos.filename
+        : "<unknown>";
+
+    return filename
+        + ":"
+        + std::to_string(pos.line)
+        + ":"
+        + std::to_string(pos.column);
+}
 
 const string Diagnostic::header() const {
     //todo Refactor. Use the switch default statement to return an error string

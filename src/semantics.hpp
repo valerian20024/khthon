@@ -12,6 +12,31 @@ namespace Khthon {
     ++================================================*/
 
 
+    class FieldInfo {
+    private:
+        std::string name_;
+        Khthon::Type type_;
+        Khthon::location location_;
+
+    public:
+        FieldInfo(
+            std::string name, 
+            Khthon::Type type, 
+            Khthon::location loc
+        ) : 
+            name_(std::move(name)), 
+            type_(std::move(type)), 
+            location_(std::move(loc)) 
+        {}
+
+        // Eventual Type inference
+        //void set_type(const Khthon::Type& t) { type_ = t; }
+
+        const std::string& name() const { return name_; }
+        const Khthon::Type& type() const { return type_; }
+        const Khthon::location& location() const { return location_; }
+    };
+
     class FormalInfo {
     private:
         std::string name_;
@@ -57,32 +82,6 @@ namespace Khthon {
         const std::string& name() const { return name_; }
         const Khthon::Type& return_type() const { return return_type_; }
         const std::vector<FormalInfo>& formals() const { return formals_; }
-        const Khthon::location& location() const { return location_; }
-    };
-
-
-    class FieldInfo {
-    private:
-        std::string name_;
-        Khthon::Type type_;
-        Khthon::location location_;
-
-    public:
-        FieldInfo(
-            std::string name, 
-            Khthon::Type type, 
-            Khthon::location loc
-        ) : 
-            name_(std::move(name)), 
-            type_(std::move(type)), 
-            location_(std::move(loc)) 
-        {}
-
-        // Eventual Type inference
-        //void set_type(const Khthon::Type& t) { type_ = t; }
-
-        const std::string& name() const { return name_; }
-        const Khthon::Type& type() const { return type_; }
         const Khthon::location& location() const { return location_; }
     };
 
@@ -134,13 +133,25 @@ namespace Khthon {
         Driver& driver_;
         std::map<std::string, ClassInfo> class_table_;
 
-        // Private methods to perform various checks.
+        // Pass 2
+        void check_main() const;
+        //void check_parent_classes_exist() const;
 
-        // For debugging symbol table.
+        // Pass 3
+        //void check_inheritance_cycles() const;
+        //std::vector<std::string> get_ancestors(const std::string& class_name) const;
+
+        // Pass 4
+        //void check_method_overriding() const;
+        //void check_field_shadowing() const;
+
+        /// @brief Debugging purpose.
         void print_class_table() const;
 
     public:
-        explicit SemanticChecker(Driver& d) : driver_(d) {}
+        explicit SemanticChecker(Driver& driver) : driver_(driver) {}
+
+        /// @brief Orchestrator for semantic analysis checks.
         bool analyze(const std::shared_ptr<ProgramNode>& root);
     };
 
@@ -165,6 +176,7 @@ namespace Khthon {
         {}
 
         void visit(const ProgramNode& node) const override;
+
         // Modifying SemanticChecker state.
         void visit(const ClassNode& node) const override;
 

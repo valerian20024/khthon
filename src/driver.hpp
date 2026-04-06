@@ -9,6 +9,10 @@
 #include "parser.hpp"
 #include "ast.hpp"
 
+/*
+? Add a InternalDiagnostic error level related to anything that is not compiling error.
+*/
+
 // Give prototype of yylex() function, then declare it.
 // Passing driver as an argument for error reporting.
 #define YY_DECL Khthon::Parser::symbol_type yylex(Khthon::Driver &driver)
@@ -36,6 +40,9 @@ namespace Khthon {
             loc_(std::move(location)), 
             level_(std::move(level)) 
         {}
+
+        /// @brief Cleanly formats location.
+        std::string format_location() const;
 
     public:
         virtual ~Diagnostic() = default;

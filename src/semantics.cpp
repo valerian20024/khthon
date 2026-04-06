@@ -5,6 +5,7 @@
 
 using namespace std;
 
+// todo Add Object class first, as it is predefined.
 void ClassesVisitor::visit(const ProgramNode& node) const {
     for (const auto& c : node.classes())
         c->accept(*this);
@@ -42,7 +43,7 @@ void ClassesVisitor::visit(const ClassNode& node) const {
 
     // Methods.
     for (const auto& method : node.methods()) {
-        // Formals
+        // Formals.
         vector<FormalInfo> formals_infos;
         for (const auto& formal : method->formals()) {
             formals_infos.emplace_back(
@@ -77,9 +78,29 @@ bool SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
     ClassesVisitor cv = ClassesVisitor(driver_, class_table_);
     root->accept(cv);
 
+    check_main();
+
     print_class_table();
 
     return true;
+}
+
+void SemanticChecker::check_main() const {
+    
+    auto list = class_table_.find("List");
+
+    auto main_class = class_table_.find("Main");
+    if (main_class == class_table_.end()) {
+
+        //Khthon::location loc;
+        //loc.initialize(nullptr, 1, 1);
+        driver_.semantic_error(
+            Khthon::location(),  // no meaningful location
+            "no 'Main' class defined"
+        );
+        return;
+    }
+    
 }
 
 void SemanticChecker::print_class_table() const {
@@ -99,8 +120,7 @@ void SemanticChecker::print_class_table() const {
                 cout << "    " 
                      << field_info.name() 
                      << " : " 
-                     << field_info.type().to_string() 
-                     << "\n";
+                     << field_info.type().to_string() << "\n";
             }
         }
 
@@ -123,12 +143,9 @@ void SemanticChecker::print_class_table() const {
                          << formals[i].type().to_string();
                 }
 
-                cout << ") : " 
-                     << method_info.return_type().to_string() 
-                     << "\n";
+                cout << ") : " << method_info.return_type().to_string() << "\n";
             }
         }
-
         cout << "-------------------------\n" << endl;
     }
 }
