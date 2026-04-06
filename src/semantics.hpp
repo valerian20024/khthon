@@ -136,6 +136,8 @@ namespace Khthon {
 
         // Private methods to perform various checks
 
+        void print_class_table() const;
+
     public:
         explicit SemanticChecker(Driver& d) : driver_(d) {}
         bool analyze(const std::shared_ptr<ProgramNode>& root);
