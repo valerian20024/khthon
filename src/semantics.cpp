@@ -39,10 +39,11 @@ void ClassesVisitor::visit(const ClassNode& node) const {
     
     for (const auto& m : node.methods()) {
         
-        vector<FormalInfo> formals;
-
+        vector<FormalInfo> formals_infos;
+        for (const auto& f : m->formals())
+            formals_infos.emplace_back(f->name(), f->type(), f->location());
         
-        MethodInfo mi(m->name(), m->type(), std::move(formals), m->location());
+        MethodInfo mi(m->name(), m->type(), std::move(formals_infos), m->location());
 
         if (!info.add_method(std::move(mi))) {
             driver_.semantic_error(
