@@ -11,19 +11,115 @@ namespace Khthon {
     ||                  STRUCTURES                    ||
     ++================================================*/
 
-    struct MethodInfo {
-        Khthon::Type return_type;
+
+    class FormalInfo {
+    private:
+        std::string name_;
+        Khthon::Type type_;
+        Khthon::location location_;
+
+    public:
+        FormalInfo(
+            std::string n, 
+            Khthon::Type t,
+            Khthon::location l
+        ) : 
+            name_(std::move(n)), 
+            type_(std::move(t)),
+            location_(std::move(l))
+        {}
+        
+        const std::string& name() const { return name_; }
+        const Khthon::Type& type() const { return type_; }
+        const Khthon::location& location() const { return location_; }
     };
 
-    struct FieldInfo {
-        Khthon::Type type;
+   class MethodInfo {
+    private:
+        std::string name_;
+        Khthon::Type return_type_;
+        std::vector<FormalInfo> formals_;
+        Khthon::location location_;
+
+    public:
+        MethodInfo(
+            std::string name,
+            Khthon::Type return_type,
+            std::vector<FormalInfo> formals,
+            Khthon::location loc
+        ) : 
+            name_(std::move(name)),
+            return_type_(std::move(return_type)),
+            formals_(std::move(formals)),
+            location_(std::move(loc))
+        {}
+
+        const std::string& name() const { return name_; }
+        const Khthon::Type& return_type() const { return return_type_; }
+        const std::vector<FormalInfo>& formals() const { return formals_; }
+        const Khthon::location& location() const { return location_; }
     };
 
-    struct ClassInfo {
-        std::string parent;
-        Khthon::location location;
-        std::map<std::string, FieldInfo> fields;
-        std::map<std::string, MethodInfo> methods;
+
+    class FieldInfo {
+    private:
+        std::string name_;
+        Khthon::Type type_;
+        Khthon::location location_;
+
+    public:
+        FieldInfo(
+            std::string name, 
+            Khthon::Type type, 
+            Khthon::location loc
+        ) : 
+            name_(std::move(name)), 
+            type_(std::move(type)), 
+            location_(std::move(loc)) 
+        {}
+
+        // Eventual Type inference
+        //void set_type(const Khthon::Type& t) { type_ = t; }
+
+        const std::string& name() const { return name_; }
+        const Khthon::Type& type() const { return type_; }
+        const Khthon::location& location() const { return location_; }
+    };
+
+    class ClassInfo {
+    private:
+        std::string name_;
+        std::string parent_;
+        Khthon::location location_;
+        std::map<std::string, FieldInfo> fields_;
+        std::map<std::string, MethodInfo> methods_;
+
+    public:
+        ClassInfo(
+            std::string name, 
+            std::string parent, 
+            Khthon::location loc
+        ) : 
+            name_(std::move(name)), 
+            parent_(std::move(parent)), 
+            location_(std::move(loc)) 
+        {}
+
+        // Returns false if a field with that name already exists
+        bool add_field(FieldInfo f) {
+            auto [it, inserted] = fields_.emplace(f.name(), std::move(f));
+            return inserted;
+        }
+
+        bool add_method(MethodInfo m) {
+            auto [it, inserted] = methods_.emplace(m.name(), std::move(m));
+            return inserted;
+        }
+
+        const std::map<std::string, FieldInfo>& fields() const { return fields_; }
+        const std::map<std::string, MethodInfo>& methods() const { return methods_; }
+        const std::string& parent() const { return parent_; }
+        const Khthon::location& location() const { return location_; }
     };
  
 

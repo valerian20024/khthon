@@ -7,7 +7,6 @@
 #include <optional>     // for std::optional
 
 #include "location.hh"  // for Bison location 
-//#include "semantics.hpp"
 
 /*
 ? Should I put back every scope ?
@@ -209,7 +208,7 @@ namespace Khthon {
             visitor.visit(*this); 
         }
 
-        const NodeList<ClassNode>& classes() const { return classes_; }        
+        const NodeList<ClassNode>& classes() const { return classes_; }
     };
 
 
@@ -748,41 +747,44 @@ namespace Khthon {
     ||               CONCRETE VISITORS                ||
     ++================================================*/
 
+    /**
+     * @brief Visitor responsible for printing an Abstract Syntax Tree.
+     * @note Will be 
+     */
     class PrintVisitor : public StringVisitor {
     private:
         bool annotate_;
-
+        
+        /// @brief Turns a node list into a string, ready for printing.
         template<typename T> std::string 
         stringify(const NodeList<T>& items) const;
-
-        /**
-         * @brief If needed, returns an annotated version of an expression node.
-        */
-        std::string annotate(std::string s, const Expr& node) const;
+        
+        /// @brief If needed, returns an annotated version of an expression node.
+        std::string annotate(std::string annotation, const Expr& node) const;
 
     public:
         explicit PrintVisitor(bool annotate = false) : annotate_(annotate) {}
 
-        std::string visit(const ProgramNode& node) const override;
-        std::string visit(const ClassNode& node) const override;
-        std::string visit(const FieldNode& node) const override;
-        std::string visit(const MethodNode& node) const override;
-        std::string visit(const FormalNode& node) const override;
-        std::string visit(const BlockExpr& node) const override;
-        std::string visit(const StringLiteralExpr& node) const override;
-        std::string visit(const IntegerLiteralExpr& node) const override;
-        std::string visit(const BoolLiteralExpr& node) const override;
-        std::string visit(const UnitLiteralExpr& node) const override;
-        std::string visit(const IfExpr& node) const override;
-        std::string visit(const AssignExpr& node) const override;
-        std::string visit(const NewExpr& node) const override;
-        std::string visit(const UnOpExpr& node) const override;
-        std::string visit(const BinOpExpr& node) const override;
-        std::string visit(const VariableExpr& node) const override;
-        std::string visit(const CallExpr& node) const override;
-        std::string visit(const SelfExpr& node) const override;
-        std::string visit(const LetExpr& node) const override;
-        std::string visit(const WhileExpr& node) const override;
+        std::string visit(const ProgramNode&) const override;
+        std::string visit(const ClassNode&) const override;
+        std::string visit(const FieldNode&) const override;
+        std::string visit(const MethodNode&) const override;
+        std::string visit(const FormalNode&) const override;
+        std::string visit(const BlockExpr&) const override;
+        std::string visit(const StringLiteralExpr&) const override;
+        std::string visit(const IntegerLiteralExpr&) const override;
+        std::string visit(const BoolLiteralExpr&) const override;
+        std::string visit(const UnitLiteralExpr&) const override;
+        std::string visit(const IfExpr&) const override;
+        std::string visit(const AssignExpr&) const override;
+        std::string visit(const NewExpr&) const override;
+        std::string visit(const UnOpExpr&) const override;
+        std::string visit(const BinOpExpr&) const override;
+        std::string visit(const VariableExpr&) const override;
+        std::string visit(const CallExpr&) const override;
+        std::string visit(const SelfExpr&) const override;
+        std::string visit(const LetExpr&) const override;
+        std::string visit(const WhileExpr&) const override;
     };
 }
 

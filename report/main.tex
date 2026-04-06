@@ -7,6 +7,14 @@
 
 hello world
 
+\section{Architecture choices}
+
+\subsection{Semantic Analysis}
+
+Decided to incorporate small duplicate checks inside the ClassesVisitor for an early stopping.
+If the class has been defines several times, there's likely a big problem, so the compiler won't take the time to inspect every fields and methods inside it, which could potentially be all duplicated. 
+We simply tell it is duplicated and return early, not adding this class to the symbol table for further inspections.
+
 \section{Potential improvements}
 If I had more time I would have enhanced the code in the following ways : 
 
