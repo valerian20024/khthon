@@ -5,8 +5,59 @@
 
 using namespace std;
 
+using Khthon::Type;
+
 // todo Add Object class first, as it is predefined.
 void ClassesVisitor::visit(const ProgramNode& node) const {
+    // Inject the built-in Object class
+    Khthon::location builtin_loc;  // default location, no source file
+    ClassInfo object_info("Object", "Object", builtin_loc);
+
+    // Object's built-in methods
+    object_info.add_method(MethodInfo(
+        "print",
+        Type("Object"),
+        { FormalInfo("s", Type(Type::Kind::STRING), builtin_loc) },
+        builtin_loc
+    ));
+
+    object_info.add_method(MethodInfo(
+        "printBool",
+        Type("Object"),
+        { FormalInfo("b", Type(Type::Kind::BOOL), builtin_loc) },
+        builtin_loc
+    ));
+
+    object_info.add_method(MethodInfo(
+        "printInt32",
+        Type("Object"),
+        { FormalInfo("i", Type(Type::Kind::INT32), builtin_loc) },
+        builtin_loc
+    ));
+
+    object_info.add_method(MethodInfo(
+        "inputLine",
+        Type(Type::Kind::STRING),
+        {},  // no formals
+        builtin_loc
+    ));
+
+    object_info.add_method(MethodInfo(
+        "inputBool",
+        Type(Type::Kind::BOOL),
+        {},
+        builtin_loc
+    ));
+
+    object_info.add_method(MethodInfo(
+        "inputInt32",
+        Type(Type::Kind::INT32),
+        {},
+        builtin_loc
+    ));
+
+    class_table_.emplace("Object", std::move(object_info));
+
     for (const auto& c : node.classes())
         c->accept(*this);
 }
@@ -86,9 +137,9 @@ bool SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
 }
 
 void SemanticChecker::check_main() const {
+    // Looking for a Main class.
     auto main_class = class_table_.find("Main");
     if (main_class == class_table_.end()) {
-
         //todo  Initialize location to filename: 1: 1
         //todo  Maybe create a helper in driver?
         driver_.semantic_error(
@@ -122,8 +173,8 @@ void SemanticChecker::check_main() const {
     }
 
     // Check main returns int32
-    const Khthon::Type& return_type = method_info.return_type();
-    if (return_type.kind != Khthon::Type::Kind::INT32) {
+    const Type& return_type = method_info.return_type();
+    if (return_type.kind != Type::Kind::INT32) {
         driver_.semantic_error(
             method_info.location(),
             "method 'main' must return 'int32', found '" 
@@ -132,6 +183,14 @@ void SemanticChecker::check_main() const {
         );
     }
 }
+
+
+
+
+
+
+
+
 
 void SemanticChecker::print_class_table() const {
     for (const auto& [class_name, class_info] : class_table_) {

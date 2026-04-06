@@ -52,6 +52,10 @@ namespace Khthon {
         ClassMembers() {}
     };
 
+    //todo Add static member functions like Int32() to return a Type::Kind::Int32
+    //todo This way we can more easily write code involving Type.
+    //todo Make it a class also, it's getting much more complicated than a struct
+    //todo Make the other struct classes as well.
     struct Type {
         enum class Kind { 
             CUSTOM, 
