@@ -10,7 +10,7 @@
 #include "ast.hpp"
 
 /*
-? Add a InternalDiagnostic error level related to anything that is not compiling error.
+? Who should have driver as reference to be able to send InternalDiagnostics ?
 */
 
 // Give prototype of yylex() function, then declare it.
@@ -57,7 +57,7 @@ namespace Khthon {
 
     class LexicalDiagnostic : public Diagnostic {
     private:
-        std::string reason;
+        std::string reason_;
     public:
         LexicalDiagnostic(
             location l,
@@ -65,7 +65,7 @@ namespace Khthon {
             std::string r
         ) : 
             Diagnostic(l, e),
-            reason(std::move(r))
+            reason_(std::move(r))
         {}
     
         std::string to_string() const override;
@@ -73,7 +73,7 @@ namespace Khthon {
 
     class SyntaxDiagnostic : public Diagnostic {
     private:
-        std::string reason;
+        std::string reason_;
     public:
         SyntaxDiagnostic(
             location l,
@@ -81,7 +81,7 @@ namespace Khthon {
             std::string r
         ) : 
             Diagnostic(l, e),
-            reason(std::move(r))
+            reason_(std::move(r))
         {}
     
         std::string to_string() const override;
@@ -90,7 +90,7 @@ namespace Khthon {
     
     class SemanticDiagnostic : public Diagnostic {
     private:
-        std::string reason;
+        std::string reason_;
     public:
         SemanticDiagnostic(
             location l,
@@ -98,9 +98,25 @@ namespace Khthon {
             std::string r
         ) : 
             Diagnostic(l, e),
-            reason(std::move(r))
+            reason_(std::move(r))
         {}
     
+        std::string to_string() const override;
+    };
+
+    class InternalDiagnostic : public Diagnostic {
+    private:
+        std::string reason_;
+    public:
+        InternalDiagnostic(
+            location l,
+            ErrorLevel e,
+            std::string r
+        ) : 
+            Diagnostic(l, e), 
+            reason_(std::move(r)) 
+        {}
+
         std::string to_string() const override;
     };
     
@@ -255,6 +271,11 @@ namespace Khthon {
          * @brief Adds a new diagnostic to the list.
          */
         void report(std::shared_ptr<Diagnostic> diagnostic);
+
+        /**
+         * @brief Logs an internal error.
+         */
+        void internal_error(const location& l, const std::string& reason);
 
         /**
          * @brief Helper function to add a new lexical note.

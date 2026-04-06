@@ -193,25 +193,32 @@ void Driver::print_AST(bool annotate) {
     cout << ast_dump << endl;
 }
 
+string InternalDiagnostic::to_string() const {
+    return format_location()
+        + ": internal error: \n"
+        + header()
+        + bold(reason_);
+}
+
 string LexicalDiagnostic::to_string() const {
     return format_location()
         + ": lexical error: \n"
         + header()
-        + bold(reason);
+        + bold(reason_);
 }
 
 string SyntaxDiagnostic::to_string() const {
     return format_location()
         + ": syntax error: \n" 
         + header()
-        + bold(reason);
+        + bold(reason_);
 }
 
 string SemanticDiagnostic::to_string() const {
     return format_location()
         + ": semantic error: \n"
         + header()
-        + bold(reason);
+        + bold(reason_);
 }
 
 void Driver::report(std::shared_ptr<Diagnostic> d) {
@@ -221,6 +228,10 @@ void Driver::report(std::shared_ptr<Diagnostic> d) {
         warning_count_++;
 
     diagnostics_.push_back(std::move(d));
+}
+
+void Driver::internal_error(const location& l, const std::string& reason) {
+    report(make_shared<InternalDiagnostic>(l, ErrorLevel::Error, reason));
 }
 
 void Driver::lexical_note(const location& l, const std::string& reason) {
@@ -285,22 +296,12 @@ string Diagnostic::format_location() const {
 }
 
 const string Diagnostic::header() const {
-    //todo Refactor. Use the switch default statement to return an error string
-    //todo Simply return in each case.
-    string header = "";
-
     switch (level_) {
-    case ErrorLevel::Error:
-        header = as_error("Error: ");
-        break;
-    case ErrorLevel::Warning:
-        header = as_warning("Warning: ");
-        break;
-    case ErrorLevel::Note:
-        header = as_note("Note: ");        
+    case ErrorLevel::Error:     return as_error("Error: ");
+    case ErrorLevel::Warning:   return as_warning("Warning: ");
+    case ErrorLevel::Note:      return as_note("Note: ");
     default:
-        break;
+        cerr << "Error in Diagnostic::header(): reached default case.";
+        return "";
     }
-
-    return header;
 }
