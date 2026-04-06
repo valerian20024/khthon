@@ -1,0 +1,15 @@
+class Main {
+    main(): int32 { }
+}
+
+class One extends Three {
+
+}
+
+class Two extends One {
+
+}
+
+class Three extends Two {
+
+}

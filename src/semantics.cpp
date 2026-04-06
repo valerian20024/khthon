@@ -2,6 +2,8 @@
 
 #include <string>
 #include <vector>
+#include <functional>
+#include <map>
 
 using namespace std;
 
@@ -130,8 +132,8 @@ bool SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
     root->accept(cv);
 
     check_main();
-
     check_parent_classes_exist();
+    check_inheritance_cycles();
 
     print_class_table();
 
@@ -200,6 +202,105 @@ void SemanticChecker::check_parent_classes_exist() const {
                 "class '" + name + "' extends unknown class '" + parent + "'"
             );
         }
+    }
+}
+
+
+void SemanticChecker::old_check_inheritance_cycles() const {
+    enum class State {Unvisited, Visiting, Visited };
+    map<string, State> states;
+
+    for (const auto& [name, info] : class_table_)
+        states[name] = State::Unvisited;
+
+    function<bool(const string&)> 
+    depth_first_search = [&](const string& name) -> bool {
+        states[name] = State::Visiting;
+
+        const string& parent = class_table_.at(name).parent();
+
+        if (parent != "Object") {
+            if (states[parent] == State::Visiting) {
+                driver_.semantic_error(
+                    class_table_.at(name).location(),
+                    "inheritance cycle detected involving class '" + name + "'"
+                );
+                return false;
+            }
+
+            if (states[parent] == State::Unvisited)
+                if (!depth_first_search(parent)) 
+                    return false;
+        }
+        
+        // Reached Object without finding loops.
+        states[name] = State::Visited;
+        return true;
+    };
+
+    for (const auto& [name, _] : class_table_)
+        if (states[name] == State::Unvisited)
+            depth_first_search(name);
+}
+
+
+
+bool SemanticChecker::cycle_check(
+    const string& name,
+    map<string, int>& states
+) const {
+    // Defining states as follows:
+    // 0 = not visited, 1 = visiting, 2 = visited
+    // A cycle is detected whenever we reach a visiting node
+    // while visiting another node.
+
+    // Mark as currently being explored
+    states[name] = 1;
+
+    const string& parent = class_table_.at(name).parent();
+
+    // Object is the root, no parent to explore
+    if (parent != "Object") {
+        if (class_table_.find(parent) == class_table_.end()) {
+            driver_.internal_error(
+                Khthon::location(),
+                "class is not part of the symbol table."
+            );
+            return true;
+        }
+
+        if (states[parent] == 1) {
+            // We've reached a node we're currently exploring: cycle!
+            driver_.semantic_error(
+                class_table_.at(name).location(),
+                "inheritance cycle detected involving class '" + name + "'"
+            );
+            return false;
+        }
+
+        if (states[parent] == 0) {
+            // Not yet visited: recurse
+            if (!cycle_check(parent, states))
+                return false;
+        }
+    }
+
+    // states[parent] == 2 means already fully explored, safe to skip
+    // Mark as fully explored
+    states[name] = 2;
+    return true;
+}
+
+void SemanticChecker::check_inheritance_cycles() {
+    // All classes start unvisited
+    map<string, int> states;
+    for (const auto& [name, info] : class_table_)
+        states[name] = 0;
+
+    // Start a DFS from each unvisited class
+    for (const auto& [name, info] : class_table_) {
+        if (states[name] == 0)
+            cycle_check(name, states);
     }
 }
 

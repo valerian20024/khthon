@@ -1,11 +1,3 @@
 class Main {
-    main(): int32 { }
-}
-
-class Moine extends Main {
-
-}
-
-class Mine extends Etranger {
     
 }

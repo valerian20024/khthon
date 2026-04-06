@@ -4,6 +4,9 @@
 #include "ast.hpp"
 #include "driver.hpp"
 
+#include <map>
+#include <string>
+
 namespace Khthon {
 
 
@@ -136,6 +139,11 @@ namespace Khthon {
         // Pass 2
         void check_main() const;
         void check_parent_classes_exist() const;
+        void old_check_inheritance_cycles() const;
+        void check_inheritance_cycles();
+
+        /// @brief Helper function implementing depth-first search for finding cycles.
+        bool cycle_check(const std::string& name, std::map<std::string, int>& states) const;
 
         // Pass 3
         //void check_inheritance_cycles() const;
