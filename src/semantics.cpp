@@ -7,7 +7,6 @@ using namespace std;
 
 using Khthon::Type;
 
-// todo Add Object class first, as it is predefined.
 void ClassesVisitor::visit(const ProgramNode& node) const {
     // Inject the built-in Object class
     Khthon::location builtin_loc;  // default location, no source file
@@ -58,6 +57,7 @@ void ClassesVisitor::visit(const ProgramNode& node) const {
 
     class_table_.emplace("Object", std::move(object_info));
 
+    // Reading concrete classes of the program.
     for (const auto& c : node.classes())
         c->accept(*this);
 }
@@ -131,6 +131,8 @@ bool SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
 
     check_main();
 
+    check_parent_classes_exist();
+
     print_class_table();
 
     return true;
@@ -184,7 +186,22 @@ void SemanticChecker::check_main() const {
     }
 }
 
-
+void SemanticChecker::check_parent_classes_exist() const {
+    for (const auto& [name, info] : class_table_) {
+        const string& parent = info.parent();
+        
+        // built-in root, always valid
+        if (parent == "Object") 
+            continue;
+        
+        if (!class_table_.count(parent)) {
+            driver_.semantic_error(
+                info.location(),
+                "class '" + name + "' extends unknown class '" + parent + "'"
+            );
+        }
+    }
+}
 
 
 

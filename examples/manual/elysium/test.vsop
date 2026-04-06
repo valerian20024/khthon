@@ -1,3 +1,11 @@
-class Main extends Banana {
-    main(): string { }
+class Main {
+    main(): int32 { }
+}
+
+class Moine extends Main {
+
+}
+
+class Mine extends Etranger {
+    
 }

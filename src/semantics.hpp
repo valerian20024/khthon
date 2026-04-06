@@ -135,7 +135,7 @@ namespace Khthon {
 
         // Pass 2
         void check_main() const;
-        //void check_parent_classes_exist() const;
+        void check_parent_classes_exist() const;
 
         // Pass 3
         //void check_inheritance_cycles() const;
