@@ -134,8 +134,9 @@ namespace Khthon {
         Driver& driver_;
         std::map<std::string, ClassInfo> class_table_;
 
-        // Private methods to perform various checks
+        // Private methods to perform various checks.
 
+        // For debugging symbol table.
         void print_class_table() const;
 
     public:
