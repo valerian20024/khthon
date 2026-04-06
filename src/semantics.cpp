@@ -11,49 +11,61 @@ void ClassesVisitor::visit(const ProgramNode& node) const {
 }
 
 void ClassesVisitor::visit(const ClassNode& node) const {
-    const string& name = node.name();
+    const string& class_name = node.name();
 
     // Not updating the symbol table if duplicates.
-    if (class_table_.count(name)) {
+    if (class_table_.count(class_name)) {
         driver_.semantic_error(
             node.location(), 
-            "class '" + name + "' is defined more than once"
+            "class '" + class_name + "' is defined more than once"
         );
         return;
     }
 
-    ClassInfo info(node.name(), node.parent(), node.location());
+    ClassInfo info(class_name, node.parent(), node.location());
 
-    for (const auto& f : node.fields()) {
-        FieldInfo fi(f->name(), f->type(), f->location());
+    for (const auto& field : node.fields()) {
+        FieldInfo field_info(
+            field->name(), 
+            field->type(), 
+            field->location()
+        );
 
-        if (!info.add_field(std::move(fi))) {
+        if (!info.add_field(std::move(field_info))) {
             driver_.semantic_error(
-                f->location(), 
-                "field '" + f->name() + "' is defined more than once"
+                field->location(), 
+                "field '" + field->name() + "' is defined more than once"
             );
         }
     }
 
     // build FormalInfo list from m->formals()
-    
-    for (const auto& m : node.methods()) {
+    for (const auto& method : node.methods()) {
         
         vector<FormalInfo> formals_infos;
-        for (const auto& f : m->formals())
-            formals_infos.emplace_back(f->name(), f->type(), f->location());
+        for (const auto& formal : method->formals())
+            formals_infos.emplace_back(
+                formal->name(), 
+                formal->type(), 
+                formal->location()
+            );
         
-        MethodInfo mi(m->name(), m->type(), std::move(formals_infos), m->location());
+        MethodInfo method_info(
+            method->name(), 
+            method->type(), 
+            std::move(formals_infos), 
+            method->location()
+        );
 
-        if (!info.add_method(std::move(mi))) {
+        if (!info.add_method(std::move(method_info))) {
             driver_.semantic_error(
-                m->location(),
-                "method '" + m->name() + "' is defined more than once"
+                method->location(),
+                "method '" + method->name() + "' is defined more than once"
             );
         }
     }
 
-    class_table_.emplace(node.name(), std::move(info));
+    class_table_.emplace(class_name, std::move(info));
 }
 
 bool SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
