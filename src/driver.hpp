@@ -11,6 +11,7 @@
 
 /*
 ? Who should have driver as reference to be able to send InternalDiagnostics ?
+    Instead, create a DiagnosticHandler class that has the duty to log new diags, etc.
 */
 
 // Give prototype of yylex() function, then declare it.
@@ -117,6 +118,7 @@ namespace Khthon {
             reason_(std::move(r)) 
         {}
 
+        // Should have a distinct printing scheme for ease of spotting "real" errors.
         std::string to_string() const override;
     };
     

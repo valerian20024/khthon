@@ -86,26 +86,55 @@ bool SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
 }
 
 void SemanticChecker::check_main() const {
-    
-    auto list = class_table_.find("List");
-
     auto main_class = class_table_.find("Main");
     if (main_class == class_table_.end()) {
 
-        //Khthon::location loc;
-        //loc.initialize(nullptr, 1, 1);
+        //todo  Initialize location to filename: 1: 1
+        //todo  Maybe create a helper in driver?
         driver_.semantic_error(
             Khthon::location(),  // no meaningful location
             "no 'Main' class defined"
         );
         return;
     }
-    
+
+    const ClassInfo& main_info = main_class->second;
+
+    // Check main method exists
+    const auto& methods = main_info.methods();
+    auto main_method = methods.find("main");
+    if (main_method == methods.end()) {
+        driver_.semantic_error(
+            main_info.location(),
+            "class 'Main' has no 'main' method"
+        );
+        return;
+    }
+
+    const MethodInfo& method_info = main_method->second;
+
+    // Check main takes no formals
+    if (!method_info.formals().empty()) {
+        driver_.semantic_error(
+            method_info.location(),
+            "method 'main' must take no arguments"
+        );
+    }
+
+    // Check main returns int32
+    const Khthon::Type& return_type = method_info.return_type();
+    if (return_type.kind != Khthon::Type::Kind::INT32) {
+        driver_.semantic_error(
+            method_info.location(),
+            "method 'main' must return 'int32', found '" 
+            + return_type.to_string() 
+            + "'"
+        );
+    }
 }
 
 void SemanticChecker::print_class_table() const {
     for (const auto& [class_name, class_info] : class_table_) {
-        
         // Class and inheritance.
         cout << "-------------------------\n"
              << "Class: " << class_name 
