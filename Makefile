@@ -138,10 +138,7 @@ clean:
 	@rm -f $(SRC_DIR)/lexer.cpp $(SRC_DIR)/parser.cpp $(SRC_DIR)/parser.hpp $(SRC_DIR)/location.hh
 	@rm -f $(ARCHIVE)
 
-debug: BISONFLAGS += -Wcounterexamples
-
+debug: CXXFLAGS += -DDEBUG
 debug: $(EXEC)
-	@echo "SRC: $(SRC)"
-	@echo "OBJ: $(OBJ)"
 
 .PHONY: all clean install-tools archive debug

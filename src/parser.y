@@ -276,7 +276,7 @@ optional_extends
     { 
       $$ = $2; 
     }
-  | EXTENDS TYPE_IDENTIFIER error LEFT_BRACE
+  | EXTENDS TYPE_IDENTIFIER error
     {
       ERROR(@3, "Cannot extend more than one class.");
       $$ = $2;

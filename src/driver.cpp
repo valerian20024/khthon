@@ -217,7 +217,12 @@ void Driver::print_AST(bool annotate, std::ostream& out) {
 
 
 void Driver::internal_error(const std::string& reason) {
-    cerr << internal_banner() << reason << endl;
+    // Only output internal errors when debugging.
+    #ifdef DEBUG
+        cerr << internal_banner() << reason << endl;
+    #else 
+        (void) reason;
+    #endif
 }
 
 string LexicalDiagnostic::to_string() const {
