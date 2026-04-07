@@ -1,0 +1,323 @@
+src/parser.y: warning: 14 shift/reduce conflicts [-Wconflicts-sr]
+src/parser.y: warning: shift/reduce conflict on token "}" [-Wcounterexamples]
+  Example: "{" "{" expression_list • "}"
+  Shift derivation
+    block
+    ↳ 34: "{" expression_list
+              ↳ 37: expression
+                    ↳ 48: block
+                          ↳ 33: "{" expression_list • "}"
+  Reduce derivation
+    block
+    ↳ 33: "{" expression_list                         "}"
+              ↳ 37: expression
+                    ↳ 48: block
+                          ↳ 34: "{" expression_list •
+src/parser.y: warning: shift/reduce conflict on token ";" [-Wcounterexamples]
+  Example: "{" expression • ";" expression_list
+  Shift derivation
+    expression
+    ↳ 48: block
+          ↳ 34: "{" expression_list
+                    ↳ 35: expression • ";" expression_list
+  Reduce derivation
+    expression_list
+    ↳ 35: expression                         ";" expression_list
+          ↳ 48: block
+                ↳ 34: "{" expression_list
+                          ↳ 37: expression •
+src/parser.y: warning: shift/reduce conflict on token ";" [-Wcounterexamples]
+  Example: "{" expression • ";"
+  Shift derivation
+    expression
+    ↳ 48: block
+          ↳ 34: "{" expression_list
+                    ↳ 36: expression • ";"
+  Reduce derivation
+    expression_list
+    ↳ 36: expression                         ";"
+          ↳ 48: block
+                ↳ 34: "{" expression_list
+                          ↳ 37: expression •
+src/parser.y: warning: shift/reduce conflict on token "=" [-Wcounterexamples]
+Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...time limit exceeded: 6.000000
+  First example: expression • "=" expression ";" expression_list "}" ";"
+  Shift derivation
+    field
+    ↳ 14: expression                              ";" expression                      ";"
+          ↳ 43: binary_operation_expr                 ↳ 48: block
+                ↳ 66: expression • "=" expression           ↳ 33: expression_list "}"
+  Second example: "object-identifier" "{" expression • "=" expression ";"
+  Reduce derivation
+    field
+    ↳ 14: "object-identifier" expression                                                    ";"
+                              ↳ 43: binary_operation_expr
+                                    ↳ 66: expression                         "=" expression
+                                          ↳ 48: block
+                                                ↳ 34: "{" expression_list
+                                                          ↳ 37: expression •
+src/parser.y: warning: shift/reduce conflict on token "<" [-Wcounterexamples]
+Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...time limit exceeded: 6.000000
+  First example: expression • "<" expression ";" expression_list "}" ";"
+  Shift derivation
+    field
+    ↳ 14: expression                              ";" expression                      ";"
+          ↳ 43: binary_operation_expr                 ↳ 48: block
+                ↳ 67: expression • "<" expression           ↳ 33: expression_list "}"
+  Second example: "object-identifier" "{" expression • "<" expression ";"
+  Reduce derivation
+    field
+    ↳ 14: "object-identifier" expression                                                    ";"
+                              ↳ 43: binary_operation_expr
+                                    ↳ 67: expression                         "<" expression
+                                          ↳ 48: block
+                                                ↳ 34: "{" expression_list
+                                                          ↳ 37: expression •
+src/parser.y: warning: shift/reduce conflict on token "<=" [-Wcounterexamples]
+Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...time limit exceeded: 6.000000
+  First example: expression • "<=" expression ";" expression_list "}" ";"
+  Shift derivation
+    field
+    ↳ 14: expression                               ";" expression                      ";"
+          ↳ 43: binary_operation_expr                  ↳ 48: block
+                ↳ 68: expression • "<=" expression           ↳ 33: expression_list "}"
+  Second example: "object-identifier" "{" expression • "<=" expression ";"
+  Reduce derivation
+    field
+    ↳ 14: "object-identifier" expression                                                     ";"
+                              ↳ 43: binary_operation_expr
+                                    ↳ 68: expression                         "<=" expression
+                                          ↳ 48: block
+                                                ↳ 34: "{" expression_list
+                                                          ↳ 37: expression •
+src/parser.y: warning: shift/reduce conflict on token "+" [-Wcounterexamples]
+Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...time limit exceeded: 6.000000
+  First example: expression • "+" expression ";" expression_list "}" ";"
+  Shift derivation
+    field
+    ↳ 14: expression                              ";" expression                      ";"
+          ↳ 43: binary_operation_expr                 ↳ 48: block
+                ↳ 69: expression • "+" expression           ↳ 33: expression_list "}"
+  Second example: "object-identifier" "{" expression • "+" expression ";"
+  Reduce derivation
+    field
+    ↳ 14: "object-identifier" expression                                                    ";"
+                              ↳ 43: binary_operation_expr
+                                    ↳ 69: expression                         "+" expression
+                                          ↳ 48: block
+                                                ↳ 34: "{" expression_list
+                                                          ↳ 37: expression •
+src/parser.y: warning: shift/reduce conflict on token "-" [-Wcounterexamples]
+Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...time limit exceeded: 6.000000
+  First example: expression • "-" expression ";" expression_list "}" ";"
+  Shift derivation
+    field
+    ↳ 14: expression                              ";" expression                      ";"
+          ↳ 43: binary_operation_expr                 ↳ 48: block
+                ↳ 70: expression • "-" expression           ↳ 33: expression_list "}"
+  Second example: "object-identifier" "{" expression • "-" expression ";"
+  Reduce derivation
+    field
+    ↳ 14: "object-identifier" expression                                                    ";"
+                              ↳ 43: binary_operation_expr
+                                    ↳ 70: expression                         "-" expression
+                                          ↳ 48: block
+                                                ↳ 34: "{" expression_list
+                                                          ↳ 37: expression •
+src/parser.y: warning: shift/reduce conflict on token "*" [-Wcounterexamples]
+Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...time limit exceeded: 6.000000
+  First example: expression • "*" expression ";" expression_list "}" ";"
+  Shift derivation
+    field
+    ↳ 14: expression                              ";" expression                      ";"
+          ↳ 43: binary_operation_expr                 ↳ 48: block
+                ↳ 71: expression • "*" expression           ↳ 33: expression_list "}"
+  Second example: "object-identifier" "{" expression • "*" expression ";"
+  Reduce derivation
+    field
+    ↳ 14: "object-identifier" expression                                                    ";"
+                              ↳ 43: binary_operation_expr
+                                    ↳ 71: expression                         "*" expression
+                                          ↳ 48: block
+                                                ↳ 34: "{" expression_list
+                                                          ↳ 37: expression •
+src/parser.y: warning: shift/reduce conflict on token "/" [-Wcounterexamples]
+Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...time limit exceeded: 6.000000
+  First example: expression • "/" expression ";" expression_list "}" ";"
+  Shift derivation
+    field
+    ↳ 14: expression                              ";" expression                      ";"
+          ↳ 43: binary_operation_expr                 ↳ 48: block
+                ↳ 72: expression • "/" expression           ↳ 33: expression_list "}"
+  Second example: "object-identifier" "{" expression • "/" expression ";"
+  Reduce derivation
+    field
+    ↳ 14: "object-identifier" expression                                                    ";"
+                              ↳ 43: binary_operation_expr
+                                    ↳ 72: expression                         "/" expression
+                                          ↳ 48: block
+                                                ↳ 34: "{" expression_list
+                                                          ↳ 37: expression •
+src/parser.y: warning: shift/reduce conflict on token "^" [-Wcounterexamples]
+Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...time limit exceeded: 6.000000
+  First example: expression • "^" expression ";" expression_list "}" ";"
+  Shift derivation
+    field
+    ↳ 14: expression                              ";" expression                      ";"
+          ↳ 43: binary_operation_expr                 ↳ 48: block
+                ↳ 73: expression • "^" expression           ↳ 33: expression_list "}"
+  Second example: "object-identifier" "{" expression • "^" expression ";"
+  Reduce derivation
+    field
+    ↳ 14: "object-identifier" expression                                                    ";"
+                              ↳ 43: binary_operation_expr
+                                    ↳ 73: expression                         "^" expression
+                                          ↳ 48: block
+                                                ↳ 34: "{" expression_list
+                                                          ↳ 37: expression •
+src/parser.y: warning: shift/reduce conflict on token "and" [-Wcounterexamples]
+Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...time limit exceeded: 6.000000
+  First example: expression • "and" expression ";" expression_list "}" ";"
+  Shift derivation
+    field
+    ↳ 14: expression                                ";" expression                      ";"
+          ↳ 43: binary_operation_expr                   ↳ 48: block
+                ↳ 74: expression • "and" expression           ↳ 33: expression_list "}"
+  Second example: "object-identifier" "{" expression • "and" expression ";"
+  Reduce derivation
+    field
+    ↳ 14: "object-identifier" expression                                                      ";"
+                              ↳ 43: binary_operation_expr
+                                    ↳ 74: expression                         "and" expression
+                                          ↳ 48: block
+                                                ↳ 34: "{" expression_list
+                                                          ↳ 37: expression •
+src/parser.y: warning: shift/reduce conflict on token "." [-Wcounterexamples]
+Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...time limit exceeded: 6.000000
+  First example: expression • "." "object-identifier" "(" ")" ";" expression_list "}" ";"
+  Shift derivation
+    field
+    ↳ 14: expression                                                        ";" expression                      ";"
+          ↳ 46: call_expr                                                       ↳ 48: block
+                ↳ 78: expression • "." "object-identifier" "(" arg_list ")"           ↳ 33: expression_list "}"
+                                                               ↳ 78: ε
+  Second example: "object-identifier" "{" expression • "." "object-identifier" "(" ")" ";"
+  Reduce derivation
+    field
+    ↳ 14: "object-identifier" expression                                                                              ";"
+                              ↳ 46: call_expr
+                                    ↳ 78: expression                         "." "object-identifier" "(" arg_list ")"
+                                          ↳ 48: block                                                    ↳ 78: ε
+                                                ↳ 34: "{" expression_list
+                                                          ↳ 37: expression •
+src/parser.y: warning: shift/reduce conflict on token "object-identifier" [-Wcounterexamples]
+time limit exceeded: 6.000000
+  First example: "class" "type-identifier" optional_extends "{" "object-identifier" ":" type "{" expression ";" • "object-identifier" "<-" expression ";" expression_list "}" method field "}" $end
+  Shift derivation
+    $accept
+    ↳ 0: program                                                                                                                                                                                                                                           $end
+         ↳ 1: class_list
+              ↳ 2: class
+                   ↳ 4: "class" "type-identifier" optional_extends class_body
+                                                                   ↳ 8: "{" class_content                                                                                                                                                              "}"
+                                                                            ↳ 10: class_content                                                                                                                                                  field
+                                                                                  ↳ 11: method                                                                                                                                            method
+                                                                                        ↳ 21: "object-identifier" ":" type block
+                                                                                                                           ↳ 33: "{" expression_list                                                                                  "}"
+                                                                                                                                     ↳ 35: expression ";" expression_list
+                                                                                                                                                          ↳ 35: expression                                        ";" expression_list
+                                                                                                                                                                ↳ 40: assign_expr
+                                                                                                                                                                      ↳ 61: • "object-identifier" "<-" expression
+  Second example: "class" "type-identifier" optional_extends "{" class_content "object-identifier" ":" type "{" expression ";" • "object-identifier" ":" type ";" "}" $end
+  Reduce derivation
+    $accept
+    ↳ 0: program                                                                                                                                                                                                     $end
+         ↳ 1: class_list
+              ↳ 2: class
+                   ↳ 4: "class" "type-identifier" optional_extends class_body
+                                                                   ↳ 8: "{" class_content                                                                                                                        "}"
+                                                                            ↳ 10: class_content                                                                           field
+                                                                                  ↳ 11: class_content method                                                              ↳ 12: "object-identifier" ":" type ";"
+                                                                                                      ↳ 21: "object-identifier" ":" type block
+                                                                                                                                         ↳ 34: "{" expression_list
+                                                                                                                                                   ↳ 36: expression ";" •
+src/parser.y: warning: shift/reduce conflict on token "-" [-Wcounterexamples]
+time limit exceeded: 6.000000
+  First example: "class" "type-identifier" optional_extends "{" "object-identifier" "<-" "{" expression ";" • "-" expression ";" expression_list "}" ";" field "}" $end
+  Shift derivation
+    $accept
+    ↳ 0: program                                                                                                                                                                                                               $end
+         ↳ 1: class_list
+              ↳ 2: class
+                   ↳ 4: "class" "type-identifier" optional_extends class_body
+                                                                   ↳ 8: "{" class_content                                                                                                                                  "}"
+                                                                            ↳ 10: field                                                                                                                              field
+                                                                                  ↳ 14: "object-identifier" "<-" expression                                                                                      ";"
+                                                                                                                 ↳ 48: block
+                                                                                                                       ↳ 33: "{" expression_list                                                             "}"
+                                                                                                                                 ↳ 35: expression ";" expression_list
+                                                                                                                                                      ↳ 35: expression                   ";" expression_list
+                                                                                                                                                            ↳ 42: unary_operation_expr
+                                                                                                                                                                  ↳ 64: • "-" expression
+  Second example: "class" "type-identifier" optional_extends "{" class_content "object-identifier" "<-" "{" expression ";" • "-" expression ";" "}" $end
+  Reduce derivation
+    $accept
+    ↳ 0: program                                                                                                                                                                                         $end
+         ↳ 1: class_list
+              ↳ 2: class
+                   ↳ 4: "class" "type-identifier" optional_extends class_body
+                                                                   ↳ 8: "{" class_content                                                                                                            "}"
+                                                                            ↳ 10: class_content field
+                                                                                                ↳ 14: "object-identifier" "<-" expression                                                        ";"
+                                                                                                                               ↳ 43: binary_operation_expr
+                                                                                                                                     ↳ 70: expression                             "-" expression
+                                                                                                                                           ↳ 48: block
+                                                                                                                                                 ↳ 34: "{" expression_list
+                                                                                                                                                           ↳ 36: expression ";" •
+src/parser.y: warning: shift/reduce conflict on token "object-identifier" [-Wcounterexamples]
+time limit exceeded: 6.000000
+  First example: "class" "type-identifier" optional_extends "{" "object-identifier" ":" type "{" expression ";" • "object-identifier" ";" expression_list "}" method field "}" $end
+  Shift derivation
+    $accept
+    ↳ 0: program                                                                                                                                                                                                                           $end
+         ↳ 1: class_list
+              ↳ 2: class
+                   ↳ 4: "class" "type-identifier" optional_extends class_body
+                                                                   ↳ 8: "{" class_content                                                                                                                                              "}"
+                                                                            ↳ 10: class_content                                                                                                                                  field
+                                                                                  ↳ 11: method                                                                                                                            method
+                                                                                        ↳ 21: "object-identifier" ":" type block
+                                                                                                                           ↳ 33: "{" expression_list                                                                  "}"
+                                                                                                                                     ↳ 35: expression ";" expression_list
+                                                                                                                                                          ↳ 35: expression                        ";" expression_list
+                                                                                                                                                                ↳ 45: variable_expr
+                                                                                                                                                                      ↳ 76: • "object-identifier"
+  Second example: "class" "type-identifier" optional_extends "{" class_content "object-identifier" ":" type "{" expression ";" • "object-identifier" ":" type ";" "}" $end
+  Reduce derivation
+    $accept
+    ↳ 0: program                                                                                                                                                                                                     $end
+         ↳ 1: class_list
+              ↳ 2: class
+                   ↳ 4: "class" "type-identifier" optional_extends class_body
+                                                                   ↳ 8: "{" class_content                                                                                                                        "}"
+                                                                            ↳ 10: class_content                                                                           field
+                                                                                  ↳ 11: class_content method                                                              ↳ 12: "object-identifier" ":" type ";"
+                                                                                                      ↳ 21: "object-identifier" ":" type block
+                                                                                                                                         ↳ 34: "{" expression_list
+                                                                                                                                                   ↳ 36: expression ";" •
+src/parser.y: warning: shift/reduce conflict on token "object-identifier" [-Wcounterexamples]
+Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...time limit exceeded: 6.000000
+  First example: type "{" expression ";" • "object-identifier" "(" ")" "}"
+  Shift derivation
+    class_content
+    ↳ 11: type method
+               ↳ 21: "{" expression ";" block
+                                        ↳ 33: call_expr                                    "}"
+                                              ↳ 79: • "object-identifier" "(" arg_list ")"
+                                                                              ↳ 79: ε
+  Second example: "(" ")" ")" ":" type block
+  Reduce derivation
+    class_content
+    ↳ 11: "(" method
+              ↳ 19: formals ")" ")" ":" type block
+                    ↳ 19: ε
