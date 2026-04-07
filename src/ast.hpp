@@ -57,6 +57,12 @@ namespace Khthon {
     //todo Make it a class also, it's getting much more complicated than a struct
     //todo Make the other struct classes as well.
     //? add driver reference for methods to log internal errors?
+
+    /**
+     * @brief Represents a type in VSOP.
+     * 
+     * It can be a primitive type like int32 or a custom type, defined by a class.
+     */
     struct Type {
         enum class Kind { 
             CUSTOM, 
@@ -73,7 +79,12 @@ namespace Khthon {
         // Default ctor is required by Bison
         Type() = default;
         explicit Type(Kind k) : kind(k), custom_name("") { }
-        explicit Type(std::string name) : kind(Kind::CUSTOM), custom_name(std::move(name)) { }
+        explicit Type(
+            std::string name
+        ) : 
+            kind(Kind::CUSTOM), 
+            custom_name(std::move(name)) 
+        { }
 
         std::string to_string() const;
     };
@@ -786,7 +797,6 @@ namespace Khthon {
 
     /**
      * @brief Visitor responsible for printing an Abstract Syntax Tree.
-     * @note Will be 
      */
     class PrintVisitor : public StringVisitor {
     private:
