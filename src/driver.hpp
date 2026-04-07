@@ -251,7 +251,7 @@ namespace Khthon {
         /**
          * @brief Print all the tokens, that is the output of the lexical analysis
          */
-        void print_tokens(bool to_stderr);
+        void print_tokens(std::ostream& out);
 
         /**
          * @brief Print the abstract syntax tree.

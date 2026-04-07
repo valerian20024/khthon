@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 
 CXX        = clang++
-CXXFLAGS   = -Wall -Wextra -g -std=c++17
+CXXFLAGS   = -Wall -Wextra -g -std=c++17 -gdwarf-4
 
 BISONFLAGS = -d
 FLEXFLAGS  =

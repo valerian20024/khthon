@@ -87,12 +87,11 @@ int Driver::lex() {
     }
 
     scan_end();
-
     
     print_diagnostics();
 
-    bool has_error = error_count_ > 0;
-    print_tokens(has_error);
+    // All correct tokens must be printed, whatever the error.
+    print_tokens(cout);
 
     return error;
 }
@@ -191,9 +190,7 @@ static void print_token(Parser::symbol_type token, std::ostream& out) {
 }
 
 
-void Driver::print_tokens(bool to_stderr = false) {
-    std::ostream& out = to_stderr ? std::cerr : std::cout;
-    
+void Driver::print_tokens(std::ostream& out) {    
     for (auto token : tokens)
         print_token(token, out);
 }

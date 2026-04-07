@@ -1,8 +1,12 @@
-42;
+// Methods should be inside classes
+add(l : int32, r : int32) : int32 { l + r }
 
-class Main {
+
+class First {
 
 }
+
+i : int32 <- 42; // Fields should be inside classes
 
 class Second {
 
