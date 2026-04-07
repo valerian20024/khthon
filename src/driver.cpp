@@ -65,47 +65,6 @@ static const map<Parser::token_type, string> type_to_string = {
     {Parser::token::STRING_LITERAL,     "string-literal"},
 };
 
-/**
- * @brief Print the information about a token
- *
- * @param token the token
- */
-static void print_token(Parser::symbol_type token) {
-    position pos = token.location.begin;
-    Parser::token_type type = (Parser::token_type)token.type_get();
-
-    cout << pos.line << ","
-         << pos.column << ","
-         << type_to_string.at(type);
-
-    // When token has a value, print it based on its type
-    switch (type) {
-        case Parser::token::INTEGER_LITERAL: {
-            int value = token.value.as<int>();
-            cout << "," << value;
-            break;
-        }
-        case Parser::token::TYPE_IDENTIFIER: {
-            string id = token.value.as<string>();
-            cout << "," << id;
-            break;
-        }
-        case Parser::token::OBJECT_IDENTIFIER: {
-            string id = token.value.as<string>();
-            cout << "," << id;
-            break;
-        }
-        case Parser::token::STRING_LITERAL: {
-            string id = token.value.as<string>();
-            cout << "," << id;
-            break;
-        }
-        default:
-            break;
-    }
-    cout << endl;
-}
-
 int Driver::lex() {
     scan_begin();
 
@@ -129,10 +88,11 @@ int Driver::lex() {
 
     scan_end();
 
+    
     print_diagnostics();
 
-    // Always printing tokens even if there is an error
-    print_tokens();
+    bool has_error = error_count_ > 0;
+    print_tokens(has_error);
 
     return error;
 }
@@ -147,9 +107,11 @@ int Driver::parse() {
 
     delete parser;
 
-    print_AST(false);
-
     print_diagnostics();
+
+    bool has_error = error_count_ > 0 || warning_count_ > 0;
+    print_AST(false, has_error);
+    
 
     if (error_count_ > 0 || warning_count_ > 0)
         return 1;
@@ -171,9 +133,11 @@ int Driver::analyze() {
     res = checker.analyze(ast_root);
 
     print_diagnostics();
-    print_AST(true);
 
-    if (error_count_ > 0 || warning_count_ > 0)
+    bool has_error = error_count_ > 0 || warning_count_ > 0;
+    print_AST(true, has_error);
+
+    if (has_error)
         return 1;
 
     return res;
@@ -183,16 +147,65 @@ int Driver::generate() {
     return 0;
 }
 
-void Driver::print_tokens() {
-    for (auto token : tokens)
-        print_token(token);
+
+/**
+ * @brief Print the information about a token
+ *
+ * @param token the token
+ * todo make it a method of Driver
+ */
+static void print_token(Parser::symbol_type token, std::ostream& out) {
+    position pos = token.location.begin;
+    Parser::token_type type = (Parser::token_type)token.type_get();
+
+    out << pos.line << ","
+         << pos.column << ","
+         << type_to_string.at(type);
+
+    // When token has a value, print it based on its type
+    switch (type) {
+        case Parser::token::INTEGER_LITERAL: {
+            int value = token.value.as<int>();
+            out << "," << value;
+            break;
+        }
+        case Parser::token::TYPE_IDENTIFIER: {
+            string id = token.value.as<string>();
+            out << "," << id;
+            break;
+        }
+        case Parser::token::OBJECT_IDENTIFIER: {
+            string id = token.value.as<string>();
+            out << "," << id;
+            break;
+        }
+        case Parser::token::STRING_LITERAL: {
+            string id = token.value.as<string>();
+            out << "," << id;
+            break;
+        }
+        default:
+            break;
+    }
+    out << endl;
 }
 
-void Driver::print_AST(bool annotate) {
+
+void Driver::print_tokens(bool to_stderr = false) {
+    std::ostream& out = to_stderr ? std::cerr : std::cout;
+    
+    for (auto token : tokens)
+        print_token(token, out);
+}
+
+void Driver::print_AST(bool annotate, bool to_stderr = false) {
+    std::ostream& out = to_stderr ? std::cerr : std::cout;
+
     PrintVisitor printer(annotate);
+    
     if (ast_root) {
         string ast_dump = ast_root->accept(printer);
-        cout << ast_dump << endl;
+        out << ast_dump << endl;
     } else {
         internal_error(
             Khthon::location(),

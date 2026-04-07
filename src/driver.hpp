@@ -251,13 +251,13 @@ namespace Khthon {
         /**
          * @brief Print all the tokens, that is the output of the lexical analysis
          */
-        void print_tokens();
+        void print_tokens(bool to_stderr);
 
         /**
          * @brief Print the abstract syntax tree.
          * @param annotate: print with or without annotations.
          */
-        void print_AST(bool annotate);
+        void print_AST(bool annotate, bool to_stderr);
 
         /**
          * @brief The result of the computation.
