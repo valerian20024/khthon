@@ -70,7 +70,7 @@ int Driver::lex() {
     scan_begin();
 
     //todo use the new error mecanism instead of the one of the old calc 
-    int error = 0;
+    int res = 0;
 
     while (true)
     {
@@ -84,7 +84,7 @@ int Driver::lex() {
             tokens.push_back(token);
 
         else
-            error = 1;
+            res = 1;
     }
 
     scan_end();
@@ -94,7 +94,9 @@ int Driver::lex() {
     // All correct tokens must be printed, whatever the error.
     print_tokens(cout);
 
-    return error;
+    bool has_error = error_count_ > 0 || warning_count_ > 0;
+    
+    return has_error ? 1 : res;
 }
 
 int Driver::parse() {
@@ -118,7 +120,7 @@ int Driver::parse() {
     if (has_error)
         return 1;
 
-    return res;
+    return has_error ? 1 : res;
 }
 
 int Driver::analyze() {
@@ -142,13 +144,7 @@ int Driver::analyze() {
     else 
         print_AST(true, cout);
 
-    //print_diagnostics();
-
-
-    if (has_error)
-        return 1;
-
-    return res;
+    return has_error ? 1 : res;
 }
 
 int Driver::generate() {
@@ -214,7 +210,6 @@ void Driver::print_AST(bool annotate, std::ostream& out) {
         internal_error("The ast_root is a null pointer. Unable to print the ast dump.");
     }
 }
-
 
 void Driver::internal_error(const std::string& reason) {
     // Only output internal errors when debugging.
