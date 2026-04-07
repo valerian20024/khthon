@@ -105,11 +105,11 @@ namespace Khthon {
         std::string to_string() const override;
     };
 
-    class InternalDiagnostic : public Diagnostic {
+    class GenerationDiagnostic : public Diagnostic {
     private:
         std::string reason_;
     public:
-        InternalDiagnostic(
+        GenerationDiagnostic(
             location l,
             ErrorLevel e,
             std::string r
@@ -118,7 +118,6 @@ namespace Khthon {
             reason_(std::move(r)) 
         {}
 
-        // Should have a distinct printing scheme for ease of spotting "real" errors.
         std::string to_string() const override;
     };
     
@@ -277,7 +276,7 @@ namespace Khthon {
         /**
          * @brief Logs an internal error.
          */
-        void internal_error(const location& l, const std::string& reason);
+        void internal_error(const std::string& reason);
 
         /**
          * @brief Helper function to add a new lexical note.
@@ -324,6 +323,21 @@ namespace Khthon {
          */
         void semantic_error(const location& l, const std::string& reason);        
         
+        /**
+         * @brief Helper function to add a new semantic note.
+         */
+        void generation_note(const location& l, const std::string& reason);
+
+        /**
+         * @brief Helper function to add a new semantic warning.
+         */
+        void generation_warning(const location& l, const std::string& reason);
+
+        /**
+         * @brief Helper function to add a new semantic error.
+         */
+        void generation_error(const location& l, const std::string& reason);      
+
         /**
          * @brief Prints all the diagnostics.
          */

@@ -217,10 +217,7 @@ bool SemanticChecker::cycle_check(
     if (parent != "Object" && parent != "") {
 
         if (class_table_.find(parent) == class_table_.end()) {
-            driver_.internal_error(
-                Khthon::location(),
-                "class '" + parent + "' is not part of the symbol table."
-            );
+            driver_.internal_error("class '" + parent + "' is not part of the symbol table.");
             return true;
         }
 
