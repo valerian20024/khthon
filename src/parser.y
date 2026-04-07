@@ -192,7 +192,7 @@ program
       driver.ast_root = $$;
     }
   /* 46 Bare fields */
-  | field error class_list
+  | field
     {
       ERROR(@1, "Fields should be enclosed in classes.");
       $$ = std::make_shared<ProgramNode>(
@@ -202,7 +202,7 @@ program
       driver.ast_root = $$;
     }
   /* 47 Bare method */
-  | method error class_list
+  | method
     {
       ERROR(@1, "Methods should be enclosed in classes.");
       $$ = std::make_shared<ProgramNode>(
@@ -288,6 +288,11 @@ class_content
     {
       $$ = std::move($1);
       $$.methods.push_back(std::move($2));
+    }
+  | class
+    {
+      ERROR(@1, "Redefinition of a class inside a class.");
+      $$ = Khthon::ClassMembers();
     }
   ;
 

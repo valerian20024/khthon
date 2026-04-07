@@ -65,6 +65,7 @@ static const map<Parser::token_type, string> type_to_string = {
     {Parser::token::STRING_LITERAL,     "string-literal"},
 };
 
+
 int Driver::lex() {
     scan_begin();
 
@@ -212,11 +213,7 @@ void Driver::print_AST(bool annotate, bool to_stderr = false) {
 }
 
 string InternalDiagnostic::to_string() const {
-    return as_error(
-        format_location() 
-        + ": internal error: " 
-        + reason_
-    );
+    return as_error("Internal error: " + reason_);
 }
 
 string LexicalDiagnostic::to_string() const {

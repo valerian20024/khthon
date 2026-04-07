@@ -1,0 +1,3 @@
+class John extends Human extends Animal {
+    s : string <- "John";
+}

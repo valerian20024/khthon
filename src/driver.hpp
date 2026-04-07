@@ -35,8 +35,8 @@ namespace Khthon {
         ErrorLevel level_;
 
         Diagnostic(
-            location location,
-            ErrorLevel level
+            location location = Khthon::location(),
+            ErrorLevel level = ErrorLevel::Error
         ) : 
             loc_(std::move(location)), 
             level_(std::move(level)) 
