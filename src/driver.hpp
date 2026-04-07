@@ -257,7 +257,7 @@ namespace Khthon {
          * @brief Print the abstract syntax tree.
          * @param annotate: print with or without annotations.
          */
-        void print_AST(bool annotate, bool to_stderr);
+        void print_AST(bool annotate, std::ostream& out);
 
         /**
          * @brief The result of the computation.

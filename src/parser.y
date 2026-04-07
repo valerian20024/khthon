@@ -211,6 +211,7 @@ program
       );
       driver.ast_root = $$;
     }
+  /*
   | error class_list
     {
       ERROR(@1, "top-level construct is not a class. Skipping.");
@@ -221,6 +222,7 @@ program
       );
       driver.ast_root = $$;
     }
+  */
   ;
 
 class_list
@@ -266,8 +268,19 @@ class
 
 
 optional_extends
-  : %empty                        { $$ = "Object"; }
-  | EXTENDS TYPE_IDENTIFIER       { $$ = $2; }
+  : %empty                        
+    { 
+      $$ = "Object"; 
+    }
+  | EXTENDS TYPE_IDENTIFIER
+    { 
+      $$ = $2; 
+    }
+  | EXTENDS TYPE_IDENTIFIER error LEFT_BRACE
+    {
+      ERROR(@3, "Cannot extend more than one class.");
+      $$ = $2;
+    }
   ;
 
 class_body

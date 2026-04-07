@@ -110,10 +110,14 @@ int Driver::parse() {
     print_diagnostics();
 
     bool has_error = error_count_ > 0 || warning_count_ > 0;
-    print_AST(false, has_error);
-    
+    if (has_error)
+        print_AST(false, cerr);
+    else 
+        print_AST(false, cout);
 
-    if (error_count_ > 0 || warning_count_ > 0)
+    print_diagnostics();
+
+    if (has_error)
         return 1;
 
     return res;
@@ -135,7 +139,13 @@ int Driver::analyze() {
     print_diagnostics();
 
     bool has_error = error_count_ > 0 || warning_count_ > 0;
-    print_AST(true, has_error);
+    if (has_error)
+        print_AST(true, cerr);
+    else 
+        print_AST(true, cout);
+
+    print_diagnostics();
+
 
     if (has_error)
         return 1;
@@ -196,9 +206,7 @@ void Driver::print_tokens(std::ostream& out) {
         print_token(token, out);
 }
 
-void Driver::print_AST(bool annotate, bool to_stderr = false) {
-    std::ostream& out = to_stderr ? std::cerr : std::cout;
-
+void Driver::print_AST(bool annotate, std::ostream& out) {
     PrintVisitor printer(annotate);
     
     if (ast_root) {

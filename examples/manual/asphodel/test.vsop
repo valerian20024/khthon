@@ -1,17 +1,7 @@
-// Methods should be inside classes
-add(l : int32, r : int32) : int32 { l + r }
-
-
-class First {
-
+class John extends Human extends Blyat {
+    s : string <- "John";
 }
 
-i : int32 <- 42; // Fields should be inside classes
-
-class Second {
-
-}
-
-class Third {
+class Samere extends Moncul {
 
 }
