@@ -1,0 +1,5 @@
+class C {
+    i : int32;
+    // `.` operator only for method calls in VSOP
+    getI() : int32 { self.i (* Could be nice, but invalid *) }
+}

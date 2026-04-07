@@ -56,6 +56,7 @@ namespace Khthon {
     //todo This way we can more easily write code involving Type.
     //todo Make it a class also, it's getting much more complicated than a struct
     //todo Make the other struct classes as well.
+    //? add driver reference for methods to log internal errors?
     struct Type {
         enum class Kind { 
             CUSTOM, 
@@ -319,6 +320,7 @@ namespace Khthon {
         const NodeList<FormalNode>& formals() const { return formals_; }
         const std::shared_ptr<Expr>& body() const { return body_; }
 
+        /// @brief Creating a dummy node to fill the tree and find more errors.
         static std::shared_ptr<MethodNode> makeDummy(
             Khthon::location location, 
             std::string name

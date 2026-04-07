@@ -15,7 +15,6 @@ namespace Khthon {
     ++================================================*/
 
     string Type::to_string() const {
-        string result;
         switch (kind) {
             case Type::Kind::CUSTOM:        return custom_name; 
             case Type::Kind::INT32:         return "int32";
@@ -23,8 +22,9 @@ namespace Khthon {
             case Type::Kind::STRING:        return "string";
             case Type::Kind::UNIT:          return "unit";
             case Type::Kind::DEFAULT:       return "DEFAULT_TYPE";
+            default:
+                return "Unknown type kind";
         }
-        return "Unknown type kind";
     }
 
     string UnaryOperation::to_string() const {
@@ -33,8 +33,9 @@ namespace Khthon {
             case UnaryOperation::Kind::UMINUS:      return "-";
             case UnaryOperation::Kind::ISNULL:      return "isnull";
             case UnaryOperation::Kind::DEFAULT:     return "DEFAULT_UNOP";
+            default:    
+                return "Unknown unary operation";
         }
-        return "Unknown unary operation";
     }
 
     string BinaryOperation::to_string() const {
@@ -49,8 +50,9 @@ namespace Khthon {
             case BinaryOperation::Kind::POWER:          return "^";
             case BinaryOperation::Kind::AND:            return "and";
             case BinaryOperation::Kind::DEFAULT:        return "DEFAULT_BINOP";
+            default: 
+                return "Unknown binary operation";
         }
-        return "Unknown binary operation";
     }
 
     /*================================================++

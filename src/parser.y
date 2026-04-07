@@ -268,6 +268,7 @@ field
       ERROR(@1, "field identifier must start with a lowercase letter");
       $$ = make_shared<FieldNode>(@$, $1, Khthon::Type());
     }
+  /* Error test 37 : field cannot start with lowercase */
   | TYPE_IDENTIFIER COLON type ASSIGN expression SEMICOLON
     {
       ERROR(@1, "field identifier must start with a lowercase letter.");
@@ -279,6 +280,7 @@ field
       WARNING(@4, "missing ';' after field declaration.");
       $$ = make_shared<FieldNode>(@$, $1, $3);
     }
+  /* Error test 34 : fields must end with a semicolon */
   | OBJECT_IDENTIFIER COLON type ASSIGN expression error
     {
       WARNING(@6, "missing ';' after field declaration.");
@@ -310,12 +312,13 @@ method
       $$ = MethodNode::makeDummy(@$, $1);
     }
   /* Error test 42 : method has no braces */
-  /*! reduce/reduce conflicts*/
+  /*! reduce/reduce conflicts 
   | OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type expression
     {
       ERROR(@7, "method has no braces");
       $$ = MethodNode::makeDummy(@$, $1);
     }
+  */
   ;
 
 formals
@@ -358,10 +361,10 @@ block
     {
       $$ = std::make_shared<BlockExpr>(@$, std::move($2));
     }
-  /*  */
-  | LEFT_BRACE expression_list
+  /* Rule 34: missing closing brace */
+  | LEFT_BRACE error RIGHT_BRACE
     {
-      ERROR(@1, "missing matching brace.");
+      ERROR(@2, "malformed block content.");
       $$ = std::make_shared<BlockExpr>(@$, std::vector<std::shared_ptr<Expr>>{});
     }
   ;

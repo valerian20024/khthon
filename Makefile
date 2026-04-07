@@ -138,7 +138,9 @@ clean:
 	@rm -f $(SRC_DIR)/lexer.cpp $(SRC_DIR)/parser.cpp $(SRC_DIR)/parser.hpp $(SRC_DIR)/location.hh
 	@rm -f $(ARCHIVE)
 
-debug:
+debug: BISONFLAGS += -Wcounterexamples
+
+debug: $(EXEC)
 	@echo "SRC: $(SRC)"
 	@echo "OBJ: $(OBJ)"
 

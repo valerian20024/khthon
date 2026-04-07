@@ -136,17 +136,20 @@ namespace Khthon {
         Driver& driver_;
         std::map<std::string, ClassInfo> class_table_;
 
+        enum class VisitState { Unvisited, Visiting, Visited };
+
+        /// @brief Helper function implementing depth-first search for finding cycles.
+        bool cycle_check(
+            const std::string& name, 
+            std::map<std::string, VisitState>& states
+        ) const;
+
         // Pass 2
         void check_main() const;
         void check_parent_classes_exist() const;
-        void old_check_inheritance_cycles() const;
         void check_inheritance_cycles();
-
-        /// @brief Helper function implementing depth-first search for finding cycles.
-        bool cycle_check(const std::string& name, std::map<std::string, int>& states) const;
-
+        
         // Pass 3
-        //void check_inheritance_cycles() const;
         //std::vector<std::string> get_ancestors(const std::string& class_name) const;
 
         // Pass 4

@@ -147,8 +147,9 @@ int Driver::parse() {
 
     delete parser;
 
-    print_diagnostics();
     print_AST(false);
+
+    print_diagnostics();
 
     if (error_count_ > 0 || warning_count_ > 0)
         return 1;
@@ -189,15 +190,23 @@ void Driver::print_tokens() {
 
 void Driver::print_AST(bool annotate) {
     PrintVisitor printer(annotate);
-    string ast_dump = ast_root->accept(printer);
-    cout << ast_dump << endl;
+    if (ast_root) {
+        string ast_dump = ast_root->accept(printer);
+        cout << ast_dump << endl;
+    } else {
+        internal_error(
+            Khthon::location(),
+            "the ast_root is a null pointer. Unable to print the ast dump."
+        );
+    }
 }
 
 string InternalDiagnostic::to_string() const {
-    return format_location()
-        + ": internal error: \n"
-        + header()
-        + bold(reason_);
+    return as_error(
+        format_location() 
+        + ": internal error: " 
+        + reason_
+    );
 }
 
 string LexicalDiagnostic::to_string() const {
