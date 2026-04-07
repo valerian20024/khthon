@@ -1,3 +1,0 @@
-class MyClass {
-    aField : int32  // Missing semicolon
-}

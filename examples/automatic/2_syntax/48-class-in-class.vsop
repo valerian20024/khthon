@@ -1,0 +1,5 @@
+class Outside {
+    class Inside {
+        // Could be nice, but not valid VSOP
+    }
+}
