@@ -134,7 +134,9 @@ def main():
                 continue
 
             retcode, stdout, stderr = run_compiler(vsop_file, mode_flag)
-            actual_output = stdout + stderr
+            
+            # First stderr, then actual dump.
+            actual_output = stderr + stdout
             expected_output = expected_file.read_text(encoding="utf-8")
 
             if compare_outputs(actual_output, expected_output, vsop_file):
