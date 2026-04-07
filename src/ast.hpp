@@ -122,11 +122,13 @@ namespace Khthon {
     ++================================================*/
 
 
-    // Abstract class for visitors.
-    //* While the visit methods are declared const member functions, the 
-    //* classes extending Visitor can still implement them to have side
-    //* effects. E.g., by modifying a reference to a variable owned by a
-    //* different class.
+    /**
+     * @brief Abstract class for visitors.
+     * @note While the visit methods are declared const member functions, the 
+     * classes extending Visitor can still implement them to have side
+     * effects. E.g., by modifying a reference to a variable owned by a
+     * different class.
+     */
     template <typename R> class Visitor {
     public:
         virtual R visit(const ProgramNode&) const           { return R{}; }
@@ -151,6 +153,35 @@ namespace Khthon {
         virtual R visit(const WhileExpr&) const             { return R{}; }
 
         virtual ~Visitor() = default;
+    };
+
+    /**
+     * @brief Specializaton of Visitor for the type void.
+     * @note On older compilers (e.g., clang++ 11), return void{} is seen
+     * as an error. This allows to fix it.
+     */
+    template <> class Visitor<void> {
+    public:
+        virtual void visit(const ProgramNode&) const        { return; }
+        virtual void visit(const ClassNode&) const          { return; }
+        virtual void visit(const FieldNode&) const          { return; }
+        virtual void visit(const MethodNode&) const         { return; }
+        virtual void visit(const FormalNode&) const         { return; }
+        virtual void visit(const BlockExpr&) const          { return; }
+        virtual void visit(const StringLiteralExpr&) const  { return; }
+        virtual void visit(const IntegerLiteralExpr&) const { return; }
+        virtual void visit(const BoolLiteralExpr&) const    { return; }
+        virtual void visit(const UnitLiteralExpr&) const    { return; }
+        virtual void visit(const IfExpr&) const             { return; }
+        virtual void visit(const AssignExpr&) const         { return; }
+        virtual void visit(const NewExpr&) const            { return; }
+        virtual void visit(const UnOpExpr&) const           { return; }
+        virtual void visit(const BinOpExpr&) const          { return; }
+        virtual void visit(const VariableExpr&) const       { return; }
+        virtual void visit(const CallExpr&) const           { return; }
+        virtual void visit(const SelfExpr&) const           { return; }
+        virtual void visit(const LetExpr&) const            { return; }
+        virtual void visit(const WhileExpr&) const          { return; }
     };
 
     // Clear and neutral notations for double dispatch.
