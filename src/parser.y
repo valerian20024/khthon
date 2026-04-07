@@ -178,8 +178,18 @@ UMINUS (unary minus) is only defined to override precedence of binary minus
 program 
   : class_list 
     {
-      (void) yynerrs_;  // this avoids to trigger a warning saying it's not used.
+      (void) yynerrs_;  // Avoids to trigger an unused variable warning.
       $$ = std::make_shared<ProgramNode>(@$, $1);
+      driver.ast_root = $$;
+    }
+  | error class_list
+    {
+      ERROR(@1, "top-level construct is not a class. Skipping.");
+      // Produce an empty but valid program so ast_root is never null
+      $$ = std::make_shared<ProgramNode>(
+        @$, 
+        std::vector<std::shared_ptr<ClassNode>>{}
+      );
       driver.ast_root = $$;
     }
   ;
@@ -193,6 +203,11 @@ class_list
     {
       $$ = std::move($1);
       $$.emplace_back(std::move($2));
+    }
+  | class_list error
+    {
+      ERROR(@2, "malformed class. Skipping.");
+      $$ = std::move($1);
     }
   ;
 
