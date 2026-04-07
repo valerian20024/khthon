@@ -65,11 +65,12 @@ static const map<Parser::token_type, string> type_to_string = {
     {Parser::token::STRING_LITERAL,     "string-literal"},
 };
 
+
 int Driver::lex() {
     scan_begin();
 
     //todo use the new error mecanism instead of the one of the old calc 
-    int error = 0;
+    int res = 0;
 
     while (true)
     {
@@ -83,18 +84,19 @@ int Driver::lex() {
             tokens.push_back(token);
 
         else
-            error = 1;
+            res = 1;
     }
 
     scan_end();
-
     
     print_diagnostics();
 
-    bool has_error = error_count_ > 0;
-    print_tokens(has_error);
+    // All correct tokens must be printed, whatever the error.
+    print_tokens(cout);
 
-    return error;
+    bool has_error = error_count_ > 0 || warning_count_ > 0;
+    
+    return has_error ? 1 : res;
 }
 
 int Driver::parse() {
@@ -110,13 +112,15 @@ int Driver::parse() {
     print_diagnostics();
 
     bool has_error = error_count_ > 0 || warning_count_ > 0;
-    print_AST(false, has_error);
-    
+    if (has_error)
+        print_AST(false, cerr);
+    else 
+        print_AST(false, cout);
 
-    if (error_count_ > 0 || warning_count_ > 0)
+    if (has_error)
         return 1;
 
-    return res;
+    return has_error ? 1 : res;
 }
 
 int Driver::analyze() {
@@ -135,12 +139,12 @@ int Driver::analyze() {
     print_diagnostics();
 
     bool has_error = error_count_ > 0 || warning_count_ > 0;
-    print_AST(true, has_error);
-
     if (has_error)
-        return 1;
+        print_AST(true, cerr);
+    else 
+        print_AST(true, cout);
 
-    return res;
+    return has_error ? 1 : res;
 }
 
 int Driver::generate() {
@@ -191,35 +195,29 @@ static void print_token(Parser::symbol_type token, std::ostream& out) {
 }
 
 
-void Driver::print_tokens(bool to_stderr = false) {
-    std::ostream& out = to_stderr ? std::cerr : std::cout;
-    
+void Driver::print_tokens(std::ostream& out) {    
     for (auto token : tokens)
         print_token(token, out);
 }
 
-void Driver::print_AST(bool annotate, bool to_stderr = false) {
-    std::ostream& out = to_stderr ? std::cerr : std::cout;
-
+void Driver::print_AST(bool annotate, std::ostream& out) {
     PrintVisitor printer(annotate);
     
     if (ast_root) {
         string ast_dump = ast_root->accept(printer);
         out << ast_dump << endl;
     } else {
-        internal_error(
-            Khthon::location(),
-            "the ast_root is a null pointer. Unable to print the ast dump."
-        );
+        internal_error("The ast_root is a null pointer. Unable to print the ast dump.");
     }
 }
 
-string InternalDiagnostic::to_string() const {
-    return as_error(
-        format_location() 
-        + ": internal error: " 
-        + reason_
-    );
+void Driver::internal_error(const std::string& reason) {
+    // Only output internal errors when debugging.
+    #ifdef DEBUG
+        cerr << internal_banner() << reason << endl;
+    #else 
+        (void) reason;
+    #endif
 }
 
 string LexicalDiagnostic::to_string() const {
@@ -243,6 +241,13 @@ string SemanticDiagnostic::to_string() const {
         + bold(reason_);
 }
 
+string GenerationDiagnostic::to_string() const {
+    return format_location()
+        + ": generation error: \n"
+        + header()
+        + bold(reason_);
+}
+
 void Driver::report(std::shared_ptr<Diagnostic> d) {
     if (d->level() == ErrorLevel::Error)
         error_count_++;
@@ -252,9 +257,6 @@ void Driver::report(std::shared_ptr<Diagnostic> d) {
     diagnostics_.push_back(std::move(d));
 }
 
-void Driver::internal_error(const location& l, const std::string& reason) {
-    report(make_shared<InternalDiagnostic>(l, ErrorLevel::Error, reason));
-}
 
 void Driver::lexical_note(const location& l, const std::string& reason) {
     report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Note, reason));
@@ -291,6 +293,19 @@ void Driver::semantic_warning(const location& l, const std::string& reason) {
 void Driver::semantic_error(const location& l, const std::string& reason) {
     report(make_shared<SemanticDiagnostic>(l, ErrorLevel::Error, reason));
 }
+
+void Driver::generation_note(const location& l, const std::string& reason) {
+    report(make_shared<GenerationDiagnostic>(l, ErrorLevel::Note, reason));
+}
+
+void Driver::generation_warning(const location& l, const std::string& reason) {
+    report(make_shared<GenerationDiagnostic>(l, ErrorLevel::Warning, reason));
+}
+
+void Driver::generation_error(const location& l, const std::string& reason) {
+    report(make_shared<GenerationDiagnostic>(l, ErrorLevel::Error, reason));
+}
+
 
 //todo sort the errors by line and columns
 //todo Then also errors, warnings, notes for a same line

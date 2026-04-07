@@ -18,4 +18,12 @@ namespace colors {
     inline std::string as_error(const std::string& s)   { return bright_red(bold(s)); }
     inline std::string as_warning(const std::string& s) { return yellow(bold(s)); }
     inline std::string as_note(const std::string& s)    { return cyan(bold(s)); }
+
+    inline std::string internal_banner() {
+        return colors::bright_red("\n"
+            "╔══════════════════════════════════════════════════════════════╗\n"
+            "║                    INTERNAL COMPILER ERROR                   ║\n"
+            "╚══════════════════════════════════════════════════════════════╝\n"
+    );
+}
 }

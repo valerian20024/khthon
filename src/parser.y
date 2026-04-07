@@ -176,12 +176,42 @@ UMINUS (unary minus) is only defined to override precedence of binary minus
 %start program;
 
 program 
-  : class_list 
+  : %empty
+    {
+      ERROR(@$, "Empty program.");
+      $$ = std::make_shared<ProgramNode>(
+        @$, 
+        std::vector<std::shared_ptr<ClassNode>>{}
+      );
+      driver.ast_root = $$;
+    }
+  | class_list 
     {
       (void) yynerrs_;  // Avoids to trigger an unused variable warning.
       $$ = std::make_shared<ProgramNode>(@$, $1);
       driver.ast_root = $$;
     }
+  /* 46 Bare fields */
+  | field
+    {
+      ERROR(@1, "Fields should be enclosed in classes.");
+      $$ = std::make_shared<ProgramNode>(
+        @$, 
+        std::vector<std::shared_ptr<ClassNode>>{}
+      );
+      driver.ast_root = $$;
+    }
+  /* 47 Bare method */
+  | method
+    {
+      ERROR(@1, "Methods should be enclosed in classes.");
+      $$ = std::make_shared<ProgramNode>(
+        @$, 
+        std::vector<std::shared_ptr<ClassNode>>{}
+      );
+      driver.ast_root = $$;
+    }
+  /*
   | error class_list
     {
       ERROR(@1, "top-level construct is not a class. Skipping.");
@@ -192,6 +222,7 @@ program
       );
       driver.ast_root = $$;
     }
+  */
   ;
 
 class_list
@@ -204,10 +235,10 @@ class_list
       $$ = std::move($1);
       $$.emplace_back(std::move($2));
     }
-  | class_list error
+  | class error class
     {
       ERROR(@2, "malformed class. Skipping.");
-      $$ = std::move($1);
+      $$.emplace_back(std::move($1));
     }
   ;
 
@@ -235,9 +266,21 @@ class
     }
   ;
 
+
 optional_extends
-  : %empty                        { $$ = "Object"; }
-  | EXTENDS TYPE_IDENTIFIER       { $$ = $2; }
+  : %empty                        
+    { 
+      $$ = "Object"; 
+    }
+  | EXTENDS TYPE_IDENTIFIER
+    { 
+      $$ = $2; 
+    }
+  | EXTENDS TYPE_IDENTIFIER error
+    {
+      ERROR(@3, "Cannot extend more than one class.");
+      $$ = $2;
+    }
   ;
 
 class_body
@@ -258,6 +301,11 @@ class_content
     {
       $$ = std::move($1);
       $$.methods.push_back(std::move($2));
+    }
+  | class
+    {
+      ERROR(@1, "Redefinition of a class inside a class.");
+      $$ = Khthon::ClassMembers();
     }
   ;
 

@@ -396,7 +396,12 @@ void Driver::scan_begin() {
     if (source_file.empty() || source_file == "-")
         yyin = stdin;
     else if (!(yyin = fopen(source_file.c_str(), "r"))) {
-        cerr << "cannot open " << source_file << ": " << strerror(errno) << '\n';
+        
+        //todo use the error system.
+        cerr << "cannot open " 
+             << source_file 
+             << ": " 
+             << strerror(errno) << endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -410,7 +415,7 @@ static string printable_hex_value(const string& hex_string) {
     if (hex_string.size() < 4 || hex_string.substr(0, 2) != "\\x") {
         cerr << "error in printable_hex_value: "
                 "incorrect escaped character" 
-                << endl;
+             << endl;
     }
 
     // Remove the escaping header ("\x")

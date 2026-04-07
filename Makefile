@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 
 CXX        = clang++
-CXXFLAGS   = -Wall -Wextra -g -std=c++17
+CXXFLAGS   = -Wall -Wextra -g -std=c++17 -gdwarf-4
 
 BISONFLAGS = -d
 FLEXFLAGS  =
@@ -138,10 +138,7 @@ clean:
 	@rm -f $(SRC_DIR)/lexer.cpp $(SRC_DIR)/parser.cpp $(SRC_DIR)/parser.hpp $(SRC_DIR)/location.hh
 	@rm -f $(ARCHIVE)
 
-debug: BISONFLAGS += -Wcounterexamples
-
+debug: CXXFLAGS += -DDEBUG
 debug: $(EXEC)
-	@echo "SRC: $(SRC)"
-	@echo "OBJ: $(OBJ)"
 
 .PHONY: all clean install-tools archive debug

@@ -1,13 +1,7 @@
-42;
-
-class Main {
-
+class John extends Human extends Blyat {
+    s : string <- "John";
 }
 
-class Second {
-
-}
-
-class Third {
+class Samere extends Moncul {
 
 }
