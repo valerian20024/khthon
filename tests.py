@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-VSOP Compiler Test Runner - Improved version
-Handles path stripping and whitespace normalization for AST/token dumps.
-"""
 
 import sys
 import subprocess
@@ -38,13 +34,16 @@ def run_compiler(vsop_file: Path, mode_flag: str) -> Tuple[int, str, str]:
 
 
 def strip_path_prefix(line: str, vsop_file: Path) -> str:
-    """Remove the full path so we only keep the filename (as in your .out files)"""
+    """Remove the full path so we only keep the filename."""
     filename = vsop_file.name
+
     # Replace any occurrence of the full path with just the filename
     if str(vsop_file.parent) in line:
         line = line.replace(str(vsop_file.parent) + "/", "")
+    
     if str(vsop_file) in line:
         line = line.replace(str(vsop_file), filename)
+    
     return line
 
 
@@ -61,17 +60,23 @@ def normalize_output(output: str, vsop_file: Path) -> str:
 
     first_line = lines[0].strip()
 
-    # If it's an error message → keep only the first line and strip path
-    if any(err in first_line.lower() for err in [": lexical error", ": syntax error", ": semantic error"]):
+    # If it's an error message, keep only the first line and strip path
+    if any(err in first_line.lower() for err in [
+            ": lexical error", 
+            ": syntax error", 
+            ": semantic error"
+        ]):
+
         cleaned = strip_path_prefix(first_line, vsop_file)
+        
         # Remove the trailing colon that sometimes appears in your current output
         if cleaned.endswith(":"):
             cleaned = cleaned[:-1].strip()
         return cleaned
 
-    # Otherwise it's a successful dump (tokens or AST)
-    # Remove ALL whitespace for robust comparison
-    normalized = "".join(output.split())   # removes spaces, tabs, newlines
+    # Otherwise it's a successful dump
+    # Remove whitespaces for robust comparison
+    normalized = "".join(output.split())
     return normalized
 
 
@@ -81,10 +86,10 @@ def compare_outputs(actual: str, expected: str, vsop_file: Path) -> bool:
     norm_expected = normalize_output(expected, vsop_file)
 
     if norm_actual == norm_expected:
-        print(f"✅ {vsop_file.parent.name}/{vsop_file.name}")
+        print(f"[V] {vsop_file.parent.name}/{vsop_file.name}")
         return True
     else:
-        print(f"❌ {vsop_file.parent.name}/{vsop_file.name}")
+        print(f"[X] {vsop_file.parent.name}/{vsop_file.name}")
         print("   Expected (normalized):")
         print(f"     {norm_expected[:300]}...")
         print("   Got (normalized):")
@@ -97,6 +102,7 @@ def main():
         print(f"Error: Compiler '{COMPILER}' not found. Run 'make' first.")
         sys.exit(1)
 
+    # Number of total and passed tests
     total = 0
     passed = 0
 
@@ -108,11 +114,9 @@ def main():
         if not mode_flag:
             continue
 
-        print(f"\n=== Running {category_dir.name} tests ({mode_flag}) ===")
+        print(f"\n=== Running {category_dir.name} tests ===")
 
-        # Support both layouts: files directly in category or in 'input/' subdir
-        input_dir = category_dir / "input" if (category_dir / "input").exists() else category_dir
-        vsop_files = sorted(input_dir.glob("*.vsop"))
+        vsop_files = sorted(category_dir.glob("*.vsop"))
 
         output_dir = EXAMPLES_ROOT.parent / "output" / category_dir.name
 
@@ -121,7 +125,7 @@ def main():
 
             expected_file = output_dir / vsop_file.with_suffix(".out").name
             if not expected_file.exists():
-                print(f"⚠️  Missing expected output: {expected_file.name}")
+                print(f"[!]  Missing expected output: {expected_file.name}")
                 continue
 
             retcode, stdout, stderr = run_compiler(vsop_file, mode_flag)
@@ -133,11 +137,6 @@ def main():
 
     print("\n" + "=" * 60)
     print(f"Test summary: {passed}/{total} passed")
-    if passed == total:
-        print("🎉 All tests passed!")
-    else:
-        print(f"💥 {total - passed} test(s) failed")
-        sys.exit(1)
 
 
 if __name__ == "__main__":
