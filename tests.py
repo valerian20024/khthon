@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+"""
+Script for testing each tests from the submission platform
+that has been cached in the repository.
+"""
+
 import sys
 import subprocess
 from pathlib import Path
@@ -13,8 +18,8 @@ EXAMPLES_ROOT = Path("examples/automatic")
 CATEGORY_TO_MODE = {
     "1_lexical":  "-l",
     "2_syntax":   "-p",
-    #"3_semantic": "-c",
-    #"4_generation": "-i",
+    "3_semantic": "-c",
+    "4_generation": "-i",
 }
 
 # =========================================================
