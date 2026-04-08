@@ -299,12 +299,14 @@ void SemanticChecker::print_class_table() const {
 
 
 
-/*
-void TypesVisitor::visit(const ProgramNode& node) const {
-    for (const auto& c : node.classes())
-        c->accept(*this);
+
+void TypesVisitor::visit(ProgramNode& node) {
+    //for (const auto& c : node.classes())
+        //c->accept(*this);
+        return;
 }
 
+/*
 void TypesVisitor::visit(const ClassNode& node) const {
     current_class_name_ = node.name();
     scope_stack_.clear();               // new class → fresh scopes

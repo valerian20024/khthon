@@ -166,7 +166,7 @@ namespace Khthon {
         virtual ~Visitor() = default;
     };
 
-        /**
+    /**
      * @brief Base class for visitors that are allowed to mutate the AST
      *        (e.g. type annotation during semantic analysis).
      * 
@@ -206,26 +206,26 @@ namespace Khthon {
      */
     template <> class MutableVisitor<void> {
     public:
-        virtual void visit(ProgramNode&)        { }
-        virtual void visit(ClassNode&)          { }
-        virtual void visit(FieldNode&)          { }
-        virtual void visit(MethodNode&)         { }
-        virtual void visit(FormalNode&)         { }
-        virtual void visit(BlockExpr&)          { }
-        virtual void visit(StringLiteralExpr&)  { }
-        virtual void visit(IntegerLiteralExpr&) { }
-        virtual void visit(BoolLiteralExpr&)    { }
-        virtual void visit(UnitLiteralExpr&)    { }
-        virtual void visit(IfExpr&)             { }
-        virtual void visit(AssignExpr&)         { }
-        virtual void visit(NewExpr&)            { }
-        virtual void visit(UnOpExpr&)           { }
-        virtual void visit(BinOpExpr&)          { }
-        virtual void visit(VariableExpr&)       { }
-        virtual void visit(CallExpr&)           { }
-        virtual void visit(SelfExpr&)           { }
-        virtual void visit(LetExpr&)            { }
-        virtual void visit(WhileExpr&)          { }
+        virtual void visit(ProgramNode&)        { return; }
+        virtual void visit(ClassNode&)          { return; }
+        virtual void visit(FieldNode&)          { return; }
+        virtual void visit(MethodNode&)         { return; }
+        virtual void visit(FormalNode&)         { return; }
+        virtual void visit(BlockExpr&)          { return; }
+        virtual void visit(StringLiteralExpr&)  { return; }
+        virtual void visit(IntegerLiteralExpr&) { return; }
+        virtual void visit(BoolLiteralExpr&)    { return; }
+        virtual void visit(UnitLiteralExpr&)    { return; }
+        virtual void visit(IfExpr&)             { return; }
+        virtual void visit(AssignExpr&)         { return; }
+        virtual void visit(NewExpr&)            { return; }
+        virtual void visit(UnOpExpr&)           { return; }
+        virtual void visit(BinOpExpr&)          { return; }
+        virtual void visit(VariableExpr&)       { return; }
+        virtual void visit(CallExpr&)           { return; }
+        virtual void visit(SelfExpr&)           { return; }
+        virtual void visit(LetExpr&)            { return; }
+        virtual void visit(WhileExpr&)          { return; }
     };
 
     /**
@@ -257,11 +257,13 @@ namespace Khthon {
         virtual void visit(const WhileExpr&) const          { return; }
     };
 
+
     // Clear and neutral notations for double dispatch.
     using StringVisitor = Visitor<std::string>;
     using VoidVisitor   = Visitor<void>;
     using MutableStringVisitor = MutableVisitor<std::string>;
     using MutableVoidVisitor   = MutableVisitor<void>;
+    
 
     /// @brief Abstract class for nodes. 
     class Node {
@@ -271,8 +273,10 @@ namespace Khthon {
         Node(Khthon::location l) : loc_(l) { }
         virtual ~Node() = default;
 
-        virtual std::string accept(StringVisitor const&) const = 0;
-        virtual void accept(VoidVisitor const&) const = 0;
+        virtual std::string accept(const StringVisitor&) const = 0;
+        
+        virtual void accept(MutableVoidVisitor&) = 0;
+        virtual void accept(const VoidVisitor&) const = 0;
 
         Khthon::location location() const { return loc_; }
     };
@@ -280,22 +284,22 @@ namespace Khthon {
     /// @brief Abstract class for expression nodes.
     class Expr : public Node {
     protected:
-        mutable Khthon::Type type_ = Type();
+        Khthon::Type type_ = Type();
 
     public:
         Expr(Khthon::location l) : Node(l) {}
         virtual ~Expr() = default;
 
-        virtual std::string accept(StringVisitor const&) const = 0;
+        virtual std::string accept(const StringVisitor&) const = 0;
 
-        //virtual void accept_mutable(VoidVisitor&) = 0;
-        virtual void accept(VoidVisitor const&) const = 0;
+        virtual void accept(MutableVoidVisitor&) = 0;
+        virtual void accept(const VoidVisitor&) const = 0;
 
         const Khthon::Type& type() const { return type_; }
 
         /// @brief Set type of the node.
         /// @warning Mutates the node even if declared as const.
-        void set_type(const Khthon::Type& t) const { type_ = t; }
+        void set_type(const Khthon::Type& t) { type_ = t; }
     };
 
 
@@ -319,7 +323,10 @@ namespace Khthon {
         std::string accept(StringVisitor const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        
+
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -353,6 +360,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -386,6 +396,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -422,6 +435,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -459,6 +475,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -484,6 +503,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -508,6 +530,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -532,6 +557,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -556,6 +584,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -572,6 +603,9 @@ namespace Khthon {
             return v.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -601,6 +635,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -629,7 +666,10 @@ namespace Khthon {
         std::string accept(StringVisitor const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        
+
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }        
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -655,6 +695,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -682,6 +725,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -714,6 +760,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -740,6 +789,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -771,6 +823,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -789,6 +844,9 @@ namespace Khthon {
             return v.visit(*this); 
         }
 
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -820,6 +878,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -851,6 +912,9 @@ namespace Khthon {
             return visitor.visit(*this); 
         }
         
+        void accept(MutableVoidVisitor& visitor) override {
+            visitor.visit(*this);
+        }
         void accept(VoidVisitor const& visitor) const override { 
             visitor.visit(*this); 
         }
@@ -860,9 +924,7 @@ namespace Khthon {
     };
 
 
-    /*================================================++
-    ||               CONCRETE VISITORS                ||
-    ++================================================*/
+    
 
     /**
      * @brief Visitor responsible for printing an Abstract Syntax Tree.
@@ -902,6 +964,9 @@ namespace Khthon {
         std::string visit(const LetExpr&) const override;
         std::string visit(const WhileExpr&) const override;
     };
+
+
+    
 }
 
 #endif

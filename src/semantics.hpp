@@ -200,7 +200,7 @@ namespace Khthon {
     /***
      * @brief Visitor performing type checking and annotating the AST.
      */
-    class TypesVisitor : public Visitor<void> {
+    class TypesVisitor : public MutableVisitor<void> {
     private:
         Driver& driver_;
         const std::map<std::string, ClassInfo>& class_table_;
@@ -220,7 +220,7 @@ namespace Khthon {
             class_table_(class_table) 
         {}
 
-        //void visit_mut(const ProgramNode& node) override;
+        void visit(ProgramNode& node) override;
         
         //void visit_mut(const ClassNode& node) override;
         /*void visit(const MethodNode& node) const override;
