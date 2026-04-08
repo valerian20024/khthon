@@ -127,7 +127,7 @@ void ClassesVisitor::visit(const ClassNode& node) const {
 void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
     if (!root)
         driver_.internal_error("SemanticChecker::analyze(): No ast root.");
-        
+
     ClassesVisitor cv = ClassesVisitor(driver_, class_table_);
     root->accept(cv);
 
@@ -251,12 +251,6 @@ void SemanticChecker::check_inheritance_cycles() {
             cycle_check(name, states);
 }
 
-
-
-
-
-
-
 void SemanticChecker::print_class_table() const {
     for (const auto& [class_name, class_info] : class_table_) {
         // Class and inheritance.
@@ -302,3 +296,25 @@ void SemanticChecker::print_class_table() const {
         cout << "-------------------------\n" << endl;
     }
 }
+
+
+
+/*
+void TypesVisitor::visit(const ProgramNode& node) const {
+    for (const auto& c : node.classes())
+        c->accept(*this);
+}
+
+void TypesVisitor::visit(const ClassNode& node) const {
+    current_class_name_ = node.name();
+    scope_stack_.clear();               // new class → fresh scopes
+
+    // Fields first (initializers may use other fields)
+    for (const auto& f : node.fields())
+        f->accept(*this);
+
+    // Then methods
+    for (const auto& m : node.methods())
+        m->accept(*this);
+}
+        */

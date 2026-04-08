@@ -171,7 +171,11 @@ namespace Khthon {
     ||                   VISITORS                     ||
     ++================================================*/
 
-
+    /**
+     * @brief Visitor gathering class informations in the symboltable.
+     * 
+     * @note Also performs basic duplicate checks, which lead to an error.
+     */
     class ClassesVisitor : public Visitor<void> {
     private:
         Driver& driver_;
@@ -188,17 +192,55 @@ namespace Khthon {
 
         void visit(const ProgramNode& node) const override;
 
-        // Modifying SemanticChecker state.
+        /// @warning Mutates SemanticChecker state.
         void visit(const ClassNode& node) const override;
 
     };
 
+    /***
+     * @brief Visitor performing type checking and annotating the AST.
+     */
     class TypesVisitor : public Visitor<void> {
-        // scope stack
-        // visit methods for all the expr nodes
-        //? access to driver
-        // Pass-2 entry points
+    private:
+        Driver& driver_;
+        const std::map<std::string, ClassInfo>& class_table_;
 
+        std::string current_class_name_;  // For self type.
+        std::vector<std::map<std::string, Type>> scope_stack_;
+
+        bool conforms(const Type& actual, const Type& expected) const;
+        Type lookup_variable(const std::string& name) const;
+
+    public:
+        explicit TypesVisitor(
+            Driver& d, 
+            const std::map<std::string, ClassInfo>& class_table
+        ) : 
+            driver_(d), 
+            class_table_(class_table) 
+        {}
+
+        //void visit_mut(const ProgramNode& node) override;
+        
+        //void visit_mut(const ClassNode& node) override;
+        /*void visit(const MethodNode& node) const override;
+        void visit(const FormalNode& node) const override;
+        void visit(const FieldNode& node) const override;
+        void visit(const BlockExpr& node) const override;
+        void visit(const StringLiteralExpr& node) const override;
+        void visit(const IntegerLiteralExpr& node) const override;
+        void visit(const BoolLiteralExpr& node) const override;
+        void visit(const UnitLiteralExpr& node) const override;
+        void visit(const IfExpr& node) const override;
+        void visit(const AssignExpr& node) const override;
+        void visit(const NewExpr& node) const override;
+        void visit(const UnOpExpr& node) const override;
+        void visit(const BinOpExpr& node) const override;
+        void visit(const VariableExpr& node) const override;
+        void visit(const CallExpr& node) const override;
+        void visit(const SelfExpr& node) const override;
+        void visit(const LetExpr& node) const override;
+        void visit(const WhileExpr& node) const override;*/
     };
 }
 

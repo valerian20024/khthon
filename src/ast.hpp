@@ -166,6 +166,68 @@ namespace Khthon {
         virtual ~Visitor() = default;
     };
 
+        /**
+     * @brief Base class for visitors that are allowed to mutate the AST
+     *        (e.g. type annotation during semantic analysis).
+     * 
+     * This is deliberately separate from Visitor<T> so we keep the original
+     * visitor purely const-correct.
+     */
+    template <typename R> class MutableVisitor {
+    public:
+        virtual R visit(ProgramNode&)           { return R{}; }
+        virtual R visit(ClassNode&)             { return R{}; }
+        virtual R visit(FieldNode&)             { return R{}; }
+        virtual R visit(MethodNode&)            { return R{}; }
+        virtual R visit(FormalNode&)            { return R{}; }
+        virtual R visit(BlockExpr&)             { return R{}; }
+        virtual R visit(StringLiteralExpr&)     { return R{}; }
+        virtual R visit(IntegerLiteralExpr&)    { return R{}; }
+        virtual R visit(BoolLiteralExpr&)       { return R{}; }
+        virtual R visit(UnitLiteralExpr&)       { return R{}; }
+        virtual R visit(IfExpr&)                { return R{}; }
+        virtual R visit(AssignExpr&)            { return R{}; }
+        virtual R visit(NewExpr&)               { return R{}; }
+        virtual R visit(UnOpExpr&)              { return R{}; }
+        virtual R visit(BinOpExpr&)             { return R{}; }
+        virtual R visit(VariableExpr&)          { return R{}; }
+        virtual R visit(CallExpr&)              { return R{}; }
+        virtual R visit(SelfExpr&)              { return R{}; }
+        virtual R visit(LetExpr&)               { return R{}; }
+        virtual R visit(WhileExpr&)             { return R{}; }
+
+        virtual ~MutableVisitor() = default;
+    };
+
+    /**
+     * @brief Specializaton of MutableVisitor for the type void.
+     * @note On older compilers (e.g., clang++ 11), return void{} is seen
+     * as an error. This allows to fix it.
+     */
+    template <> class MutableVisitor<void> {
+    public:
+        virtual void visit(ProgramNode&)        { }
+        virtual void visit(ClassNode&)          { }
+        virtual void visit(FieldNode&)          { }
+        virtual void visit(MethodNode&)         { }
+        virtual void visit(FormalNode&)         { }
+        virtual void visit(BlockExpr&)          { }
+        virtual void visit(StringLiteralExpr&)  { }
+        virtual void visit(IntegerLiteralExpr&) { }
+        virtual void visit(BoolLiteralExpr&)    { }
+        virtual void visit(UnitLiteralExpr&)    { }
+        virtual void visit(IfExpr&)             { }
+        virtual void visit(AssignExpr&)         { }
+        virtual void visit(NewExpr&)            { }
+        virtual void visit(UnOpExpr&)           { }
+        virtual void visit(BinOpExpr&)          { }
+        virtual void visit(VariableExpr&)       { }
+        virtual void visit(CallExpr&)           { }
+        virtual void visit(SelfExpr&)           { }
+        virtual void visit(LetExpr&)            { }
+        virtual void visit(WhileExpr&)          { }
+    };
+
     /**
      * @brief Specializaton of Visitor for the type void.
      * @note On older compilers (e.g., clang++ 11), return void{} is seen
@@ -198,6 +260,8 @@ namespace Khthon {
     // Clear and neutral notations for double dispatch.
     using StringVisitor = Visitor<std::string>;
     using VoidVisitor   = Visitor<void>;
+    using MutableStringVisitor = MutableVisitor<std::string>;
+    using MutableVoidVisitor   = MutableVisitor<void>;
 
     /// @brief Abstract class for nodes. 
     class Node {
