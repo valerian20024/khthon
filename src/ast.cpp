@@ -94,7 +94,7 @@ namespace Khthon {
             string result = "[";
             for (size_t i = 0; i < items.size(); ++i) {
                 if (i > 0) 
-                    result += ", ";
+                    result += ",\n ";
                 result += items[i]->accept(*this);
             }
             return result + "]";
@@ -139,11 +139,11 @@ namespace Khthon {
     string PrintVisitor::visit(const MethodNode& node) const {
         return "Method("
             + node.name()
-            + ", "
+            + ", \n\t"
             + stringify(node.formals())
             + ", "
             + node.type().to_string()
-            + ", \n\t"
+            + ", "
             + node.body()->accept(*this)
             + ")";
     }

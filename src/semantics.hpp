@@ -163,7 +163,7 @@ namespace Khthon {
         explicit SemanticChecker(Driver& driver) : driver_(driver) {}
 
         /// @brief Orchestrator for semantic analysis checks.
-        bool analyze(const std::shared_ptr<ProgramNode>& root);
+        void analyze(const std::shared_ptr<ProgramNode>& root);
     };
 
 

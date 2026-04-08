@@ -124,10 +124,10 @@ void ClassesVisitor::visit(const ClassNode& node) const {
     class_table_.emplace(class_name, std::move(class_info));
 }
 
-bool SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
+void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
     if (!root)
-        return false;
-    
+        driver_.internal_error("SemanticChecker::analyze(): No ast root.");
+        
     ClassesVisitor cv = ClassesVisitor(driver_, class_table_);
     root->accept(cv);
 
@@ -135,9 +135,9 @@ bool SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
     check_parent_classes_exist();
     check_inheritance_cycles();
 
+    #ifdef DEBUG
     print_class_table();
-
-    return true;
+    #endif
 }
 
 void SemanticChecker::check_main() const {
@@ -261,8 +261,8 @@ void SemanticChecker::print_class_table() const {
     for (const auto& [class_name, class_info] : class_table_) {
         // Class and inheritance.
         cout << "-------------------------\n"
-             << "Class: " << class_name 
-             << " extends " << class_info.parent() << "\n";
+            << "Class: " << class_name 
+            << " extends " << class_info.parent() << "\n";
 
         // Fields.
         cout << "  Fields:\n";
@@ -271,29 +271,29 @@ void SemanticChecker::print_class_table() const {
         } else {
             for (const auto& [field_name, field_info] : class_info.fields()) {
                 cout << "    " 
-                     << field_info.name() 
-                     << " : " 
-                     << field_info.type().to_string() << "\n";
+                    << field_info.name() 
+                    << " : " 
+                    << field_info.type().to_string() << "\n";
             }
         }
 
         // Methods.
         cout << "  Methods:\n";
-        if (class_info.methods().empty()) {
+        if (class_info.methods().empty()) {/*  */
             cout << "    (none)\n";
         } else {
             for (const auto& [method_name, method_info] : class_info.methods()) {
                 cout << "    " 
-                     << method_info.name()
-                     << "(";
+                    << method_info.name()
+                    << "(";
                 
                 // Formals.
                 const auto& formals = method_info.formals();
                 for (size_t i = 0; i < formals.size(); ++i) {
                     if (i > 0) cout << ", ";
                     cout << formals[i].name() 
-                         << " : " 
-                         << formals[i].type().to_string();
+                        << " : " 
+                        << formals[i].type().to_string();
                 }
 
                 cout << ") : " << method_info.return_type().to_string() << "\n";

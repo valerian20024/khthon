@@ -1,5 +1,4 @@
-class Main {
-    main(): int32 {
-        0
-    }
+class MyClass {
+    veryOriginal : string <- "Hello, world!";
 }
+class Main { main() : int32 { 0 } }

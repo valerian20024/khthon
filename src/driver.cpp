@@ -103,48 +103,51 @@ int Driver::parse() {
     scan_begin();
 
     parser = new Parser(*this);    
-    int res = parser->parse();
-
+    int parse_result = parser->parse();
+    if (parse_result) 
+        internal_error("Driver::parse(): Bison parse returned with:" + to_string(parse_result));
+    
     scan_end();
-
     delete parser;
 
-    print_diagnostics();
-
     bool has_error = error_count_ > 0 || warning_count_ > 0;
-    if (has_error)
+    if (has_error) {
+        print_diagnostics();
         print_AST(false, cerr);
-    else 
+    } else {
         print_AST(false, cout);
+    }
 
-    if (has_error)
-        return 1;
-
-    return has_error ? 1 : res;
+    return has_error;
 }
 
 int Driver::analyze() {
     scan_begin();
-
-    parser = new Parser(*this);
-    int res = parser->parse();
-
+    parser = new Parser(*this);    
+    int parse_result = parser->parse();
+    
+    if (parse_result) {
+        internal_error(
+            "Driver::analyze(): Bison parse returned with:" 
+            + to_string(parse_result)
+        );
+    }
+    
     scan_end();
-
     delete parser;
 
     SemanticChecker checker = SemanticChecker(*this);
-    res = checker.analyze(ast_root);
-
-    print_diagnostics();
+    checker.analyze(ast_root);
 
     bool has_error = error_count_ > 0 || warning_count_ > 0;
-    if (has_error)
+    if (has_error) {
+        print_diagnostics();
         print_AST(true, cerr);
-    else 
+    } else {
         print_AST(true, cout);
+    }
 
-    return has_error ? 1 : res;
+    return has_error;
 }
 
 int Driver::generate() {
