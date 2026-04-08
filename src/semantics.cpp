@@ -135,6 +135,10 @@ void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
     check_parent_classes_exist();
     check_inheritance_cycles();
 
+    TypesVisitor tv = TypesVisitor(driver_, class_table_);
+    root->accept(tv);
+
+
     #ifdef DEBUG
     print_class_table();
     #endif
@@ -301,22 +305,24 @@ void SemanticChecker::print_class_table() const {
 
 
 void TypesVisitor::visit(ProgramNode& node) {
-    //for (const auto& c : node.classes())
-        //c->accept(*this);
-        return;
+    for (const auto& c : node.classes())
+        c->accept(*this);
 }
 
-/*
-void TypesVisitor::visit(const ClassNode& node) const {
+
+void TypesVisitor::visit(ClassNode& node) {
     current_class_name_ = node.name();
     scope_stack_.clear();               // new class → fresh scopes
 
+    cout << "MAGGIC HAPPENNNSSS " << endl;
+
     // Fields first (initializers may use other fields)
+    /*
     for (const auto& f : node.fields())
         f->accept(*this);
 
     // Then methods
     for (const auto& m : node.methods())
         m->accept(*this);
+    */
 }
-        */

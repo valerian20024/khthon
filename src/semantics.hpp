@@ -221,8 +221,8 @@ namespace Khthon {
         {}
 
         void visit(ProgramNode& node) override;
-        
-        //void visit_mut(const ClassNode& node) override;
+        void visit(ClassNode& node) override;
+
         /*void visit(const MethodNode& node) const override;
         void visit(const FormalNode& node) const override;
         void visit(const FieldNode& node) const override;
