@@ -2,7 +2,21 @@
 
 """
 Script for testing each tests from the submission platform
-that has been cached in the repository.
+that has been cached in the repository. Tree structure required to parse correctly : 
+
+examples
+└── automatic
+    ├── input
+    │   ├── 1_lexical
+    │   ├── 2_syntax
+    │   ├── 3_semantic
+    │   └── 4_generation
+    └── output
+        ├── 1_lexical
+        ├── 2_syntax
+        ├── 3_semantic
+        └── 4_generation
+
 """
 
 import sys
@@ -14,6 +28,8 @@ from typing import Tuple
 
 COMPILER = "./vsopc"
 EXAMPLES_ROOT = Path("examples/automatic")
+INPUT         = (EXAMPLES_ROOT / "input")
+OUTPUT        = (EXAMPLES_ROOT / "output")
 
 CATEGORY_TO_MODE = {
     "1_lexical":  "-l",
@@ -111,7 +127,7 @@ def main():
     total = 0
     passed = 0
 
-    for category_dir in sorted(EXAMPLES_ROOT.iterdir()):
+    for category_dir in sorted(INPUT.iterdir()):
         if not category_dir.is_dir():
             continue
 
@@ -123,7 +139,7 @@ def main():
 
         vsop_files = sorted(category_dir.glob("*.vsop"))
 
-        output_dir = EXAMPLES_ROOT.parent / "output" / category_dir.name
+        output_dir = OUTPUT / category_dir.name
 
         for vsop_file in vsop_files:
             total += 1
