@@ -923,9 +923,6 @@ namespace Khthon {
         const auto& body() const { return body_; }        
     };
 
-
-    
-
     /**
      * @brief Visitor responsible for printing an Abstract Syntax Tree.
      */

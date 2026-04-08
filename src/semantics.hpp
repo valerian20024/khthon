@@ -222,25 +222,26 @@ namespace Khthon {
 
         void visit(ProgramNode& node) override;
         void visit(ClassNode& node) override;
-
-        /*void visit(const MethodNode& node) const override;
-        void visit(const FormalNode& node) const override;
-        void visit(const FieldNode& node) const override;
-        void visit(const BlockExpr& node) const override;
-        void visit(const StringLiteralExpr& node) const override;
-        void visit(const IntegerLiteralExpr& node) const override;
-        void visit(const BoolLiteralExpr& node) const override;
-        void visit(const UnitLiteralExpr& node) const override;
-        void visit(const IfExpr& node) const override;
-        void visit(const AssignExpr& node) const override;
-        void visit(const NewExpr& node) const override;
-        void visit(const UnOpExpr& node) const override;
-        void visit(const BinOpExpr& node) const override;
-        void visit(const VariableExpr& node) const override;
-        void visit(const CallExpr& node) const override;
-        void visit(const SelfExpr& node) const override;
-        void visit(const LetExpr& node) const override;
-        void visit(const WhileExpr& node) const override;*/
+        /*
+        void visit(MethodNode& node) const override;
+        void visit(FormalNode& node) const override;
+        void visit(FieldNode& node) const override;
+        void visit(BlockExpr& node) const override;
+        void visit(StringLiteralExpr& node) const override;
+        void visit(IntegerLiteralExpr& node) const override;
+        void visit(BoolLiteralExpr& node) const override;
+        void visit(UnitLiteralExpr& node) const override;
+        void visit(IfExpr& node) const override;
+        void visit(AssignExpr& node) const override;
+        void visit(NewExpr& node) const override;
+        void visit(UnOpExpr& node) const override;
+        void visit(BinOpExpr& node) const override;
+        void visit(VariableExpr& node) const override;
+        void visit(CallExpr& node) const override;
+        void visit(SelfExpr& node) const override;
+        void visit(LetExpr& node) const override;
+        void visit(WhileExpr& node) const override;
+        */
     };
 }
 
