@@ -220,7 +220,7 @@ void Driver::print_AST(bool annotate, std::ostream& out) {
 void Driver::internal_error(const std::string& reason) {
     // Only output internal errors when debugging.
     #ifdef DEBUG
-        cerr << internal_banner() << reason << endl;
+        cerr << internal_error_banner() << reason << endl;
     #else 
         (void) reason;
     #endif
