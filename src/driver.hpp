@@ -42,14 +42,19 @@ namespace Khthon {
             level_(std::move(level)) 
         {}
 
-        /// @brief Cleanly formats location.
+        /// @brief Cleanly formats the filename, line and column of the Diagnostic.
+        /// @return The location associated to this Diagnostic.
         std::string format_location() const;
 
     public:
         virtual ~Diagnostic() = default;
         
+        /// @brief Compiles all the diagnostic useful informations.
+        /// @return The Diagnostic's informations.
         virtual std::string to_string() const = 0;
 
+        /// @brief Formats the header for a Diagnostic.
+        /// @return The formatted header.
         const std::string header() const;
         const location& loc() const { return loc_; }
         const ErrorLevel& level() const { return level_; };
@@ -120,59 +125,41 @@ namespace Khthon {
 
         std::string to_string() const override;
     };
-    
 
-
-    /*
-    The Driver class acts as a central coordinator. 
-    It manages the input file, stores state (like variables for the calculator),
-    and bridges the lexer/parser 
-    */
+    /**
+     * @brief The Driver class acts as a central coordinator. 
+     * 
+     * It manages the input file, stores state (tokens, AST, ...) 
+     * and bridges the lexer/parser 
+     */
     class Driver {
     private:
-        /**
-         * @brief The source file.
-         */
+        /// @brief The source file to compile.
         std::string source_file;
 
-        /**
-         * @brief The parser.
-         */
+        /// @brief The parser.
         Khthon::Parser *parser;
 
-        /**
-         * @brief Store the variables (names + values).
-         */
+        /// @brief Store the variables (names + values).
+        //todo is this useful?
         std::map<std::string, int> variables;
 
-        /**
-         * @brief Stores the tokens.
-         */
+        /// @brief Stores the tokens.
         std::vector<Parser::symbol_type> tokens;  //todo add a _ after the name
 
-        /**
-         * @brief Stores all the encountered errors and warnings. 
-         */
+        /// @brief Stores all the encountered errors and warnings. 
         std::vector<std::shared_ptr<Diagnostic>> diagnostics_;
 
-        /**
-         * @brief The total number of errors encountered during compilation.
-         */
+        /// @brief The total number of errors encountered during compilation.
         size_t error_count_ = 0;
 
-        /**
-         * @brief The total number of warnings encountered during compilation.
-         */
+        /// @brief The total number of warnings encountered during compilation.
         size_t warning_count_ = 0;
 
-        /**
-         * @brief Start the lexer.
-         */
+        /// @brief Starts the lexer.
         void scan_begin();
 
-        /**
-         * @brief Stop the lexer.
-         */
+        /// @brief Stops the lexer.
         void scan_end();
 
     public:
@@ -186,7 +173,7 @@ namespace Khthon {
         /**
          * @brief Get the source file.
          *
-         * @return const std::string& The source file.
+         * @return The source file.
          */
         const std::string &get_source_file() { return source_file; }
 
@@ -196,6 +183,7 @@ namespace Khthon {
          * @param name The name of the variable.
          * @param value The value of the variable.
          */
+        //todo is this still useful?
         void add_variable(std::string name, int value) { variables[name] = value; }
 
         /**
@@ -206,6 +194,7 @@ namespace Khthon {
          * @return true If the variable exists.
          * @return false If the variable does not exist.
          */
+        //todo is this still useful?
         bool has_variable(std::string name) { return variables.count(name); }
 
         /**
@@ -215,12 +204,13 @@ namespace Khthon {
          *
          * @return int The value of the variable.
          */
+        //todo is this still useful?
         int get_variable(std::string name) { return variables.at(name); }
 
         /**
          * @brief Run the lexer on the source file.
          *
-         * @return int 0 if no lexical error.
+         * @return int 0 if no lexical error. Non-zero otherwise.
          */
         int lex();
 
@@ -228,7 +218,7 @@ namespace Khthon {
          * @brief Run the lexer and the parser on the source file.
          * @note Requires the lexer to run first.
          *
-         * @return int 0 if no lexical or syntax error.
+         * @return int 0 if no lexical or syntax error. Non-zero otherwise.
          */
         int parse();
 
@@ -258,89 +248,57 @@ namespace Khthon {
          */
         void print_AST(bool annotate, std::ostream& out);
 
-        /**
-         * @brief The result of the computation.
-         */
+        /// @brief The result of the computation.
+        //todo is this useful ?
         int result;
 
-        /**
-         * @brief The root of the AST. Used as a handle to parse the whole tree.
-         */
+        /// @brief The root of the AST. Used as a handle to parse the whole tree.
         std::shared_ptr<ProgramNode> ast_root;
 
-        /**
-         * @brief Adds a new diagnostic to the list.
-         */
+        /// @brief Adds a new diagnostic to the list.
         void report(std::shared_ptr<Diagnostic> diagnostic);
 
-        /**
-         * @brief Logs an internal error.
-         */
+        /// @brief Logs an internal error.
+        /// @note When debugging is activated, will directly print the error on stderr.
         void internal_error(const std::string& reason);
 
-        /**
-         * @brief Helper function to add a new lexical note.
-         */
+        /// @brief Helper function to add a new lexical note.
         void lexical_note(const location& l, const std::string& reason);
 
-        /**
-         * @brief Helper function to add a new lexical warning.
-         */
+        /// @brief Helper function to add a new lexical warning.
         void lexical_warning(const location& l, const std::string& reason);
 
-        /**
-         * @brief Helper function to add a new lexical error.
-         */
+        /// @brief Helper function to add a new lexical error.
         void lexical_error(const location& l, const std::string& reason);
 
-        /**
-         * @brief Helper function to add a new syntax note.
-         */
+        /// @brief Helper function to add a new syntax note.
         void syntax_note(const location& l, const std::string& reason);
 
-        /**
-         * @brief Helper function to add a new syntax warning.
-         */
+        /// @brief Helper function to add a new syntax warning.
         void syntax_warning(const location& l, const std::string& reason);
 
-        /**
-         * @brief Helper function to add a new syntax error.
-         */
+        /// @brief Helper function to add a new syntax error.
         void syntax_error(const location& l, const std::string& reason);
 
-        /**
-         * @brief Helper function to add a new semantic note.
-         */
+        /// @brief Helper function to add a new semantic note.
         void semantic_note(const location& l, const std::string& reason);
 
-        /**
-         * @brief Helper function to add a new semantic warning.
-         */
+        /// @brief Helper function to add a new semantic warning.
         void semantic_warning(const location& l, const std::string& reason);
 
-        /**
-         * @brief Helper function to add a new semantic error.
-         */
+        /// @brief Helper function to add a new semantic error.
         void semantic_error(const location& l, const std::string& reason);        
         
-        /**
-         * @brief Helper function to add a new semantic note.
-         */
+        /// @brief Helper function to add a new semantic note.
         void generation_note(const location& l, const std::string& reason);
 
-        /**
-         * @brief Helper function to add a new semantic warning.
-         */
+        /// @brief Helper function to add a new semantic warning.
         void generation_warning(const location& l, const std::string& reason);
 
-        /**
-         * @brief Helper function to add a new semantic error.
-         */
+        /// @brief Helper function to add a new semantic error.
         void generation_error(const location& l, const std::string& reason);      
 
-        /**
-         * @brief Prints all the diagnostics.
-         */
+        /// @brief Print all the diagnostics.
         void print_diagnostics() const;
     };
 }

@@ -105,7 +105,10 @@ int Driver::parse() {
     parser = new Parser(*this);    
     int parse_result = parser->parse();
     if (parse_result) 
-        internal_error("Driver::parse(): Bison parse returned with:" + to_string(parse_result));
+        internal_error(
+            "Driver::parse(): Bison parse returned with:" 
+            + to_string(parse_result)
+        );
     
     scan_end();
     delete parser;
@@ -153,7 +156,6 @@ int Driver::analyze() {
 int Driver::generate() {
     return 0;
 }
-
 
 /**
  * @brief Print the information about a token
@@ -260,7 +262,6 @@ void Driver::report(std::shared_ptr<Diagnostic> d) {
     diagnostics_.push_back(std::move(d));
 }
 
-
 void Driver::lexical_note(const location& l, const std::string& reason) {
     report(make_shared<SyntaxDiagnostic>(l, ErrorLevel::Note, reason));
 }
@@ -309,7 +310,6 @@ void Driver::generation_error(const location& l, const std::string& reason) {
     report(make_shared<GenerationDiagnostic>(l, ErrorLevel::Error, reason));
 }
 
-
 //todo sort the errors by line and columns
 //todo Then also errors, warnings, notes for a same line
 void Driver::print_diagnostics() const {
@@ -341,7 +341,7 @@ const string Diagnostic::header() const {
     case ErrorLevel::Warning:   return as_warning("Warning: ");
     case ErrorLevel::Note:      return as_note("Note: ");
     default:
-        cerr << "Error in Diagnostic::header(): reached default case.";
+        cerr << "Error in Diagnostic::header(): No such ErrorLevel.";
         return "";
     }
 }
