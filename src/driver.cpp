@@ -13,12 +13,10 @@ using namespace Khthon;
 using namespace colors;
 
 /*
-todo  Remove old school new and delete
+
 */
 
-/**
- * @brief Map a token type to a string (pretty-print token types).
- */
+/// @brief Map a token type to its string representation.
 static const map<Parser::token_type, string> type_to_string = {
     {Parser::token::AND,                "and"},
     {Parser::token::BOOL,               "bool"},
@@ -212,7 +210,10 @@ void Driver::print_AST(bool annotate, std::ostream& out) {
         string ast_dump = ast_root->accept(printer);
         out << ast_dump << endl;
     } else {
-        internal_error("The ast_root is a null pointer. Unable to print the ast dump.");
+        internal_error(
+            "The ast_root is a null pointer." 
+            "Unable to print the ast dump."
+        );
     }
 }
 

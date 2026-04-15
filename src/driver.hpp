@@ -12,6 +12,7 @@
 /*
 ? Who should have driver as reference to be able to send InternalDiagnostics ?
     Instead, create a DiagnosticHandler class that has the duty to log new diags, etc.
+todo add a _ after the name
 */
 
 // Give prototype of yylex() function, then declare it.
@@ -140,12 +141,8 @@ namespace Khthon {
         /// @brief The parser.
         Khthon::Parser *parser;
 
-        /// @brief Store the variables (names + values).
-        //todo is this useful?
-        std::map<std::string, int> variables;
-
         /// @brief Stores the tokens.
-        std::vector<Parser::symbol_type> tokens;  //todo add a _ after the name
+        std::vector<Parser::symbol_type> tokens;  
 
         /// @brief Stores all the encountered errors and warnings. 
         std::vector<std::shared_ptr<Diagnostic>> diagnostics_;
@@ -163,94 +160,54 @@ namespace Khthon {
         void scan_end();
 
     public:
-        /**
-         * @brief Construct a new Driver.
-         *
-         * @param _source_file The file containing the source code.
-         */
+        /// @brief Construct a new Driver.
+        /// @param _source_file The file containing the source code.
         Driver(const std::string &_source_file) : source_file(_source_file) {}
 
-        /**
-         * @brief Get the source file.
-         *
-         * @return The source file.
-         */
+        /// @brief Get the source file.
+        /// @return The source file.
         const std::string &get_source_file() { return source_file; }
-
-        /**
-         * @brief Add a new integer variable.
-         *
-         * @param name The name of the variable.
-         * @param value The value of the variable.
-         */
-        //todo is this still useful?
-        void add_variable(std::string name, int value) { variables[name] = value; }
-
-        /**
-         * @brief Check if a variable exists.
-         *
-         * @param name The name of the variable.
-         *
-         * @return true If the variable exists.
-         * @return false If the variable does not exist.
-         */
-        //todo is this still useful?
-        bool has_variable(std::string name) { return variables.count(name); }
-
-        /**
-         * @brief Get the interger value of a variable.
-         *
-         * @param name The name of the variable.
-         *
-         * @return int The value of the variable.
-         */
-        //todo is this still useful?
-        int get_variable(std::string name) { return variables.at(name); }
 
         /**
          * @brief Run the lexer on the source file.
          *
-         * @return int 0 if no lexical error. Non-zero otherwise.
+         * @return 0 if no error happened during compilation. Non-zero otherwise.
          */
         int lex();
 
         /**
          * @brief Run the lexer and the parser on the source file.
+         * 
          * @note Requires the lexer to run first.
          *
-         * @return int 0 if no lexical or syntax error. Non-zero otherwise.
+         * @return 0 if no error happened during compilation. Non-zero otherwise.
          */
         int parse();
 
         /**
          * @brief Checks semantics on the source file.
+         * 
          * @note Requires the lexer and the parser to run first.
          *
-         * @return int 0 if no lexical, syntax, or semantic error.
+         * @return 0 if no error happened during compilation. Non-zero otherwise.
          */
         int analyze();
 
         /**
          * @brief Run the lexer, parser on the source file. Checks semantics and generate intermediate representation.
+         * 
          * @note Requires the lexer, parser, and semantic checker to run first.
-         * @return int 0 if no lexical, syntax, or semantic error.
+         * 
+         * @return 0 if no error happened during compilation. Non-zero otherwise.
          */
         int generate();
 
-        /**
-         * @brief Print all the tokens, that is the output of the lexical analysis
-         */
+        /// @brief Print all the tokens, that is the output of the lexical analysis
         void print_tokens(std::ostream& out);
 
-        /**
-         * @brief Print the abstract syntax tree.
-         * @param annotate: print with or without annotations.
-         */
+        /// @brief Print the abstract syntax tree.
+        /// @param annotate: print with or without annotations.
         void print_AST(bool annotate, std::ostream& out);
-
-        /// @brief The result of the computation.
-        //todo is this useful ?
-        int result;
 
         /// @brief The root of the AST. Used as a handle to parse the whole tree.
         std::shared_ptr<ProgramNode> ast_root;
