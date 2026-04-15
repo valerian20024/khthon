@@ -111,27 +111,11 @@ namespace Khthon {
         std::string to_string() const override;
     };
 
-    class GenerationDiagnostic : public Diagnostic {
-    private:
-        std::string reason_;
-    public:
-        GenerationDiagnostic(
-            location l,
-            ErrorLevel e,
-            std::string r
-        ) : 
-            Diagnostic(l, e), 
-            reason_(std::move(r)) 
-        {}
-
-        std::string to_string() const override;
-    };
-
     /**
      * @brief The Driver class acts as a central coordinator. 
      * 
      * It manages the input file, stores state (tokens, AST, ...) 
-     * and bridges the lexer/parser 
+     * and bridges the lexer/parser.
      */
     class Driver {
     private:
@@ -246,15 +230,6 @@ namespace Khthon {
         /// @brief Helper function to add a new semantic error.
         void semantic_error(const location& l, const std::string& reason);        
         
-        /// @brief Helper function to add a new semantic note.
-        void generation_note(const location& l, const std::string& reason);
-
-        /// @brief Helper function to add a new semantic warning.
-        void generation_warning(const location& l, const std::string& reason);
-
-        /// @brief Helper function to add a new semantic error.
-        void generation_error(const location& l, const std::string& reason);      
-
         /// @brief Print all the diagnostics.
         void print_diagnostics() const;
     };

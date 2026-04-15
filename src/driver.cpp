@@ -247,13 +247,6 @@ string SemanticDiagnostic::to_string() const {
         + bold(reason_);
 }
 
-string GenerationDiagnostic::to_string() const {
-    return format_location()
-        + ": generation error: \n"
-        + header()
-        + bold(reason_);
-}
-
 void Driver::report(std::shared_ptr<Diagnostic> d) {
     if (d->level() == ErrorLevel::Error)
         error_count_++;
@@ -297,18 +290,6 @@ void Driver::semantic_warning(const location& l, const std::string& reason) {
 
 void Driver::semantic_error(const location& l, const std::string& reason) {
     report(make_shared<SemanticDiagnostic>(l, ErrorLevel::Error, reason));
-}
-
-void Driver::generation_note(const location& l, const std::string& reason) {
-    report(make_shared<GenerationDiagnostic>(l, ErrorLevel::Note, reason));
-}
-
-void Driver::generation_warning(const location& l, const std::string& reason) {
-    report(make_shared<GenerationDiagnostic>(l, ErrorLevel::Warning, reason));
-}
-
-void Driver::generation_error(const location& l, const std::string& reason) {
-    report(make_shared<GenerationDiagnostic>(l, ErrorLevel::Error, reason));
 }
 
 //todo sort the errors by line and columns
