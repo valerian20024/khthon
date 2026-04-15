@@ -87,7 +87,7 @@ namespace Khthon {
         Kind kind = Kind::DEFAULT;
         std::string custom_name;
 
-        // Default ctor is required by Bison
+        //* Default constructor is required by Bison
         Type() = default;
         explicit Type(Kind k) : kind(k), custom_name("") { }
         explicit Type(
@@ -100,6 +100,7 @@ namespace Khthon {
         std::string to_string() const;
     };
 
+    /// @brief Represents an unary operation in VSOP.
     struct UnaryOperation {
         enum class Kind {
             NOT, 
@@ -116,6 +117,7 @@ namespace Khthon {
         std::string to_string() const;
     };
 
+    /// @brief Represents a binary operation in VSOP.
     struct BinaryOperation {
         enum class Kind { 
             EQUAL, 
@@ -149,11 +151,14 @@ namespace Khthon {
     private:
         Khthon::location loc_;
     public:
-        Node(Khthon::location l) : loc_(l) { }
+        Node(
+            Khthon::location l
+        ) : 
+            loc_(l) 
+        { }
         virtual ~Node() = default;
 
         virtual std::string accept(const StringVisitor&) const = 0;
-        
         virtual void accept(MutableVoidVisitor&) = 0;
         virtual void accept(const VoidVisitor&) const = 0;
 
@@ -166,7 +171,11 @@ namespace Khthon {
         Khthon::Type type_ = Type();
 
     public:
-        Expr(Khthon::location l) : Node(l) {}
+        Expr(
+            Khthon::location l
+        ) : 
+            Node(l) 
+        {}
         virtual ~Expr() = default;
 
         virtual std::string accept(const StringVisitor&) const = 0;
@@ -709,6 +718,7 @@ namespace Khthon {
         }
     };
 
+
     class LetExpr : public Expr {
     private:
         std::string name_;
@@ -747,6 +757,7 @@ namespace Khthon {
         const auto& initializer() const { return initializer_; }
         const auto& scope() const { return scope_; }
     };
+
 
     class WhileExpr : public Expr {
     private:

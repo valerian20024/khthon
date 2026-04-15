@@ -1,5 +1,6 @@
 #include <string>
 
+/// @brief Contains methods printing in the terminal.
 namespace colors {
 
     inline std::string with(const std::string code, const std::string& text) {

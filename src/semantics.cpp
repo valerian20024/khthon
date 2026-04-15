@@ -10,6 +10,7 @@ using namespace std;
 using Khthon::Type;
 
 void ClassesVisitor::visit(const ProgramNode& node) const {
+    
     // Inject the built-in Object class
     Khthon::location builtin_loc;  // default location, no source file
     ClassInfo object_info("Object", "Object", builtin_loc);
@@ -138,9 +139,8 @@ void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
     TypesVisitor tv = TypesVisitor(driver_, class_table_);
     root->accept(tv);
 
-
     #ifdef DEBUG
-    print_class_table();
+        print_class_table();
     #endif
 }
 
