@@ -19,41 +19,41 @@ void ClassesVisitor::visit(const ProgramNode& node) const {
     object_info.add_method(MethodInfo(
         "print",
         Type("Object"),
-        { FormalInfo("s", Type(Type::Kind::STRING), builtin_loc) },
+        { FormalInfo("s", Type::String(), builtin_loc) },
         builtin_loc
     ));
 
     object_info.add_method(MethodInfo(
         "printBool",
         Type("Object"),
-        { FormalInfo("b", Type(Type::Kind::BOOL), builtin_loc) },
+        { FormalInfo("b", Type::Bool(), builtin_loc) },
         builtin_loc
     ));
 
     object_info.add_method(MethodInfo(
         "printInt32",
         Type("Object"),
-        { FormalInfo("i", Type(Type::Kind::INT32), builtin_loc) },
+        { FormalInfo("i", Type::Int32(), builtin_loc) },
         builtin_loc
     ));
 
     object_info.add_method(MethodInfo(
         "inputLine",
-        Type(Type::Kind::STRING),
+        Type::String(),
         {},  // no formals
         builtin_loc
     ));
 
     object_info.add_method(MethodInfo(
         "inputBool",
-        Type(Type::Kind::BOOL),
+        Type::Bool(),
         {},
         builtin_loc
     ));
 
     object_info.add_method(MethodInfo(
         "inputInt32",
-        Type(Type::Kind::INT32),
+        Type::Int32(),
         {},
         builtin_loc
     ));
@@ -182,7 +182,7 @@ void SemanticChecker::check_main() const {
 
     // Check main returns int32
     const Type& return_type = method_info.return_type();
-    if (return_type.kind != Type::Kind::INT32) {
+    if (!return_type.is_int32()) {
         driver_.semantic_error(
             method_info.location(),
             "method 'main' must return 'int32', found '" 

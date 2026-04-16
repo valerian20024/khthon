@@ -74,7 +74,8 @@ namespace Khthon {
      * 
      * It can be a primitive type like int32 or a custom type, defined by a class.
      */
-    struct Type {
+    class Type {
+    public:
         enum class Kind { 
             CUSTOM, 
             INT32, 
@@ -82,20 +83,36 @@ namespace Khthon {
             STRING, 
             UNIT,
             DEFAULT
-        };  
+        };    
 
-        Kind kind = Kind::DEFAULT;
-        std::string custom_name;
-
+    private: 
+        Kind kind_ = Kind::DEFAULT;
+        std::string custom_name_;
+        
+    public:     
         //* Default constructor is required by Bison
         Type() = default;
-        explicit Type(Kind k) : kind(k), custom_name("") { }
-        explicit Type(
-            std::string name
-        ) : 
-            kind(Kind::CUSTOM), 
-            custom_name(std::move(name)) 
-        { }
+
+        explicit Type(Kind k) : kind_(k), custom_name_("") { }
+        
+        explicit Type(std::string name) : 
+            kind_(Kind::CUSTOM), custom_name_(std::move(name)) { }
+
+        // Static factory methods. Called using Type::Int32()
+        static Type Int32()   { return Type(Kind::INT32); }
+        static Type Bool()    { return Type(Kind::BOOL); }
+        static Type String()  { return Type(Kind::STRING); }
+        static Type Unit()    { return Type(Kind::UNIT); }
+        static Type Default() { return Type(Kind::DEFAULT); }
+
+        bool is_custom()    const { return kind_ == Kind::CUSTOM; }
+        bool is_primitive() const { return kind_ != Kind::DEFAULT && !is_custom(); }
+
+        bool is_int32()     const { return kind_ == Kind::INT32; }
+        bool is_bool()      const { return kind_ == Kind::BOOL; }
+        bool is_string()    const { return kind_ == Kind::STRING; }
+        bool is_unit()      const { return kind_ == Kind::UNIT; }
+        bool is_undefined() const { return kind_ == Kind::UNIT; }
 
         std::string to_string() const;
     };
@@ -116,6 +133,7 @@ namespace Khthon {
 
         std::string to_string() const;
     };
+
 
     /// @brief Represents a binary operation in VSOP.
     struct BinaryOperation {

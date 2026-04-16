@@ -11,8 +11,8 @@ using namespace std;
 namespace Khthon {
 
     string Type::to_string() const {
-        switch (kind) {
-            case Type::Kind::CUSTOM:        return custom_name; 
+        switch (kind_) {
+            case Type::Kind::CUSTOM:        return custom_name_; 
             case Type::Kind::INT32:         return "int32";
             case Type::Kind::BOOL:          return "bool";
             case Type::Kind::STRING:        return "string";
