@@ -15,8 +15,7 @@
 
 ? Is it better to keep make_shared or use unique ptr?
 
-todo put back const std::string before to_string methods of UnOp, BinOp, Type
-
+? add driver reference in classes to be able to log internal errors?
 */
 
 namespace Khthon {
@@ -63,11 +62,6 @@ namespace Khthon {
         ClassMembers() {}
     };
 
-    //todo Add static member functions like Int32() to return a Type::Kind::Int32
-    //todo This way we can more easily write code involving Type.
-    //todo Make it a class also, it's getting much more complicated than a struct
-    //todo Make the other struct classes as well.
-    //? add driver reference for methods to log internal errors?
 
     /**
      * @brief Represents a type in VSOP.

@@ -12,12 +12,12 @@ namespace Khthon {
 
     string Type::to_string() const {
         switch (kind_) {
-            case Type::Kind::CUSTOM:        return custom_name_; 
-            case Type::Kind::INT32:         return "int32";
-            case Type::Kind::BOOL:          return "bool";
-            case Type::Kind::STRING:        return "string";
-            case Type::Kind::UNIT:          return "unit";
-            case Type::Kind::DEFAULT:       return "DEFAULT_TYPE";
+            case Kind::CUSTOM:        return custom_name_; 
+            case Kind::INT32:         return "int32";
+            case Kind::BOOL:          return "bool";
+            case Kind::STRING:        return "string";
+            case Kind::UNIT:          return "unit";
+            case Kind::DEFAULT:       return "DEFAULT_TYPE";
             default:
                 return "Unknown type kind";
         }
