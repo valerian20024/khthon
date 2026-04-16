@@ -312,17 +312,14 @@ void TypesVisitor::visit(ProgramNode& node) {
 
 void TypesVisitor::visit(ClassNode& node) {
     current_class_name_ = node.name();
-    scope_stack_.clear();               // new class → fresh scopes
-
-    cout << "MAGGIC HAPPENNNSSS " << endl;
+    scope_stack_.clear();  // fresh scope for new class
 
     // Fields first (initializers may use other fields)
-    /*
+    
     for (const auto& f : node.fields())
         f->accept(*this);
 
     // Then methods
     for (const auto& m : node.methods())
         m->accept(*this);
-    */
 }
