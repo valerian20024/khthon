@@ -139,23 +139,15 @@ namespace Khthon {
         enum class VisitState { Unvisited, Visiting, Visited };
 
         /// @brief Helper function implementing depth-first search for finding cycles.
-        bool cycle_check(
-            const std::string& name, 
-            std::map<std::string, VisitState>& states
-        ) const;
+        bool cycle_check(const std::string& name, 
+            std::map<std::string, VisitState>& states) const;
 
         // Pass 2
         void check_main() const;
         void check_parent_classes_exist() const;
         void check_inheritance_cycles();
+
         
-        // Pass 3
-        //std::vector<std::string> get_ancestors(const std::string& class_name) const;
-
-        // Pass 4
-        //void check_method_overriding() const;
-        //void check_field_shadowing() const;
-
         /// @brief Debugging purpose.
         void print_class_table() const;
 
@@ -205,7 +197,7 @@ namespace Khthon {
         Driver& driver_;
         const std::map<std::string, ClassInfo>& class_table_;
 
-        std::string current_class_name_;  // For self type.
+        std::string current_class_name_;  // For handling 'self' keyword.
         std::vector<std::map<std::string, Type>> scope_stack_;
 
         bool conforms(const Type& actual, const Type& expected) const;

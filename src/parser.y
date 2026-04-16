@@ -409,10 +409,10 @@ formal
 
 type
   : TYPE_IDENTIFIER { $$ = Khthon::Type(std::move($1)); }
-  | INT32           { $$ = Khthon::Type::Int32();  }
-  | BOOL            { $$ = Khthon::Type::Bool();   }
+  | INT32           { $$ = Khthon::Type::Int32(); }
+  | BOOL            { $$ = Khthon::Type::Bool(); }
   | STRING          { $$ = Khthon::Type::String(); }
-  | UNIT            { $$ = Khthon::Type::Unit();   }
+  | UNIT            { $$ = Khthon::Type::Unit(); }
   ;
 
 block
