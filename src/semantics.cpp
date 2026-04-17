@@ -315,9 +315,26 @@ void SemanticChecker::print_class_table() const {
 
 
     /*================================================++
-    ||          TYPESVISITOR VISIT METHODS            ||
+    ||                 TYPESVISITOR                   ||
     ++================================================*/
 
+bool TypesVisitor::conforms(const Type& given, const Type& expected) const {
+    
+    // Undefined types should never reach type checking.
+    if (given.is_undefined() || expected.is_undefined()) {
+        driver_.internal_error("conforms(): encountered an undefined type");
+        return false;
+    }
+
+    // Primitive types conform only with themselves
+    if (given.is_primitive() || expected.is_primitive()) {
+        return given == expected;
+    }
+
+    // Types are custom
+    // return is_subtype(given, expected);
+    return true;
+}
 
 void TypesVisitor::visit(ProgramNode& node) {
     cout << "TypesVisitor::visit(ProgramNode" << endl;

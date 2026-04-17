@@ -194,18 +194,25 @@ namespace Khthon {
      */
     class TypesVisitor : public MutableVisitor<void> {
     private:
+        // Handle to main driver.
+        // todo const?
         Driver& driver_;
 
+        // Handle to the classes symbol table.
         const std::map<std::string, ClassInfo>& class_table_;
 
-        std::string current_class_name_;  // For handling 'self' keyword.
-        
         std::vector<std::map<std::string, Type>> scope_stack_;
 
+        std::string current_class_name_;  // For handling 'self' keyword.        
+
+        /// @brief Checks the `actual` type conforms to the one `expected`.
         bool conforms(const Type& actual, const Type& expected) const;
 
-        Type ancestor(const Type& t1, const Type& t2) const;
+        /// @brief Checks whether `given` is a subtype of `compared_to` using class inheritance.
+        bool is_subtype(const Type& given, const Type& compared_to) const;
 
+        /// @brief Finds the least common ancestor of `t1` and `t2`
+        Type ancestor(const Type& t1, const Type& t2) const;
 
     public:
         explicit TypesVisitor(
