@@ -77,7 +77,7 @@ namespace Khthon {
 
     private: 
         Kind kind_ = Kind::DEFAULT;
-        std::string custom_name_;
+        std::string custom_name_ = {};
         
     public:
         /// @brief Default constructor for Type.
@@ -109,12 +109,14 @@ namespace Khthon {
         bool is_bool()      const { return kind_ == Kind::BOOL; }
         bool is_string()    const { return kind_ == Kind::STRING; }
         bool is_unit()      const { return kind_ == Kind::UNIT; }
-
         /// @brief Checks whether this `Type` is defined in VSOP.
         bool is_undefined() const { return kind_ == Kind::DEFAULT; }
 
         bool operator==(const Type& other) const;
         bool operator!=(const Type& other) const;
+
+        /// @brief Returns the custom type name. An empty string if none.
+        std::string custom_name() const { return custom_name_; }
 
         /// @brief The `Type` string representation, as seen in any valid VSOP code.
         std::string to_string() const;

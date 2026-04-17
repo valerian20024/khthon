@@ -257,8 +257,8 @@ bool SemanticChecker::cycle_check(
 }
 
 void SemanticChecker::check_inheritance_cycles() {
-
     map<string, VisitState> states;
+    
     for (const auto& [name, info] : class_table_)
         states[name] = VisitState::Unvisited;
 
@@ -326,14 +326,42 @@ bool TypesVisitor::conforms(const Type& given, const Type& expected) const {
         return false;
     }
 
-    // Primitive types conform only with themselves
-    if (given.is_primitive() || expected.is_primitive()) {
+    // Primitive types conform only with themselves.
+    if (given.is_primitive() || expected.is_primitive())
         return given == expected;
+
+
+    // Types are custom so we check for subtyping.
+    return is_subtype(given, expected);
+}
+
+bool TypesVisitor::is_subtype(const Type& given, const Type& compared_to) const {
+    
+    // Subtyping is only available for classes.
+    if (!given.is_custom() || !compared_to.is_custom()) {
+        driver_.internal_error("is_subtype(): called with non custom types");
+        return false;
     }
 
-    // Types are custom
-    // return is_subtype(given, expected);
-    return true;
+    string current = given.custom_name();
+    while (true) {
+
+        if (current == compared_to.custom_name())
+            return true;
+        
+        if (current == "Object")
+            return false;
+        
+        auto it = class_table_.find(current);
+        if (it == class_table_.end()) {
+            driver_.internal_error(
+                "is_subtype(): class '" + current + "'not found in class table"
+            );
+            return false;
+        }
+
+        current = it->second.parent();
+    }
 }
 
 void TypesVisitor::visit(ProgramNode& node) {
