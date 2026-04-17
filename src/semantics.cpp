@@ -370,12 +370,12 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
     // This method only applies to custom types
     if (!t1.is_custom() || !t2.is_custom()) {
         driver_.internal_error("ancestor(): called with non custom types");
-        return Type::Object();  // todo return Object
+        return Type::Object();
     }
 
     // Collect the full ancestry chain of t1 into an ordered list.
-    std::vector<std::string> ancestors;
-    std::string current = t1.custom_name();
+    vector<string> ancestors;
+    string current = t1.custom_name();
     while (true) {
 
         ancestors.push_back(current);
@@ -393,8 +393,10 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
         current = it->second.parent();
     }
 
-    // Walk up t2's chain and return the first class found in t1's chain.
-    std::unordered_set<std::string> ancestors_set(ancestors.begin(), ancestors.end());
+    // Walk up t2's ancestors and return the first class found in t1's ancestors
+    unordered_set<string>ancestors_set(
+        ancestors.begin(), ancestors.end());
+
     current = t2.custom_name();
     while (true) {
 
@@ -402,7 +404,7 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
             return Type(current);
 
         if (current == "Object")
-            return Type("Object");  // Guaranteed fallback.
+            return Type("Object");  // Fallback
 
         auto it = class_table_.find(current);
         if (it == class_table_.end()) {
@@ -558,11 +560,20 @@ void TypesVisitor::visit(LetExpr& node) {
 void TypesVisitor::visit(WhileExpr& node) { 
     cout << "TypesVisitor::visit(WhileExpr" << endl;
     //? New scope
-    node.condition()->accept(*this);  // must be bool
-    node.body()->accept(*this);  // can be anything
+    node.condition()->accept(*this);
+    node.body()->accept(*this);
 
-    // Check types
-    
+    if (!conforms(node.condition()->type(), Type::Bool())) {
+        driver_.semantic_error(
+            node.location(),
+            "condition of 'while' must be of type 'bool', found '"
+            + node.condition()->type().to_string()
+            + "'"
+        );
+    }
+
+    if (node.body()->type().is_undefined())
+        driver_.internal_error("visiting WhileExpr found an undefined type");
 
     node.set_type(Type::Unit());
     //? Pop scope
