@@ -463,6 +463,9 @@ void TypesVisitor::visit(WhileExpr& node) {
     //? New scope
     node.condition()->accept(*this);  // must be bool
     node.body()->accept(*this);  // can be anything
-    // set type of while to unit
+
+    // Check types
+
+    node.set_type(Type::Unit());
     //? Pop scope
 }

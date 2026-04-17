@@ -1,8 +1,9 @@
-
 #include "visitors.hpp"
 #include "ast.hpp"
+#include "colors.hpp"
 
 using namespace std;
+using namespace colors;
 
 namespace Khthon {
 
@@ -19,7 +20,7 @@ namespace Khthon {
 
     string PrintVisitor::annotate(string s, const Expr& node) const {
         if (annotate_)
-            s += " : " + node.type().to_string();
+            s += " : " + as_note(node.type().to_string());
         return s;
     }
 

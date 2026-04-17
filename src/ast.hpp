@@ -63,11 +63,7 @@ namespace Khthon {
     };
 
 
-    /**
-     * @brief Represents a type in VSOP.
-     * 
-     * It can be a primitive type like int32 or a custom type, defined by a class.
-     */
+    /// @brief Represents a type in VSOP.
     class Type {
     public:
         enum class Kind { 
@@ -83,31 +79,41 @@ namespace Khthon {
         Kind kind_ = Kind::DEFAULT;
         std::string custom_name_;
         
-    public:     
-        //* Default constructor is required by Bison
+    public:
+        /// @brief Default constructor for Type.
+        /// @note Required by Bison.
         Type() = default;
 
+        /// @brief Constructs a new Type based on a Type::Kind.
         explicit Type(Kind k) : kind_(k), custom_name_("") { }
         
+        /// @brief Constructs a new custom type based on the class name.
         explicit Type(std::string name) : 
             kind_(Kind::CUSTOM), custom_name_(std::move(name)) { }
 
-        // Static factory methods. Called using Type::Int32()
+        // Static factory methods.
+
         static Type Int32()   { return Type(Kind::INT32); }
         static Type Bool()    { return Type(Kind::BOOL); }
         static Type String()  { return Type(Kind::STRING); }
         static Type Unit()    { return Type(Kind::UNIT); }
         static Type Default() { return Type(Kind::DEFAULT); }
 
+        /// @brief Any class in VSOP is a type. 
         bool is_custom()    const { return kind_ == Kind::CUSTOM; }
+
+        /// @brief Primitive types are `int32`, `string`, `bool` and `unit` in VSOP.
         bool is_primitive() const { return kind_ != Kind::DEFAULT && !is_custom(); }
 
         bool is_int32()     const { return kind_ == Kind::INT32; }
         bool is_bool()      const { return kind_ == Kind::BOOL; }
         bool is_string()    const { return kind_ == Kind::STRING; }
         bool is_unit()      const { return kind_ == Kind::UNIT; }
-        bool is_undefined() const { return kind_ == Kind::UNIT; }
 
+        /// @brief Checks whether this type is defined in VSOP.
+        bool is_undefined() const { return kind_ == Kind::DEFAULT; }
+
+        /// @brief The type string representation, as in any valid VSOP code.
         std::string to_string() const;
     };
 

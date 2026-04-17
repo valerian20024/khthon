@@ -195,13 +195,19 @@ namespace Khthon {
     class TypesVisitor : public MutableVisitor<void> {
     private:
         Driver& driver_;
+
         const std::map<std::string, ClassInfo>& class_table_;
 
         std::string current_class_name_;  // For handling 'self' keyword.
+        
         std::vector<std::map<std::string, Type>> scope_stack_;
 
         bool conforms(const Type& actual, const Type& expected) const;
-        Type lookup_variable(const std::string& name) const;
+
+        Type ancestor(const Type& t1, const Type& t2) const;
+
+        
+
 
     public:
         explicit TypesVisitor(
