@@ -149,7 +149,7 @@ void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
     check_parent_classes_exist();
     check_inheritance_cycles();
 
-    TypesVisitor tv = TypesVisitor(driver_, class_table_);
+    TypesVisitor tv = TypesVisitor(driver_, *this);
     root->accept(tv);
 
     #ifdef DEBUG
@@ -353,15 +353,14 @@ bool TypesVisitor::is_subtype(const Type& given, const Type& compared_to) const 
         if (current == "Object")
             return false;
         
-        auto it = class_table_.find(current);
-        if (it == class_table_.end()) {
+        if (checker_.class_exists(current)) {
             driver_.internal_error(
                 "is_subtype(): class '" + current + "'not found in class table"
             );
             return false;
         }
 
-        current = it->second.parent();
+        current = checker_.get_class(current).parent();
     }
 }
 
@@ -376,21 +375,20 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
     // Collect the full ancestry chain of t1 into an ordered list.
     vector<string> ancestors;
     string current = t1.custom_name();
-    while (true) {
 
+    while (true) {
         ancestors.push_back(current);
         if (current == "Object")
             break;
 
-        auto it = class_table_.find(current);
-        if (it == class_table_.end()) {
+        if (checker_.class_exists(current)) {
             driver_.internal_error(
                 "ancestor(): class '" + current + "' not found in class table."
             );
             return Type::Object();
         }
 
-        current = it->second.parent();
+        current = checker_.get_class(current).parent();
     }
 
     // Walk up t2's ancestors and return the first class found in t1's ancestors
@@ -406,15 +404,14 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
         if (current == "Object")
             return Type("Object");  // Fallback
 
-        auto it = class_table_.find(current);
-        if (it == class_table_.end()) {
+        if (checker_.class_exists(current)) {
             driver_.internal_error(
                 "ancestor(): class '" + current + "' not found in class table."
             );
             return Type::Object();
         }
 
-        current = it->second.parent();
+        current = checker_.get_class(current).parent();
     }
 }
 
@@ -428,7 +425,7 @@ void TypesVisitor::visit(ClassNode& node) {
     cout << "TypesVisitor::visit(ClassNode" << endl;
     
     current_class_name_ = node.name();
-    scope_stack_.clear();  // fresh scope for new class
+    // Have fresh scope for new class
     
     for (const auto& f : node.fields())
         f->accept(*this);

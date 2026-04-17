@@ -127,38 +127,6 @@ namespace Khthon {
     ||                     CORE                       ||
     ++================================================*/
 
-
-    /** 
-     * @brief Main orchestrator of the semantic analysis.
-     */
-    class SemanticChecker {
-    private:
-        Driver& driver_;
-        std::map<std::string, ClassInfo> class_table_;
-
-        //todo bulky to have this here
-        enum class VisitState { Unvisited, Visiting, Visited };
-
-        /// @brief Helper function implementing depth-first search for finding cycles.
-        bool cycle_check(const std::string& name, 
-            std::map<std::string, VisitState>& states) const;
-
-        // Pass 2
-        void check_main() const;
-        void check_parent_classes_exist() const;
-        void check_inheritance_cycles();
-
-        
-        /// @brief Debugging purpose.
-        void print_class_table() const;
-
-    public:
-        explicit SemanticChecker(Driver& driver) : driver_(driver) {}
-
-        /// @brief Orchestrator for semantic analysis checks.
-        void analyze(const std::shared_ptr<ProgramNode>& root);
-    };
-
     /**
      * @brief Manages the scope symbol table.
      */
@@ -186,6 +154,7 @@ namespace Khthon {
          * 
          * @return The identifier's type, or nullopt if not found.
          */
+        //todo put in .cpp
         std::optional<Type> lookup(const std::string& name) const {
             // Walk the stack from top (innermost) to bottom (outermost).
             for (auto it = stack_.rbegin(); it != stack_.rend(); ++it) {
@@ -197,10 +166,66 @@ namespace Khthon {
         }
     };
 
+    /** 
+     * @brief Main orchestrator of the semantic analysis.
+     */
+    class SemanticChecker {
+    private:
+        Driver& driver_;
+        //todo  Wrap class_table_ in a ClassManager class
+        //todo  mirroring ScopeManager, for consistency and cleaner interface
+        std::map<std::string, ClassInfo> class_table_;
+        ScopeManager scope_manager_;
+
+        //todo bulky to have this here
+        enum class VisitState { Unvisited, Visiting, Visited };
+
+        /// @brief Helper function implementing depth-first search for finding cycles.
+        bool cycle_check(const std::string& name, 
+            std::map<std::string, VisitState>& states) const;
+
+        void check_main() const;
+        void check_parent_classes_exist() const;
+        void check_inheritance_cycles();
+        
+        /// @brief Debugging purpose.
+        void print_class_table() const;
+
+    public:
+        explicit SemanticChecker(Driver& driver) : driver_(driver) {}
+
+        /// @brief Orchestrator for semantic analysis checks.
+        void analyze(const std::shared_ptr<ProgramNode>& root);
+
+        // Scope management is delegated to ScopeManager
+        
+        void push_scope() { scope_manager_.push_scope(); }
+        void pop_scope() { scope_manager_.pop_scope(); }
+        void add_binding(const std::string& name, const Type& t) { 
+            scope_manager_.add_binding(name, t); 
+        }
+
+        // Class table queries (used by TypesVisitor for type checking).
+        //todo  Place it into the future ClassManager
+        bool class_exists(const std::string& name) const { 
+            return class_table_.count(name) > 0; 
+        }
+
+        const ClassInfo& get_class(const std::string& name) const { 
+            return class_table_.at(name); 
+        }
+
+        std::optional<Type> resolve(
+            const std::string& name, 
+            const std::string& current_class) const;
+
+    };
+
 
     /*================================================++
     ||                   VISITORS                     ||
     ++================================================*/
+
 
     /**
      * @brief Visitor gathering class informations in the symboltable.
@@ -238,9 +263,7 @@ namespace Khthon {
         Driver& driver_;
 
         // Handle to the classes symbol table.
-        const std::map<std::string, ClassInfo>& class_table_;
-
-        std::vector<std::map<std::string, Type>> scope_stack_;
+        SemanticChecker& checker_;
 
         std::string current_class_name_;  // For handling 'self' keyword.        
 
@@ -256,10 +279,10 @@ namespace Khthon {
     public:
         explicit TypesVisitor(
             Driver& d, 
-            const std::map<std::string, ClassInfo>& class_table
+            SemanticChecker& sc
         ) : 
             driver_(d), 
-            class_table_(class_table) 
+            checker_(sc) 
         {}
 
         void visit(ProgramNode& node) override;
