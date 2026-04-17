@@ -214,26 +214,25 @@ namespace Khthon {
 
         void visit(ProgramNode& node) override;
         void visit(ClassNode& node) override;
-        /*
-        void visit(MethodNode& node) const override;
-        void visit(FormalNode& node) const override;
-        void visit(FieldNode& node) const override;
-        void visit(BlockExpr& node) const override;
-        void visit(StringLiteralExpr& node) const override;
-        void visit(IntegerLiteralExpr& node) const override;
-        void visit(BoolLiteralExpr& node) const override;
-        void visit(UnitLiteralExpr& node) const override;
-        void visit(IfExpr& node) const override;
-        void visit(AssignExpr& node) const override;
-        void visit(NewExpr& node) const override;
-        void visit(UnOpExpr& node) const override;
-        void visit(BinOpExpr& node) const override;
-        void visit(VariableExpr& node) const override;
-        void visit(CallExpr& node) const override;
-        void visit(SelfExpr& node) const override;
-        void visit(LetExpr& node) const override;
-        void visit(WhileExpr& node) const override;
-        */
+        void visit(MethodNode& node) override;
+        void visit(FormalNode& node) override;
+        void visit(FieldNode& node) override;
+        void visit(BlockExpr& node) override;
+        void visit(StringLiteralExpr& node) override;
+        void visit(IntegerLiteralExpr& node) override;
+        void visit(BoolLiteralExpr& node) override;
+        void visit(UnitLiteralExpr& node) override;
+        void visit(IfExpr& node) override;
+        void visit(AssignExpr& node) override;
+        void visit(NewExpr& node) override;
+        void visit(UnOpExpr& node) override;
+        void visit(BinOpExpr& node) override;
+        void visit(VariableExpr& node) override;
+        void visit(CallExpr& node) override;
+        void visit(SelfExpr& node) override;
+        void visit(LetExpr& node) override;
+        void visit(WhileExpr& node) override;
+        
     };
 }
 

@@ -323,3 +323,94 @@ void TypesVisitor::visit(ClassNode& node) {
     for (const auto& m : node.methods())
         m->accept(*this);
 }
+
+void TypesVisitor::visit(MethodNode& node) {
+    (void) node;
+    return;
+}
+
+
+void TypesVisitor::visit(FormalNode& node) {
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(FieldNode& node) {
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(BlockExpr& node) {
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(StringLiteralExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(IntegerLiteralExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(BoolLiteralExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(UnitLiteralExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(IfExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(AssignExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(NewExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(UnOpExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(BinOpExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(VariableExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(CallExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(SelfExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(LetExpr& node) { 
+    (void) node;
+    return;
+}
+
+void TypesVisitor::visit(WhileExpr& node) { 
+    (void) node;
+    return;
+}
