@@ -98,6 +98,7 @@ namespace Khthon {
         static Type String()  { return Type(Kind::STRING); }
         static Type Unit()    { return Type(Kind::UNIT); }
         static Type Default() { return Type(Kind::DEFAULT); }
+        static Type Object()  { return Type("Object"); }
 
         /// @brief Any class in VSOP is a type. 
         bool is_custom()    const { return kind_ == Kind::CUSTOM; }

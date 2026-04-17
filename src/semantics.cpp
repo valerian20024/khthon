@@ -1,5 +1,6 @@
 #include "semantics.hpp"
 
+#include <unordered_set>
 #include <string>
 #include <vector>
 #include <functional>
@@ -258,7 +259,7 @@ bool SemanticChecker::cycle_check(
 
 void SemanticChecker::check_inheritance_cycles() {
     map<string, VisitState> states;
-    
+
     for (const auto& [name, info] : class_table_)
         states[name] = VisitState::Unvisited;
 
@@ -358,6 +359,57 @@ bool TypesVisitor::is_subtype(const Type& given, const Type& compared_to) const 
                 "is_subtype(): class '" + current + "'not found in class table"
             );
             return false;
+        }
+
+        current = it->second.parent();
+    }
+}
+
+Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
+
+    // This method only applies to custom types
+    if (!t1.is_custom() || !t2.is_custom()) {
+        driver_.internal_error("ancestor(): called with non custom types");
+        return Type::Object();  // todo return Object
+    }
+
+    // Collect the full ancestry chain of t1 into an ordered list.
+    std::vector<std::string> ancestors;
+    std::string current = t1.custom_name();
+    while (true) {
+
+        ancestors.push_back(current);
+        if (current == "Object")
+            break;
+
+        auto it = class_table_.find(current);
+        if (it == class_table_.end()) {
+            driver_.internal_error(
+                "ancestor(): class '" + current + "' not found in class table."
+            );
+            return Type::Object();
+        }
+
+        current = it->second.parent();
+    }
+
+    // Walk up t2's chain and return the first class found in t1's chain.
+    std::unordered_set<std::string> ancestors_set(ancestors.begin(), ancestors.end());
+    current = t2.custom_name();
+    while (true) {
+
+        if (ancestors_set.count(current))
+            return Type(current);
+
+        if (current == "Object")
+            return Type("Object");  // Guaranteed fallback.
+
+        auto it = class_table_.find(current);
+        if (it == class_table_.end()) {
+            driver_.internal_error(
+                "ancestor(): class '" + current + "' not found in class table."
+            );
+            return Type::Object();
         }
 
         current = it->second.parent();
@@ -510,6 +562,7 @@ void TypesVisitor::visit(WhileExpr& node) {
     node.body()->accept(*this);  // can be anything
 
     // Check types
+    
 
     node.set_type(Type::Unit());
     //? Pop scope
