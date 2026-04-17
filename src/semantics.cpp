@@ -9,6 +9,12 @@ using namespace std;
 
 using Khthon::Type;
 
+
+    /*================================================++
+    ||          TYPESVISITOR VISIT METHODS            ||
+    ++================================================*/
+
+
 void ClassesVisitor::visit(const ProgramNode& node) const {
     
     // Inject the built-in Object class
@@ -124,6 +130,12 @@ void ClassesVisitor::visit(const ClassNode& node) const {
 
     class_table_.emplace(class_name, std::move(class_info));
 }
+
+
+    /*================================================++
+    ||          SEMANTIC CHECKS PROCEDURES            ||
+    ++================================================*/
+
 
 void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
     if (!root)
@@ -302,6 +314,9 @@ void SemanticChecker::print_class_table() const {
 }
 
 
+    /*================================================++
+    ||          TYPESVISITOR VISIT METHODS            ||
+    ++================================================*/
 
 
 void TypesVisitor::visit(ProgramNode& node) {
@@ -309,7 +324,6 @@ void TypesVisitor::visit(ProgramNode& node) {
     for (const auto& c : node.classes())
         c->accept(*this);
 }
-
 
 void TypesVisitor::visit(ClassNode& node) {
     cout << "TypesVisitor::visit(ClassNode" << endl;
@@ -334,7 +348,6 @@ void TypesVisitor::visit(MethodNode& node) {
     
     // Pop scope 
 }
-
 
 void TypesVisitor::visit(FormalNode& node) {
     cout << "TypesVisitor::visit(FormalNode" << endl;
@@ -362,26 +375,22 @@ void TypesVisitor::visit(BlockExpr& node) {
 
 void TypesVisitor::visit(StringLiteralExpr& node) { 
     cout << "TypesVisitor::visit(StringLiteralExpr" << endl;
-    (void) node;
-    return;
+    node.set_type(Type::String());
 }
 
 void TypesVisitor::visit(IntegerLiteralExpr& node) { 
     cout << "TypesVisitor::visit(IntegerLiteralExpr" << endl;
-    (void) node;
-    return;
+    node.set_type(Type::Int32());
 }
 
 void TypesVisitor::visit(BoolLiteralExpr& node) { 
     cout << "TypesVisitor::visit(BoolLiteralExpr" << endl;
-    (void) node;
-    return;
+    node.set_type(Type::Bool());
 }
 
 void TypesVisitor::visit(UnitLiteralExpr& node) { 
     cout << "TypesVisitor::visit(UnitLiteralExpr" << endl;
-    (void) node;
-    return;
+    node.set_type(Type::Unit());
 }
 
 void TypesVisitor::visit(IfExpr& node) { 
