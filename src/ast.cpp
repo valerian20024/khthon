@@ -10,6 +10,20 @@ using namespace std;
 
 namespace Khthon {
 
+    bool Type::operator==(const Type& other) const {
+        if (kind_ != other.kind_)
+            return false;
+        
+        if (kind_ == Kind::CUSTOM)
+            return custom_name_ == other.custom_name_;
+
+        return true;
+    }
+
+    bool Type::operator!=(const Type& other) const {
+        return !(*this == other);
+    }
+
     string Type::to_string() const {
         switch (kind_) {
             case Kind::CUSTOM:        return custom_name_; 

@@ -206,8 +206,6 @@ namespace Khthon {
 
         Type ancestor(const Type& t1, const Type& t2) const;
 
-        
-
 
     public:
         explicit TypesVisitor(

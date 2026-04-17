@@ -110,10 +110,13 @@ namespace Khthon {
         bool is_string()    const { return kind_ == Kind::STRING; }
         bool is_unit()      const { return kind_ == Kind::UNIT; }
 
-        /// @brief Checks whether this type is defined in VSOP.
+        /// @brief Checks whether this `Type` is defined in VSOP.
         bool is_undefined() const { return kind_ == Kind::DEFAULT; }
 
-        /// @brief The type string representation, as in any valid VSOP code.
+        bool operator==(const Type& other) const;
+        bool operator!=(const Type& other) const;
+
+        /// @brief The `Type` string representation, as seen in any valid VSOP code.
         std::string to_string() const;
     };
 
