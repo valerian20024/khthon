@@ -313,20 +313,23 @@ void TypesVisitor::visit(ProgramNode& node) {
 void TypesVisitor::visit(ClassNode& node) {
     current_class_name_ = node.name();
     scope_stack_.clear();  // fresh scope for new class
-
-    // Fields first (initializers may use other fields)
     
     for (const auto& f : node.fields())
         f->accept(*this);
 
-    // Then methods
     for (const auto& m : node.methods())
         m->accept(*this);
 }
 
 void TypesVisitor::visit(MethodNode& node) {
-    (void) node;
-    return;
+    // New scope
+    cout << "visit(MethodNode& node" << endl;
+
+    //? visiting formals?
+
+    node.body()->accept(*this);
+    
+    // Pop scope 
 }
 
 
@@ -341,8 +344,15 @@ void TypesVisitor::visit(FieldNode& node) {
 }
 
 void TypesVisitor::visit(BlockExpr& node) {
-    (void) node;
-    return;
+    //? New scope
+    cout << "visit(BlockExpr& node" << endl;
+
+    for (const auto& e : node.expressions())
+        e->accept(*this);
+    
+    // Set type of last expression
+
+    //? Pop scope
 }
 
 void TypesVisitor::visit(StringLiteralExpr& node) { 
@@ -366,13 +376,15 @@ void TypesVisitor::visit(UnitLiteralExpr& node) {
 }
 
 void TypesVisitor::visit(IfExpr& node) { 
-    (void) node;
-    return;
+    node.guardian()->accept(*this);
+    node.consequent()->accept(*this);
+    
+    if (node.alternative().has_value())
+        node.alternative().value()->accept(*this);
 }
 
 void TypesVisitor::visit(AssignExpr& node) { 
-    (void) node;
-    return;
+    node.value()->accept(*this);
 }
 
 void TypesVisitor::visit(NewExpr& node) { 
@@ -381,13 +393,13 @@ void TypesVisitor::visit(NewExpr& node) {
 }
 
 void TypesVisitor::visit(UnOpExpr& node) { 
-    (void) node;
-    return;
+    node.operand()->accept(*this);
 }
 
 void TypesVisitor::visit(BinOpExpr& node) { 
-    (void) node;
-    return;
+    node.left()->accept(*this);
+    node.right()->accept(*this);  
+    // compare types based on the operation
 }
 
 void TypesVisitor::visit(VariableExpr& node) { 
@@ -396,8 +408,11 @@ void TypesVisitor::visit(VariableExpr& node) {
 }
 
 void TypesVisitor::visit(CallExpr& node) { 
-    (void) node;
-    return;
+    node.receiver()->accept(*this);
+    for (const auto& arg : node.args())
+        arg->accept(*this);
+    
+    // Do something with dispatching
 }
 
 void TypesVisitor::visit(SelfExpr& node) { 
@@ -406,11 +421,20 @@ void TypesVisitor::visit(SelfExpr& node) {
 }
 
 void TypesVisitor::visit(LetExpr& node) { 
-    (void) node;
-    return;
+    // New scope
+
+    if (node.has_initializer())
+        node.initializer().value()->accept(*this);
+
+    node.scope()->accept(*this);
+    
+    // Pop scope
 }
 
 void TypesVisitor::visit(WhileExpr& node) { 
-    (void) node;
-    return;
+    //? New scope
+    node.condition()->accept(*this);  // must be bool
+    node.body()->accept(*this);  // can be anything
+    // set type of while to unit
+    //? Pop scope
 }

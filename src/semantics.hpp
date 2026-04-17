@@ -232,7 +232,6 @@ namespace Khthon {
         void visit(SelfExpr& node) override;
         void visit(LetExpr& node) override;
         void visit(WhileExpr& node) override;
-        
     };
 }
 
