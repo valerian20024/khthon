@@ -3,8 +3,8 @@ class Main {
 
     main() : int32 {  }
 
-    method(x: int32) : int32 {
-        while(true) do {
+    method(x : int32) : int32 {
+        while (true) do {
             x + 1
         }
     }

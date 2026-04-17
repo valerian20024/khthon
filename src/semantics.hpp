@@ -32,9 +32,6 @@ namespace Khthon {
             location_(std::move(loc)) 
         {}
 
-        // Eventual Type inference
-        //void set_type(const Khthon::Type& t) { type_ = t; }
-
         const std::string& name() const { return name_; }
         const Khthon::Type& type() const { return type_; }
         const Khthon::location& location() const { return location_; }
@@ -107,12 +104,13 @@ namespace Khthon {
             location_(std::move(loc)) 
         {}
 
-        // Returns false if a field with that name already exists
+        /// @return false if a field with that name already exists. true otherwise.
         bool add_field(FieldInfo f) {
             auto [it, inserted] = fields_.emplace(f.name(), std::move(f));
             return inserted;
         }
 
+        /// @return false if a method with that name already exists. true otherwise.
         bool add_method(MethodInfo m) {
             auto [it, inserted] = methods_.emplace(m.name(), std::move(m));
             return inserted;
@@ -130,12 +128,15 @@ namespace Khthon {
     ++================================================*/
 
 
-    // Orchestrator for diverse passes of semantic analysis.
+    /** 
+     * @brief Main orchestrator of the semantic analysis.
+     */
     class SemanticChecker {
     private:
         Driver& driver_;
         std::map<std::string, ClassInfo> class_table_;
 
+        //todo bulky to have this here
         enum class VisitState { Unvisited, Visiting, Visited };
 
         /// @brief Helper function implementing depth-first search for finding cycles.
@@ -156,6 +157,44 @@ namespace Khthon {
 
         /// @brief Orchestrator for semantic analysis checks.
         void analyze(const std::shared_ptr<ProgramNode>& root);
+    };
+
+    /**
+     * @brief Manages the scope symbol table.
+     */
+    class ScopeManager {
+    private:
+        std::vector<std::map<std::string, Type>> stack_;
+
+    public:
+        void push_scope() { 
+            stack_.push_back({}); 
+        }
+        
+        void pop_scope() { 
+            stack_.pop_back(); 
+        }
+        
+        void add_binding(const std::string& name, const Type& type) {
+            stack_.back()[name] = type;
+        }
+
+        /** @brief Looks for a identifier's type.
+         *
+         * It will first look for variables in local scope, then upward, up
+         * to global scope. This allows to implement shadowing.
+         * 
+         * @return The identifier's type, or nullopt if not found.
+         */
+        std::optional<Type> lookup(const std::string& name) const {
+            // Walk the stack from top (innermost) to bottom (outermost).
+            for (auto it = stack_.rbegin(); it != stack_.rend(); ++it) {
+                auto found = it->find(name);
+                if (found != it->end())
+                    return found->second;
+            }
+            return std::nullopt;
+        }
     };
 
 
