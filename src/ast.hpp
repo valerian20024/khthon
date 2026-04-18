@@ -109,6 +109,7 @@ namespace Khthon {
         bool is_bool()      const { return kind_ == Kind::BOOL; }
         bool is_string()    const { return kind_ == Kind::STRING; }
         bool is_unit()      const { return kind_ == Kind::UNIT; }
+
         /// @brief Checks whether this `Type` is defined in VSOP.
         bool is_undefined() const { return kind_ == Kind::DEFAULT; }
 
@@ -131,14 +132,11 @@ namespace Khthon {
             DEFAULT
         };
 
-        Kind kind = Kind::DEFAULT;
+        Kind kind_ = Kind::DEFAULT;
 
         UnaryOperation() = default;
         
-        explicit UnaryOperation(Kind k) : kind(k) { }
-
-        
-
+        explicit UnaryOperation(Kind k) : kind_(k) { }
 
         std::string to_string() const;
     };
@@ -160,14 +158,14 @@ namespace Khthon {
             DEFAULT
         };
     
-        Kind kind = Kind::DEFAULT;
+        Kind kind_ = Kind::DEFAULT;
 
     public:
         using TypePair = std::pair<Type, Type>;
 
         BinaryOperation() = default;
 
-        explicit BinaryOperation(Kind k) : kind(k) { }
+        explicit BinaryOperation(Kind k) : kind_(k) { }
 
         // Factory methods.
 
@@ -196,6 +194,9 @@ namespace Khthon {
 
         /// @brief Returns the types this binary operator operands can be.
         std::vector<TypePair> valid_operand_types() const;
+
+        /// @brief Returns the type this binary operator should result in.
+        Type result_type() const;
 
         std::string to_string() const;
     };

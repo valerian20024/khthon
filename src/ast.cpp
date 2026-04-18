@@ -41,7 +41,7 @@ namespace Khthon {
     }
 
     string UnaryOperation::to_string() const {
-        switch (kind) {
+        switch (kind_) {
             case UnaryOperation::Kind::NOT:         return "not";
             case UnaryOperation::Kind::UMINUS:      return "-";
             case UnaryOperation::Kind::ISNULL:      return "isnull";
@@ -54,10 +54,9 @@ namespace Khthon {
         }
     }
 
-
     std::vector<BinaryOperation::TypePair> 
     BinaryOperation::valid_operand_types() const {
-        switch (kind) {
+        switch (kind_) {
 
             case Kind::PLUS:
             case Kind::MINUS:
@@ -90,8 +89,30 @@ namespace Khthon {
         }
     }
 
+    Type BinaryOperation::result_type() const {
+        switch (kind_) {
+            case Kind::PLUS:
+            case Kind::MINUS:
+            case Kind::TIMES:
+            case Kind::DIVIDE:
+            case Kind::POWER:   
+                return Type::Int32();
+
+            case Kind::LOWER:
+            case Kind::LOWER_EQUAL:
+            case Kind::AND:
+            case Kind::EQUAL:   
+                return Type::Bool();
+
+            default: {
+                cerr << "result_type(): Unknown kind." << endl;
+                return Type::Default();
+            }
+        }
+    }
+
     string BinaryOperation::to_string() const {
-        switch (kind) {
+        switch (kind_) {
             case BinaryOperation::Kind::EQUAL:          return "=";
             case BinaryOperation::Kind::LOWER:          return "<";
             case BinaryOperation::Kind::LOWER_EQUAL:    return "<=";
