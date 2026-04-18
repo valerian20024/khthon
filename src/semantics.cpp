@@ -579,9 +579,26 @@ void TypesVisitor::visit(UnOpExpr& node) {
 
 void TypesVisitor::visit(BinOpExpr& node) { 
     cout << "TypesVisitor::visit(BinOpExpr" << endl;
+
     node.left()->accept(*this);
     node.right()->accept(*this);  
-    // compare types based on the operation
+    
+    const Type& t_left  = node.left()->type();
+    const Type& t_right = node.right()->type();
+
+    if (!check_binop_operands(node.operation(), t_left, t_right)) {
+        driver_.semantic_error(
+            node.location(),
+            "operator '" + node.operation().to_string()
+            + "' cannot be applied to types '"
+            + t_left.to_string() + "' and '"
+            + t_right.to_string() + "'"
+        );
+    }
+
+    // Serves also as error recovery. Whatever happens, this node should have
+    // the expected type.
+    node.set_type(node.operation().result_type());
 }
 
 void TypesVisitor::visit(VariableExpr& node) { 
