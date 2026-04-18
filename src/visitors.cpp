@@ -19,8 +19,14 @@ namespace Khthon {
     }
 
     string PrintVisitor::annotate(string s, const Expr& node) const {
-        if (annotate_)
-            s += " : " + as_note(node.type().to_string());
+        if (annotate_) {
+            // Highlighting types when debugging the semantic analysis.
+            #ifdef DEBUG
+                s += " : " + as_note(node.type().to_string());
+            #else 
+                s += " : " + node.type().to_string();
+            #endif
+        }
         return s;
     }
 
