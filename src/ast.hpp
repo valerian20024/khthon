@@ -124,6 +124,7 @@ namespace Khthon {
     };
 
     /// @brief Represents an unary operation in VSOP.
+    // todo Merge with Binary Operator ?
     class UnaryOperation {
     private:
         enum class Kind {
@@ -143,6 +144,19 @@ namespace Khthon {
         static UnaryOperation Not()         { return UnaryOperation(Kind::NOT); }
         static UnaryOperation UnaryMinus()  { return UnaryOperation(Kind::UMINUS); }
         static UnaryOperation IsNull()      { return UnaryOperation(Kind::ISNULL); }
+
+        bool is_not()           const { return kind_ == Kind::NOT; }
+        bool is_unary_minus()   const { return kind_ == Kind::UMINUS; }
+        bool is_isnull()        const { return kind_ == Kind::ISNULL; }
+
+        /// @brief Checks whether this operation is defined in VSOP.
+        bool is_undefined()     const { return kind_ == Kind::DEFAULT; }
+
+        /// @brief Returns the type this unary operator operand can be.
+        std::vector<Type> valid_operand_types() const;
+
+        /// @brief Returns the type this unary operator should result in.
+        Type result_type() const;
 
         std::string to_string() const;
     };

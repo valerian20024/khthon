@@ -419,24 +419,36 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
     }
 }
 
+bool TypesVisitor::check_unop_operand(
+    const UnaryOperation& operation,
+    const Type& operand
+) const {
+    
+    // If the given operand is one of those expected by the operation.
+    for (const auto& expected : operation.valid_operand_types()) {
+        if (conforms(operand, expected))
+            return true;
+    }
+    return false;
+}
+
 bool TypesVisitor::check_binop_operands(
     const BinaryOperation& op,
     const Type& t_left,
     const Type& t_right
 ) const {
 
+    // Handling the special case of equality.
     if (op.is_equality())
         return (t_left == t_right) || (t_left.is_custom() && t_right.is_custom());
 
-    // We check for all possible operands
+    // If the given operands are among the pairs expected by the operation.
     for (const auto& [expected_left, expected_right] : op.valid_operand_types()) {
         if (conforms(t_left, expected_left) && conforms(t_right, expected_right))
             return true;
     }
     return false;
 }
-
-
 
 void TypesVisitor::visit(ProgramNode& node) {
     cout << "TypesVisitor::visit(ProgramNode" << endl;
@@ -574,7 +586,11 @@ void TypesVisitor::visit(NewExpr& node) {
 
 void TypesVisitor::visit(UnOpExpr& node) { 
     cout << "TypesVisitor::visit(UnOpExpr" << endl;
+
     node.operand()->accept(*this);
+
+
+
 }
 
 void TypesVisitor::visit(BinOpExpr& node) { 

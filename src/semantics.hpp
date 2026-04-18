@@ -275,6 +275,12 @@ namespace Khthon {
         /// @brief Finds the least common ancestor of `t1` and `t2`
         Type ancestor(const Type& t1, const Type& t2) const;
 
+        /// @brief Checks whether the operand conforms to the ones expected by 
+        /// the unary operator.
+        bool check_unop_operand(
+            const UnaryOperation& operation,
+            const Type& operand
+        ) const;
 
         /// @brief Checks whether the two operands conform to the ones expected by 
         /// the binary operator.

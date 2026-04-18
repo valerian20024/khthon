@@ -40,6 +40,43 @@ namespace Khthon {
         }
     }
 
+    vector<Type> UnaryOperation::valid_operand_types() const {
+        switch (kind_) {
+            case Kind::NOT:
+                return { Type::Bool() };
+
+            case Kind::UMINUS:
+                return { Type::Int32() };
+            
+            case Kind::ISNULL:
+                return { Type::Object() };  // sentinel value
+
+            default: {
+                cerr << "valid_operand_type(): Unknown kind." << endl;
+                return { Type::Default() };
+            }
+        }
+    }
+
+    Type UnaryOperation::result_type() const {
+        switch (kind_) {
+            case Kind::NOT:
+                return Type::Bool();
+
+            case Kind::UMINUS:
+                return Type::Int32();
+            
+            case Kind::ISNULL:
+                return Type::Bool();
+
+            default: {
+                cerr << "result_type(): Unknown kind." << endl;
+                return Type::Default();
+            }
+        }
+    }
+
+
     string UnaryOperation::to_string() const {
         switch (kind_) {
             case UnaryOperation::Kind::NOT:         return "not";
@@ -99,7 +136,7 @@ namespace Khthon {
                     {Type::Int32(),  Type::Int32()},
                     {Type::Bool(),   Type::Bool()},
                     {Type::String(), Type::String()},
-                    {Type::Object(), Type::Object()},
+                    {Type::Object(), Type::Object()},  // sentinel value
                 };
 
             default: {
