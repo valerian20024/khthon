@@ -6,11 +6,20 @@
 #include <functional>
 #include <map>
 
+    bool constexpr enable_advanced_logging = 
+#ifdef DEBUG
+    true;
+#else
+    false;
+#endif
+
 using namespace std;
 
 using Khthon::Type;
 
 //todo put it at the end of the file
+
+//todo put in a namespace (and the ifdef as well)
 
 void ClassesVisitor::visit(const ProgramNode& node) const {
     
@@ -60,9 +69,6 @@ void ClassesVisitor::visit(const ProgramNode& node) const {
         {},
         builtin_loc
     ));
-
-    //todo remove me
-    //class_table_.emplace("Object", std::move(object_info));
 
     checker_.add_class(object_info);
 
@@ -134,8 +140,10 @@ void ClassesVisitor::visit(const ClassNode& node) const {
 
 
     /*================================================++
-    ||          SEMANTIC CHECKS PROCEDURES            ||
+    ||                CORE PROCEDURES                 ||
     ++================================================*/
+
+
 optional<Type> ScopeManager::lookup(const string& name) const {
     // Walk the stack from innermost to outermost scope.
     for (auto it = scope_table_.rbegin(); it != scope_table_.rend(); ++it) {
@@ -161,9 +169,8 @@ void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
     TypesVisitor tv = TypesVisitor(driver_, *this);
     root->accept(tv);
 
-    #ifdef DEBUG
+    if (enable_advanced_logging)
         print_class_table();
-    #endif
 }
 
 void SemanticChecker::check_main() const {
@@ -415,7 +422,7 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
             );
             return Type::Object();
         } 
-        
+
         current = info->parent();
     }
 

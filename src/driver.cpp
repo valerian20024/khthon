@@ -8,6 +8,13 @@
 #include "colors.hpp"
 #include "semantics.hpp"
 
+    
+#ifdef DEBUG
+    constexpr bool enable_advanced_logging = true;
+#else
+    constexpr bool enable_advanced_logging = false;
+#endif
+
 using namespace std;
 using namespace Khthon;
 using namespace colors;
@@ -218,12 +225,8 @@ void Driver::print_AST(bool annotate, std::ostream& out) {
 }
 
 void Driver::internal_error(const std::string& reason) {
-    // Only output internal errors when debugging.
-    #ifdef DEBUG
+    if (enable_advanced_logging)
         cerr << internal_error_banner() << reason << endl;
-    #else 
-        (void) reason;
-    #endif
 }
 
 string LexicalDiagnostic::to_string() const {

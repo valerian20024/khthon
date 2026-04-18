@@ -3,8 +3,21 @@
 /// @brief Contains methods printing in the terminal.
 namespace colors {
 
+    constexpr bool enable_colors =
+#ifdef DEBUG
+    true;   // colors ON when debugging
+#else
+    false;  // colors OFF when submitting 
+#endif
+
+    /// @brief Applies ANSI color codes `code` to `text`.
+    /// @note Automatically resets colors at the end.
+    /// @note Only does so when DEBUG is set. Otherwise returns the plain text.
     inline std::string with(const std::string code, const std::string& text) {
-        return code + text + "\033[0m";
+        if constexpr (enable_colors)
+            return code + text + "\033[0m";
+        else
+            return text;
     }
 
     inline std::string bold(const std::string& s)       { return with("\033[1m", s); }
@@ -22,9 +35,9 @@ namespace colors {
 
     inline std::string internal_error_banner() {
         return colors::bright_red("\n"
-            "╔══════════════════════════════════════════════════════════════╗\n"
-            "║                    INTERNAL COMPILER ERROR                   ║\n"
-            "╚══════════════════════════════════════════════════════════════╝\n"
-    );
-}
+                "╔══════════════════════════════════════════════════════════════╗\n"
+                "║                    INTERNAL COMPILER ERROR                   ║\n"
+                "╚══════════════════════════════════════════════════════════════╝\n"
+        );
+    }
 }
