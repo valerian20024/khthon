@@ -124,19 +124,25 @@ namespace Khthon {
     };
 
     /// @brief Represents an unary operation in VSOP.
-    struct UnaryOperation {
+    class UnaryOperation {
+    private:
         enum class Kind {
-            NOT, 
-            UMINUS, 
-            ISNULL, 
+            NOT,
+            UMINUS,
+            ISNULL,
             DEFAULT
         };
-
+    
         Kind kind_ = Kind::DEFAULT;
 
+    public:
         UnaryOperation() = default;
         
         explicit UnaryOperation(Kind k) : kind_(k) { }
+
+        static UnaryOperation Not()         { return UnaryOperation(Kind::NOT); }
+        static UnaryOperation UnaryMinus()  { return UnaryOperation(Kind::UMINUS); }
+        static UnaryOperation IsNull()      { return UnaryOperation(Kind::ISNULL); }
 
         std::string to_string() const;
     };

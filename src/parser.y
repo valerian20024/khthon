@@ -527,19 +527,19 @@ unary_operation_expr
   : NOT expression
     {
       $$ = make_shared<UnOpExpr>(
-        @$, UnaryOperation(UnaryOperation::Kind::NOT), std::move($2)
+        @$, UnaryOperation::Not(), std::move($2)
       );
     }
   | MINUS expression
     {
       $$ = make_shared<UnOpExpr>(
-        @$, UnaryOperation(UnaryOperation::Kind::UMINUS), std::move($2)
+        @$, UnaryOperation::UnaryMinus(), std::move($2)
       );
     }
   | ISNULL expression
     {
       $$ = make_shared<UnOpExpr>(
-        @$, UnaryOperation(UnaryOperation::Kind::ISNULL), std::move($2)
+        @$, UnaryOperation::IsNull(), std::move($2)
       );
     }
   ;
