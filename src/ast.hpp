@@ -144,10 +144,17 @@ namespace Khthon {
         static UnaryOperation Not()         { return UnaryOperation(Kind::NOT); }
         static UnaryOperation UnaryMinus()  { return UnaryOperation(Kind::UMINUS); }
         static UnaryOperation IsNull()      { return UnaryOperation(Kind::ISNULL); }
+        static UnaryOperation Default()     { return UnaryOperation(Kind::DEFAULT); }
 
         bool is_not()           const { return kind_ == Kind::NOT; }
         bool is_unary_minus()   const { return kind_ == Kind::UMINUS; }
         bool is_isnull()        const { return kind_ == Kind::ISNULL; }
+
+        /// @brief Returns true for unary minus.
+        bool is_arithmetic() const  { return kind_ == Kind::UMINUS; }
+
+        /// @brief Returns true for the not and isnull operators.
+        bool is_logical() const     { return (kind_ == Kind::NOT) || (kind_ == Kind::ISNULL); }
 
         /// @brief Checks whether this operation is defined in VSOP.
         bool is_undefined()     const { return kind_ == Kind::DEFAULT; }
@@ -158,6 +165,7 @@ namespace Khthon {
         /// @brief Returns the type this unary operator should result in.
         Type result_type() const;
 
+        /// @brief The `UnaryOperation` string representation, as seen in any valid VSOP code.
         std::string to_string() const;
     };
 
@@ -203,14 +211,17 @@ namespace Khthon {
         /// @brief Returns true for +, -, *, /, ^
         bool is_arithmetic() const;
 
+        /// @brief Returns true only for 'and'
+        bool is_logical() const;
+
         /// @brief Returns true for < and <=
         bool is_comparison() const;
 
         /// @brief Returns true only for =
         bool is_equality() const;
 
-        /// @brief Returns true only for 'and'
-        bool is_logical() const;
+        /// @brief Checks whether this operation is defined in VSOP.
+        bool is_undefined()     const { return kind_ == Kind::DEFAULT; }
 
         /// @brief Returns the types this binary operator operands can be.
         /// @note The vector of pairs allows for future asymmetric and overloaded operators.
@@ -219,6 +230,7 @@ namespace Khthon {
         /// @brief Returns the type this binary operator should result in.
         Type result_type() const;
 
+        /// @brief The `BinaryOperation` string representation, as seen in any valid VSOP code.
         std::string to_string() const;
     };
 

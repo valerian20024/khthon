@@ -421,12 +421,12 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
 
 bool TypesVisitor::check_unop_operand(
     const UnaryOperation& operation,
-    const Type& operand
+    const Type& t_operand
 ) const {
     
     // If the given operand is one of those expected by the operation.
     for (const auto& expected : operation.valid_operand_types()) {
-        if (conforms(operand, expected))
+        if (conforms(t_operand, expected))
             return true;
     }
     return false;
@@ -589,8 +589,21 @@ void TypesVisitor::visit(UnOpExpr& node) {
 
     node.operand()->accept(*this);
 
+    const Type& t_operand = node.operand()->type();
 
+    if(!check_unop_operand(node.operation(), t_operand)) {
+        driver_.semantic_error(
+            node.location(),
+            "operator '" + node.operation().to_string()
+            + "' cannot be applied to type '"
+            + t_operand.to_string() + "'"
+        );
 
+        node.set_type(Type::Object());
+        return;
+    }
+
+    node.set_type(node.operation().result_type());
 }
 
 void TypesVisitor::visit(BinOpExpr& node) { 
@@ -610,10 +623,11 @@ void TypesVisitor::visit(BinOpExpr& node) {
             + t_left.to_string() + "' and '"
             + t_right.to_string() + "'"
         );
+
+        node.set_type(Type::Object());
+        return;
     }
 
-    // Serves also as error recovery. Whatever happens, this node should have
-    // the expected type.
     node.set_type(node.operation().result_type());
 }
 

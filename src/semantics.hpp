@@ -279,7 +279,7 @@ namespace Khthon {
         /// the unary operator.
         bool check_unop_operand(
             const UnaryOperation& operation,
-            const Type& operand
+            const Type& t_operand
         ) const;
 
         /// @brief Checks whether the two operands conform to the ones expected by 
