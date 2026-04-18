@@ -290,6 +290,15 @@ namespace Khthon {
             const Type& t_right
         ) const;
 
+        /// @brief Prints a tracing message when debugging is enabled.
+        void trace(const std::string& message) const { 
+            #ifdef DEBUG
+                std::cout << message << std::endl;
+            #else
+                (void) message;
+            #endif
+        }
+
     public:
         explicit TypesVisitor(
             Driver& d, 

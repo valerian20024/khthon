@@ -451,13 +451,14 @@ bool TypesVisitor::check_binop_operands(
 }
 
 void TypesVisitor::visit(ProgramNode& node) {
-    cout << "TypesVisitor::visit(ProgramNode" << endl;
+    trace("TypesVisitor visits ProgramNode");
+
     for (const auto& c : node.classes())
         c->accept(*this);
 }
 
 void TypesVisitor::visit(ClassNode& node) {
-    cout << "TypesVisitor::visit(ClassNode" << endl;
+    trace("TypesVisitor visits ClassNode");
     
     current_class_name_ = node.name();
     // Have fresh scope for new class
@@ -470,7 +471,7 @@ void TypesVisitor::visit(ClassNode& node) {
 }
 
 void TypesVisitor::visit(MethodNode& node) {
-    cout << "TypesVisitor::visit(MethodNode& node" << endl;
+    trace("TypesVisitor visits MethodNode");
 
     // New scope
 
@@ -482,19 +483,21 @@ void TypesVisitor::visit(MethodNode& node) {
 }
 
 void TypesVisitor::visit(FormalNode& node) {
-    cout << "TypesVisitor::visit(FormalNode" << endl;
+    trace("TypesVisitor visits FormalNode");
+
     (void) node;
     return;
 }
 
 void TypesVisitor::visit(FieldNode& node) {
-    cout << "TypesVisitor::visit(FieldNode" << endl;
+    trace("TypesVisitor visits FieldNode");
+
     if (node.has_init())
         node.initializer().value()->accept(*this);
 }
 
 void TypesVisitor::visit(BlockExpr& node) {
-    cout << "TypesVisitor::visit(BlockExpr& node" << endl;
+    trace("TypesVisitor visits BlockExpr");
 
     // Empty blocks yield unit.
     if (node.is_empty()) {
@@ -511,27 +514,32 @@ void TypesVisitor::visit(BlockExpr& node) {
 }
 
 void TypesVisitor::visit(StringLiteralExpr& node) { 
-    cout << "TypesVisitor::visit(StringLiteralExpr" << endl;
+    trace("TypesVisitor visits StringLiteralExpr");
+
     node.set_type(Type::String());
 }
 
 void TypesVisitor::visit(IntegerLiteralExpr& node) { 
-    cout << "TypesVisitor::visit(IntegerLiteralExpr" << endl;
+    trace("TypesVisitor visits IntegerLiteralExpr");
+
     node.set_type(Type::Int32());
 }
 
 void TypesVisitor::visit(BoolLiteralExpr& node) { 
-    cout << "TypesVisitor::visit(BoolLiteralExpr" << endl;
+    trace("TypesVisitor visits BoolLiteralExpr");
+
     node.set_type(Type::Bool());
 }
 
 void TypesVisitor::visit(UnitLiteralExpr& node) { 
-    cout << "TypesVisitor::visit(UnitLiteralExpr" << endl;
+    trace("TypesVisitor visits UnitLiteralExpr");
+
     node.set_type(Type::Unit());
 }
 
 void TypesVisitor::visit(IfExpr& node) { 
-    cout << "TypesVisitor::visit(IfExpr" << endl;
+    trace("TypesVisitor visits IfExpr");
+
     node.guardian()->accept(*this);
     node.consequent()->accept(*this);
     
@@ -580,18 +588,20 @@ void TypesVisitor::visit(IfExpr& node) {
 }
 
 void TypesVisitor::visit(AssignExpr& node) {
-    cout << "TypesVisitor::visit(AssignExpr" << endl;
+    trace("TypesVisitor visits AssignExpr");
+
     node.value()->accept(*this);
 }
 
 void TypesVisitor::visit(NewExpr& node) {
-    cout << "TypesVisitor::visit(NewExpr" << endl;
+    trace("TypesVisitor visits NewExpr");
+
     (void) node;
     return;
 }
 
 void TypesVisitor::visit(UnOpExpr& node) { 
-    cout << "TypesVisitor::visit(UnOpExpr" << endl;
+    trace("TypesVisitor visits UnOpExpr");
 
     node.operand()->accept(*this);
 
@@ -613,7 +623,7 @@ void TypesVisitor::visit(UnOpExpr& node) {
 }
 
 void TypesVisitor::visit(BinOpExpr& node) { 
-    cout << "TypesVisitor::visit(BinOpExpr" << endl;
+    trace("TypesVisitor visits BinOpExpr");
 
     node.left()->accept(*this);
     node.right()->accept(*this);  
@@ -638,13 +648,15 @@ void TypesVisitor::visit(BinOpExpr& node) {
 }
 
 void TypesVisitor::visit(VariableExpr& node) { 
-    cout << "TypesVisitor::visit(VariableExpr" << endl;
+    trace("TypesVisitor visits VariableExpr");
+
     (void) node;
     return;
 }
 
 void TypesVisitor::visit(CallExpr& node) { 
-    cout << "TypesVisitor::visit(CallExpr" << endl;
+    trace("TypesVisitor visits CallExpr");
+
     node.receiver()->accept(*this);
     for (const auto& arg : node.args())
         arg->accept(*this);
@@ -653,13 +665,15 @@ void TypesVisitor::visit(CallExpr& node) {
 }
 
 void TypesVisitor::visit(SelfExpr& node) { 
-    cout << "TypesVisitor::visit(SelfExpr" << endl;
+    trace("TypesVisitor visits SelfExpr");
+
     (void) node;
     return;
 }
 
 void TypesVisitor::visit(LetExpr& node) { 
-    cout << "TypesVisitor::visit(LetExpr" << endl;
+    trace("TypesVisitor visits LetExpr");
+
     // New scope
 
     if (node.has_initializer())
@@ -671,7 +685,7 @@ void TypesVisitor::visit(LetExpr& node) {
 }
 
 void TypesVisitor::visit(WhileExpr& node) { 
-    cout << "TypesVisitor::visit(WhileExpr" << endl;
+    trace("TypesVisitor visits WhileExpr");
     
     node.condition()->accept(*this);
     node.body()->accept(*this);
