@@ -65,7 +65,7 @@ namespace Khthon {
 
     /// @brief Represents a type in VSOP.
     class Type {
-    public:
+    private: 
         enum class Kind { 
             CUSTOM, 
             INT32, 
@@ -75,7 +75,6 @@ namespace Khthon {
             DEFAULT
         };    
 
-    private: 
         Kind kind_ = Kind::DEFAULT;
         std::string custom_name_ = {};
         

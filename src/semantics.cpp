@@ -376,7 +376,6 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
     if (t1 == t2)
         return t1;
     
-
     // Collect the full ancestry chain of t1 into an ordered list.
     vector<string> ancestors;
     string current = t1.custom_name();
