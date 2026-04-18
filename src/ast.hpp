@@ -482,7 +482,15 @@ namespace Khthon {
             visitor.visit(*this);
         }
 
+        /// @brief Whether this block contains expressions or not.
+        bool is_empty() const { return expressions_.empty(); }
+        
+        /// @brief Return the expressions of this block.
         const NodeList<Expr>& expressions() const { return expressions_; }
+
+        /// @brief Get the last expression of this block.
+        const std::shared_ptr<Expr>& last_expression() const {return expressions_.back(); }
+        
     };
 
 

@@ -290,7 +290,6 @@ namespace Khthon {
             const Type& t_right
         ) const;
 
-
     public:
         explicit TypesVisitor(
             Driver& d, 

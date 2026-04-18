@@ -470,8 +470,9 @@ void TypesVisitor::visit(ClassNode& node) {
 }
 
 void TypesVisitor::visit(MethodNode& node) {
-    // New scope
     cout << "TypesVisitor::visit(MethodNode& node" << endl;
+
+    // New scope
 
     //? visiting formals?
 
@@ -493,15 +494,20 @@ void TypesVisitor::visit(FieldNode& node) {
 }
 
 void TypesVisitor::visit(BlockExpr& node) {
-    //? New scope
     cout << "TypesVisitor::visit(BlockExpr& node" << endl;
+
+    // Empty blocks yield unit.
+    if (node.is_empty()) {
+        node.set_type(Type::Unit());
+        return;
+    }
 
     for (const auto& e : node.expressions())
         e->accept(*this);
     
-    // Set type of last expression
-
-    //? Pop scope
+    // The type of a block is the type of its last expression.
+    const auto& last_expression = node.last_expression();
+    node.set_type(last_expression->type());
 }
 
 void TypesVisitor::visit(StringLiteralExpr& node) { 
