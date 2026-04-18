@@ -116,10 +116,11 @@ namespace Khthon {
             return inserted;
         }
 
-        const std::map<std::string, FieldInfo>& fields() const { return fields_; }
-        const std::map<std::string, MethodInfo>& methods() const { return methods_; }
-        const std::string& parent() const { return parent_; }
-        const Khthon::location& location() const { return location_; }
+        const std::string name() const                              { return name_; }
+        const std::string& parent() const                           { return parent_; }
+        const Khthon::location& location() const                    { return location_; }
+        const std::map<std::string, FieldInfo>& fields() const      { return fields_; }
+        const std::map<std::string, MethodInfo>& methods() const    { return methods_; }
     };
  
 
@@ -132,19 +133,19 @@ namespace Khthon {
      */
     class ScopeManager {
     private:
-        std::vector<std::map<std::string, Type>> stack_;
+        std::vector<std::map<std::string, Type>> scope_table_;
 
     public:
         void push_scope() { 
-            stack_.push_back({}); 
+            scope_table_.push_back({}); 
         }
         
         void pop_scope() { 
-            stack_.pop_back(); 
+            scope_table_.pop_back(); 
         }
         
         void add_binding(const std::string& name, const Type& type) {
-            stack_.back()[name] = type;
+            scope_table_.back()[name] = type;
         }
 
         /** @brief Looks for a identifier's type.
@@ -154,16 +155,109 @@ namespace Khthon {
          * 
          * @return The identifier's type, or nullopt if not found.
          */
-        //todo put in .cpp
-        std::optional<Type> lookup(const std::string& name) const {
-            // Walk the stack from top (innermost) to bottom (outermost).
-            for (auto it = stack_.rbegin(); it != stack_.rend(); ++it) {
-                auto found = it->find(name);
-                if (found != it->end())
-                    return found->second;
-            }
-            return std::nullopt;
+        std::optional<Type> lookup(const std::string& name) const;
+    };
+
+    class ClassManager {
+    private:
+        std::map<std::string, ClassInfo> class_table_;
+
+    public:
+        /// @return false if a class with that name already exists.
+        bool add_class(ClassInfo c) {
+            auto [it, inserted] = class_table_.emplace(c.name(), std::move(c));
+            return inserted;
         }
+
+        bool class_exists(const std::string& name) const {
+            return class_table_.count(name) > 0;
+        }
+        
+        const std::optional<ClassInfo> get_class(const std::string& name) const {
+            auto it = class_table_.find(name);
+            if (it == class_table_.end())
+                return std::nullopt;
+            return it->second;
+        }
+
+        /// @return The whole classes symbol table.
+        const std::map<std::string, ClassInfo>& table() const {
+            return class_table_;
+        }
+        
+        /* 
+        /// Walks the ancestor chain to find a field, returns nullopt if not found.
+        std::optional<FieldInfo> lookup_field(
+            const std::string& class_name,
+            const std::string& field_name
+        ) const {
+            std::string current = class_name;
+            while (true) {
+                if (!exists(current)) return std::nullopt;
+                const auto& fields = get(current).fields();
+                auto it = fields.find(field_name);
+                if (it != fields.end()) return it->second;
+                const std::string& parent = get(current).parent();
+                if (parent == current) return std::nullopt; // reached Object
+                current = parent;
+            }
+        }
+
+        /// Walks the ancestor chain to find a method, returns nullopt if not found.
+        std::optional<MethodInfo> lookup_method(
+            const std::string& class_name,
+            const std::string& method_name
+        ) const {
+            std::string current = class_name;
+            while (true) {
+                if (!exists(current)) return std::nullopt;
+                const auto& methods = get(current).methods();
+                auto it = methods.find(method_name);
+                if (it != methods.end()) return it->second;
+                const std::string& parent = get(current).parent();
+                if (parent == current) return std::nullopt; // reached Object
+                current = parent;
+            }
+        }
+
+        /// Returns the full ancestor chain from class_name up to and including Object.
+        std::vector<std::string> ancestors(const std::string& class_name) const {
+            std::vector<std::string> chain;
+            std::string current = class_name;
+            while (true) {
+                chain.push_back(current);
+                if (current == "Object") break;
+                if (!exists(current)) break; // safety
+                current = get(current).parent();
+            }
+            return chain;
+        }
+
+        /// Returns true if `given` is a subtype of `compared_to`.
+        bool is_subtype(const std::string& given, const std::string& compared_to) const {
+            std::string current = given;
+            while (true) {
+                if (current == compared_to) return true;
+                if (current == "Object")    return false;
+                if (!exists(current))       return false;
+                current = get(current).parent();
+            }
+        }
+
+        /// Returns the least common ancestor of two class types.
+        std::string ancestor(const std::string& t1, const std::string& t2) const {
+            if (t1 == t2) return t1;
+            auto chain = ancestors(t1);
+            std::unordered_set<std::string> chain_set(chain.begin(), chain.end());
+            std::string current = t2;
+            while (true) {
+                if (chain_set.count(current)) return current;
+                if (current == "Object")      return "Object";
+                if (!exists(current))         return "Object"; // safety
+                current = get(current).parent();
+            }
+        }
+        */
     };
 
     /** 
@@ -172,9 +266,9 @@ namespace Khthon {
     class SemanticChecker {
     private:
         Driver& driver_;
-        //todo  Wrap class_table_ in a ClassManager class
-        //todo  mirroring ScopeManager, for consistency and cleaner interface
-        std::map<std::string, ClassInfo> class_table_;
+        
+        //std::map<std::string, ClassInfo> class_table_;
+        ClassManager class_manager_;
         ScopeManager scope_manager_;
 
         //todo bulky to have this here
@@ -183,9 +277,11 @@ namespace Khthon {
         /// @brief Helper function implementing depth-first search for finding cycles.
         bool cycle_check(const std::string& name, 
             std::map<std::string, VisitState>& states) const;
-
+        
         void check_main() const;
+
         void check_parent_classes_exist() const;
+        
         void check_inheritance_cycles();
         
         /// @brief Debugging purpose.
@@ -200,25 +296,32 @@ namespace Khthon {
         // Scope management is delegated to ScopeManager
         
         void push_scope() { scope_manager_.push_scope(); }
+
         void pop_scope() { scope_manager_.pop_scope(); }
+        
         void add_binding(const std::string& name, const Type& t) { 
             scope_manager_.add_binding(name, t); 
         }
 
-        // Class table queries (used by TypesVisitor for type checking).
-        //todo  Place it into the future ClassManager
+        // Class Management is delegated to ClassManager
+
+        //? ClassInfo& c ?
+        bool add_class(ClassInfo c) {
+            return class_manager_.add_class(c);
+        }        
+
         bool class_exists(const std::string& name) const { 
-            return class_table_.count(name) > 0; 
+            return class_manager_.class_exists(name);
         }
 
-        const ClassInfo& get_class(const std::string& name) const { 
-            return class_table_.at(name); 
+        std::optional<ClassInfo> get_class(const std::string& name) const { 
+            return class_manager_.get_class(name); 
         }
 
         std::optional<Type> resolve(
             const std::string& name, 
-            const std::string& current_class) const;
-
+            const std::string& current_class
+        ) const;
     };
 
 
@@ -235,22 +338,24 @@ namespace Khthon {
     class ClassesVisitor : public Visitor<void> {
     private:
         Driver& driver_;
-        std::map<std::string, ClassInfo>& class_table_;
+
+        SemanticChecker& checker_;
+        //std::map<std::string, ClassInfo>& class_table_;
 
     public:
         explicit ClassesVisitor(
             Driver& d, 
-            std::map<std::string, ClassInfo>& table
+            //std::map<std::string, ClassInfo>& table
+            SemanticChecker& sc
         ) : 
             driver_(d), 
-            class_table_(table) 
+            checker_(sc) 
         {}
 
         void visit(const ProgramNode& node) const override;
 
         /// @warning Mutates SemanticChecker state.
         void visit(const ClassNode& node) const override;
-
     };
 
     /***
@@ -264,7 +369,7 @@ namespace Khthon {
         // Handle to the classes symbol table.
         SemanticChecker& checker_;
 
-        std::string current_class_name_;  // For handling 'self' keyword.        
+        std::string current_class_name_;  // For handling 'self' keyword.
 
         /// @brief Checks the `actual` type conforms to the one `expected`.
         bool conforms(const Type& actual, const Type& expected) const;

@@ -10,11 +10,7 @@ using namespace std;
 
 using Khthon::Type;
 
-
-    /*================================================++
-    ||          TYPESVISITOR VISIT METHODS            ||
-    ++================================================*/
-
+//todo put it at the end of the file
 
 void ClassesVisitor::visit(const ProgramNode& node) const {
     
@@ -65,7 +61,10 @@ void ClassesVisitor::visit(const ProgramNode& node) const {
         builtin_loc
     ));
 
-    class_table_.emplace("Object", std::move(object_info));
+    //todo remove me
+    //class_table_.emplace("Object", std::move(object_info));
+
+    checker_.add_class(object_info);
 
     // Reading concrete classes of the program.
     for (const auto& c : node.classes())
@@ -76,7 +75,7 @@ void ClassesVisitor::visit(const ClassNode& node) const {
     const string& class_name = node.name();
 
     // Not adding duplicate classes.
-    if (class_table_.count(class_name)) {
+    if (checker_.class_exists(class_name)) {
         driver_.semantic_error(
             node.location(), 
             "class '" + class_name + "' is defined more than once"
@@ -129,20 +128,30 @@ void ClassesVisitor::visit(const ClassNode& node) const {
         }
     }
 
-    class_table_.emplace(class_name, std::move(class_info));
+    //class_table_.emplace(class_name, std::move(class_info));
+    checker_.add_class(class_info);
 }
 
 
     /*================================================++
     ||          SEMANTIC CHECKS PROCEDURES            ||
     ++================================================*/
+optional<Type> ScopeManager::lookup(const string& name) const {
+    // Walk the stack from innermost to outermost scope.
+    for (auto it = scope_table_.rbegin(); it != scope_table_.rend(); ++it) {
+        auto found = it->find(name);
 
+        if (found != it->end())
+            return found->second;
+    }
+    return std::nullopt;
+}
 
 void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
     if (!root)
         driver_.internal_error("SemanticChecker::analyze(): No ast root.");
 
-    ClassesVisitor cv = ClassesVisitor(driver_, class_table_);
+    ClassesVisitor cv = ClassesVisitor(driver_, *this);
     root->accept(cv);
 
     check_main();
@@ -158,11 +167,9 @@ void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
 }
 
 void SemanticChecker::check_main() const {
-    // Looking for a Main class.
-    auto main_class = class_table_.find("Main");
-    if (main_class == class_table_.end()) {
-        //todo  Initialize location to filename: 1: 1
-        //todo  Maybe create a helper in driver?
+    
+    auto main_info = get_class("Main");
+    if (!main_info) {
         driver_.semantic_error(
             Khthon::location(),  // no meaningful location
             "no 'Main' class defined"
@@ -170,14 +177,12 @@ void SemanticChecker::check_main() const {
         return;
     }
 
-    const ClassInfo& main_info = main_class->second;
-
     // Check main method exists
-    const auto& methods = main_info.methods();
+    const auto& methods = main_info->methods();
     auto main_method = methods.find("main");
     if (main_method == methods.end()) {
         driver_.semantic_error(
-            main_info.location(),
+            main_info->location(),
             "class 'Main' has no 'main' method"
         );
         return;
@@ -199,21 +204,20 @@ void SemanticChecker::check_main() const {
         driver_.semantic_error(
             method_info.location(),
             "method 'main' must return 'int32', found '" 
-            + return_type.to_string() 
-            + "'"
+            + return_type.to_string() + "'"
         );
     }
 }
 
 void SemanticChecker::check_parent_classes_exist() const {
-    for (const auto& [name, info] : class_table_) {
+    for (const auto& [name, info] : class_manager_.table()) {
         const string& parent = info.parent();
         
         // built-in root, always valid
         if (parent == "Object") 
             continue;
         
-        if (!class_table_.count(parent)) {
+        if (!class_exists(parent)) {
             driver_.semantic_error(
                 info.location(),
                 "class '" + name + "' extends unknown class '" + parent + "'"
@@ -229,18 +233,28 @@ bool SemanticChecker::cycle_check(
 
     states[name] = VisitState::Visiting;
 
-    const string& parent = class_table_.at(name).parent();
+    auto info = get_class(name);
+    if (!info) {
+        driver_.internal_error(
+            "cycle_check(): unable to get class '" + name + "'"
+        );
+        return false;
+    }
+
+    const string& parent = info->parent();
 
     if (parent != "Object" && parent != "") {
 
-        if (class_table_.find(parent) == class_table_.end()) {
-            driver_.internal_error("class '" + parent + "' is not part of the symbol table.");
+        if (!class_exists(parent)) {
+            driver_.internal_error(
+                "class '" + parent + "' is not part of the symbol table."
+            );
             return true;
         }
 
         if (states[parent] == VisitState::Visiting) {
             driver_.semantic_error(
-                class_table_.at(name).location(),
+                info->location(),
                 "inheritance cycle detected involving class '" + name + "'"
             );
             return false;
@@ -260,16 +274,16 @@ bool SemanticChecker::cycle_check(
 void SemanticChecker::check_inheritance_cycles() {
     map<string, VisitState> states;
 
-    for (const auto& [name, info] : class_table_)
+    for (const auto& [name, info] : class_manager_.table())
         states[name] = VisitState::Unvisited;
 
-    for (const auto& [name, info] : class_table_)
+    for (const auto& [name, info] : class_manager_.table())
         if (states[name] == VisitState::Unvisited)
             cycle_check(name, states);
 }
 
 void SemanticChecker::print_class_table() const {
-    for (const auto& [class_name, class_info] : class_table_) {
+    for (const auto& [class_name, class_info] : class_manager_.table()) {
         // Class and inheritance.
         cout << "-------------------------\n"
             << "Class: " << class_name 
@@ -360,7 +374,15 @@ bool TypesVisitor::is_subtype(const Type& given, const Type& compared_to) const 
             return false;
         }
 
-        current = checker_.get_class(current).parent();
+        auto info = checker_.get_class(current);
+        if (!info) {
+            driver_.internal_error(
+                "is_subtype(): unable to get class'" + current + "'"
+            );
+            return false;
+        }
+
+        current = info->parent();
     }
 }
 
@@ -378,21 +400,23 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
     
     // Collect the full ancestry chain of t1 into an ordered list.
     vector<string> ancestors;
+    
     string current = t1.custom_name();
-
     while (true) {
+
         ancestors.push_back(current);
         if (current == "Object")
             break;
 
-        if (!checker_.class_exists(current)) {
+        auto info = checker_.get_class(current);
+        if (!info) {
             driver_.internal_error(
-                "ancestor(): class '" + current + "' not found in class table."
+                "ancestor(): unable to find '" + current + "'"
             );
             return Type::Object();
-        }
-
-        current = checker_.get_class(current).parent();
+        } 
+        
+        current = info->parent();
     }
 
     // Walk up t2's ancestors and return the first class found in t1's ancestors
@@ -408,14 +432,15 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
         if (current == "Object")
             return Type("Object");  // Fallback
 
-        if (!checker_.class_exists(current)) {
+        auto info = checker_.get_class(current);
+        if (!info) {
             driver_.internal_error(
-                "ancestor(): class '" + current + "' not found in class table."
+                "ancestor(): unable to find '" + current + "'"
             );
             return Type::Object();
         }
 
-        current = checker_.get_class(current).parent();
+        current = info->parent();
     }
 }
 
