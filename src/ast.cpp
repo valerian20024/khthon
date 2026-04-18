@@ -32,8 +32,11 @@ namespace Khthon {
             case Kind::STRING:        return "string";
             case Kind::UNIT:          return "unit";
             case Kind::DEFAULT:       return "DEFAULT_TYPE";
-            default:
-                return "Unknown type kind";
+            
+            default: {
+                cerr << "Unknown type kind" << endl;
+                return "";
+            }
         }
     }
 
@@ -43,8 +46,11 @@ namespace Khthon {
             case UnaryOperation::Kind::UMINUS:      return "-";
             case UnaryOperation::Kind::ISNULL:      return "isnull";
             case UnaryOperation::Kind::DEFAULT:     return "DEFAULT_UNOP";
-            default:    
-                return "Unknown unary operation";
+            
+            default: {
+                cerr << "to_string(): Unknown unary operation." << endl;
+                return "";
+            }
         }
     }
 
@@ -53,7 +59,6 @@ namespace Khthon {
     BinaryOperation::valid_operand_types() const {
         switch (kind) {
 
-            // +, -, *, /, ^ : only on int32 pairs.
             case Kind::PLUS:
             case Kind::MINUS:
             case Kind::TIMES:
@@ -61,27 +66,27 @@ namespace Khthon {
             case Kind::POWER:
                 return { {Type::Int32(), Type::Int32()} };
 
-            // <, <= : only on int32 pairs.
             case Kind::LOWER:
             case Kind::LOWER_EQUAL:
                 return { {Type::Int32(), Type::Int32()} };
 
-            // and : only on bool pairs.
             case Kind::AND:
                 return { {Type::Bool(), Type::Bool()} };
 
-            // = : defined on all primitive pairs, plus any custom type pair.
-            // We represent the custom case with a sentinel Type::Object().
+            // Defined on all primitive pairs, and any custom type pair.
+            // The custom case is represented with a sentinel Type::Object().
             case Kind::EQUAL:
                 return {
                     {Type::Int32(),  Type::Int32()},
                     {Type::Bool(),   Type::Bool()},
                     {Type::String(), Type::String()},
-                    {Type::Object(), Type::Object()},  // sentinel for custom types
+                    {Type::Object(), Type::Object()},
                 };
 
-            default:
+            default: {
+                cerr << "valid_operand_types(): unknown BinOp kind." << endl;
                 return {};
+            }
         }
     }
 
@@ -97,8 +102,11 @@ namespace Khthon {
             case BinaryOperation::Kind::POWER:          return "^";
             case BinaryOperation::Kind::AND:            return "and";
             case BinaryOperation::Kind::DEFAULT:        return "DEFAULT_BINOP";
-            default: 
-                return "Unknown binary operation";
+            
+            default: {
+                cerr << "to_string(): Unknown binary operation." << endl;
+                return "";
+            }
         }
     }
 
