@@ -353,7 +353,7 @@ bool TypesVisitor::is_subtype(const Type& given, const Type& compared_to) const 
         if (current == "Object")
             return false;
         
-        if (checker_.class_exists(current)) {
+        if (!checker_.class_exists(current)) {
             driver_.internal_error(
                 "is_subtype(): class '" + current + "'not found in class table"
             );
@@ -381,7 +381,7 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
         if (current == "Object")
             break;
 
-        if (checker_.class_exists(current)) {
+        if (!checker_.class_exists(current)) {
             driver_.internal_error(
                 "ancestor(): class '" + current + "' not found in class table."
             );
@@ -404,7 +404,7 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
         if (current == "Object")
             return Type("Object");  // Fallback
 
-        if (checker_.class_exists(current)) {
+        if (!checker_.class_exists(current)) {
             driver_.internal_error(
                 "ancestor(): class '" + current + "' not found in class table."
             );
@@ -556,7 +556,7 @@ void TypesVisitor::visit(LetExpr& node) {
 
 void TypesVisitor::visit(WhileExpr& node) { 
     cout << "TypesVisitor::visit(WhileExpr" << endl;
-    //? New scope
+    
     node.condition()->accept(*this);
     node.body()->accept(*this);
 
@@ -573,5 +573,4 @@ void TypesVisitor::visit(WhileExpr& node) {
         driver_.internal_error("visiting WhileExpr found an undefined type");
 
     node.set_type(Type::Unit());
-    //? Pop scope
 }

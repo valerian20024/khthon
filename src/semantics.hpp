@@ -259,7 +259,6 @@ namespace Khthon {
     class TypesVisitor : public MutableVisitor<void> {
     private:
         // Handle to main driver.
-        // todo const?
         Driver& driver_;
 
         // Handle to the classes symbol table.
