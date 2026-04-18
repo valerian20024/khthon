@@ -146,8 +146,7 @@ namespace Khthon {
 
     /// @brief Represents a binary operation in VSOP.
     class BinaryOperation {
-    //todo put back to private
-    public:
+    private:
         enum class Kind { 
             EQUAL, 
             LOWER, 
@@ -160,13 +159,12 @@ namespace Khthon {
             AND, 
             DEFAULT
         };
-    private:
-
-        using TypePair = std::pair<Type, Type>;
     
         Kind kind = Kind::DEFAULT;
 
     public:
+        using TypePair = std::pair<Type, Type>;
+
         BinaryOperation() = default;
 
         explicit BinaryOperation(Kind k) : kind(k) { }
