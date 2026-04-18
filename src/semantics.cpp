@@ -419,6 +419,25 @@ Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
     }
 }
 
+bool TypesVisitor::check_binop_operands(
+    const BinaryOperation& op,
+    const Type& t_left,
+    const Type& t_right
+) const {
+
+    if (op.is_equality())
+        return (t_left == t_right) || (t_left.is_custom() && t_right.is_custom());
+
+    // We check for all possible operands
+    for (const auto& [expected_left, expected_right] : op.valid_operand_types()) {
+        if (conforms(t_left, expected_left) && conforms(t_right, expected_right))
+            return true;
+    }
+    return false;
+}
+
+
+
 void TypesVisitor::visit(ProgramNode& node) {
     cout << "TypesVisitor::visit(ProgramNode" << endl;
     for (const auto& c : node.classes())

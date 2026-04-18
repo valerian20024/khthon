@@ -54,6 +54,26 @@ namespace Khthon {
         }
     }
 
+    bool BinaryOperation::is_arithmetic() const {
+        return (kind_ == Kind::PLUS) 
+            || (kind_ == Kind::MINUS)
+            || (kind_ == Kind::TIMES)
+            || (kind_ == Kind::DIVIDE)
+            || (kind_ == Kind::POWER);
+    }
+    
+    bool BinaryOperation::is_comparison() const {
+        return (kind_ == Kind::LOWER) || (kind_ == Kind::LOWER_EQUAL);
+    }
+    
+    bool BinaryOperation::is_equality() const {
+        return kind_ == Kind::EQUAL;
+    }
+
+    bool BinaryOperation::is_logical() const {
+        return kind_ == Kind::AND;
+    }
+
     std::vector<BinaryOperation::TypePair> 
     BinaryOperation::valid_operand_types() const {
         switch (kind_) {

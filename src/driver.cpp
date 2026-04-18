@@ -294,6 +294,7 @@ void Driver::semantic_error(const location& l, const std::string& reason) {
 
 //todo sort the errors by line and columns
 //todo Then also errors, warnings, notes for a same line
+//todo Only if not in debug mode. Keep the original order in debug mode
 void Driver::print_diagnostics() const {
     for (const auto& d : diagnostics_)
         cerr << d->to_string() << endl;

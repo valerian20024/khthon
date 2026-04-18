@@ -193,6 +193,7 @@ namespace Khthon {
         bool is_logical() const;
 
         /// @brief Returns the types this binary operator operands can be.
+        /// @note The vector of pairs allows for future asymmetric and overloaded operators.
         std::vector<TypePair> valid_operand_types() const;
 
         /// @brief Returns the type this binary operator should result in.
