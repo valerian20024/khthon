@@ -366,11 +366,16 @@ bool TypesVisitor::is_subtype(const Type& given, const Type& compared_to) const 
 
 Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
 
-    // This method only applies to custom types
+    // This method only applies to custom types.
     if (!t1.is_custom() || !t2.is_custom()) {
         driver_.internal_error("ancestor(): called with non custom types");
         return Type::Object();
     }
+
+    // Types agree so their common ancestor is themselves.
+    if (t1 == t2)
+        return t1;
+    
 
     // Collect the full ancestry chain of t1 into an ordered list.
     vector<string> ancestors;
@@ -496,6 +501,46 @@ void TypesVisitor::visit(IfExpr& node) {
     
     if (node.alternative().has_value())
         node.alternative().value()->accept(*this);
+    
+    // Guardian must have type bool.
+    if (!conforms(node.guardian()->type(), Type::Bool())) {
+        driver_.semantic_error(
+            node.location(),
+            "condition of 'if' must be of type 'bool', found '"
+            + node.guardian()->type().to_string()
+            + "'"
+        );
+    }
+
+    const Type consequent_type = node.consequent()->type();
+    const Type alternative_type = node.alternative().has_value()
+        ? node.alternative().value()->type()
+        : Type::Unit();
+    
+    // If at least one branch is unit, the node is unit.
+    if (consequent_type.is_unit() || alternative_type.is_unit()) {
+        node.set_type(Type::Unit());
+
+    // If branches have class types, the node has the type of their ancestor.
+    } else if (consequent_type.is_custom() && alternative_type.is_custom()) {
+        node.set_type(ancestor(consequent_type, alternative_type));
+
+    // If branches have non-unit, primitive types.
+    } else if (consequent_type == alternative_type) {
+        node.set_type(consequent_type);
+
+    } else {
+        driver_.semantic_error(
+            node.location(),
+            "branches of 'if' have incompatible types '"
+            + consequent_type.to_string()
+            + "' and '"
+            + alternative_type.to_string()
+            + "'"
+        );
+
+        node.set_type(Type::Object());  // error recovery
+    }
 }
 
 void TypesVisitor::visit(AssignExpr& node) {
