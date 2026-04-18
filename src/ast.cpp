@@ -48,6 +48,43 @@ namespace Khthon {
         }
     }
 
+
+    std::vector<BinaryOperation::TypePair> 
+    BinaryOperation::valid_operand_types() const {
+        switch (kind) {
+
+            // +, -, *, /, ^ : only on int32 pairs.
+            case Kind::PLUS:
+            case Kind::MINUS:
+            case Kind::TIMES:
+            case Kind::DIVIDE:
+            case Kind::POWER:
+                return { {Type::Int32(), Type::Int32()} };
+
+            // <, <= : only on int32 pairs.
+            case Kind::LOWER:
+            case Kind::LOWER_EQUAL:
+                return { {Type::Int32(), Type::Int32()} };
+
+            // and : only on bool pairs.
+            case Kind::AND:
+                return { {Type::Bool(), Type::Bool()} };
+
+            // = : defined on all primitive pairs, plus any custom type pair.
+            // We represent the custom case with a sentinel Type::Object().
+            case Kind::EQUAL:
+                return {
+                    {Type::Int32(),  Type::Int32()},
+                    {Type::Bool(),   Type::Bool()},
+                    {Type::String(), Type::String()},
+                    {Type::Object(), Type::Object()},  // sentinel for custom types
+                };
+
+            default:
+                return {};
+        }
+    }
+
     string BinaryOperation::to_string() const {
         switch (kind) {
             case BinaryOperation::Kind::EQUAL:          return "=";

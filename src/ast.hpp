@@ -134,14 +134,20 @@ namespace Khthon {
         Kind kind = Kind::DEFAULT;
 
         UnaryOperation() = default;
+        
         explicit UnaryOperation(Kind k) : kind(k) { }
+
+        
+
 
         std::string to_string() const;
     };
 
 
     /// @brief Represents a binary operation in VSOP.
-    struct BinaryOperation {
+    class BinaryOperation {
+    //todo put back to private
+    public:
         enum class Kind { 
             EQUAL, 
             LOWER, 
@@ -154,11 +160,44 @@ namespace Khthon {
             AND, 
             DEFAULT
         };
+    private:
 
+        using TypePair = std::pair<Type, Type>;
+    
         Kind kind = Kind::DEFAULT;
 
+    public:
         BinaryOperation() = default;
+
         explicit BinaryOperation(Kind k) : kind(k) { }
+
+        // Factory methods.
+
+        static BinaryOperation Equal()        { return BinaryOperation(Kind::EQUAL); }
+        static BinaryOperation Lower()        { return BinaryOperation(Kind::LOWER); }
+        static BinaryOperation LowerEqual()   { return BinaryOperation(Kind::LOWER_EQUAL); }
+        static BinaryOperation Plus()         { return BinaryOperation(Kind::PLUS); }
+        static BinaryOperation Minus()        { return BinaryOperation(Kind::MINUS); }
+        static BinaryOperation Times()        { return BinaryOperation(Kind::TIMES); }
+        static BinaryOperation Divide()       { return BinaryOperation(Kind::DIVIDE); }
+        static BinaryOperation Power()        { return BinaryOperation(Kind::POWER); }
+        static BinaryOperation And()          { return BinaryOperation(Kind::AND); }
+        static BinaryOperation Default()      { return BinaryOperation(Kind::DEFAULT); }
+
+        /// @brief Returns true for +, -, *, /, ^
+        bool is_arithmetic() const;
+
+        /// @brief Returns true for < and <=
+        bool is_comparison() const;
+
+        /// @brief Returns true only for =
+        bool is_equality() const;
+
+        /// @brief Returns true only for 'and'
+        bool is_logical() const;
+
+        /// @brief Returns the types this binary operator operands can be.
+        std::vector<TypePair> valid_operand_types() const;
 
         std::string to_string() const;
     };
