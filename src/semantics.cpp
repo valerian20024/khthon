@@ -113,7 +113,7 @@ namespace Khthon {
         }
     }
 
-    optional<Type> ClassManager::lookup_field(
+    optional<FieldInfo> ClassManager::lookup_field(
         const string& name,
         const string& class_name
     ) const {
@@ -127,7 +127,7 @@ namespace Khthon {
             const auto& fields = info->fields();
             auto it = fields.find(name);
             if (it != fields.end())
-                return it->second.type();
+                return it->second;
 
             // Stop after Object, but still check it first.
             if (candidate == "Object")
@@ -454,10 +454,14 @@ namespace Khthon {
             return local;
 
         // Looking for fields in the class hierarchy.
-        return class_manager_.lookup_field(name, current_class);
+        auto field = class_manager_.lookup_field(name, current_class);
+        if (!field)
+            return nullopt;
+            
+        return field->type();
     }
 
-    optional<Type> SemanticChecker::lookup_field(
+    optional<FieldInfo> SemanticChecker::lookup_field(
         const string& name,
         const string& class_name
     ) const {

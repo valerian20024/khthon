@@ -202,8 +202,7 @@ namespace Khthon {
         /// ancestors up to Object included).
         ///
         /// @return `nullopt` if not found.
-        //todo make it return the FieldInfo itself
-        std::optional<Type> lookup_field(
+        std::optional<FieldInfo>lookup_field(
             const std::string& name, 
             const std::string& class_name
         ) const;
@@ -293,7 +292,7 @@ namespace Khthon {
             const std::string& current_class
         ) const;
 
-        std::optional<Type> lookup_field(
+        std::optional<FieldInfo> lookup_field(
             const std::string& name, 
             const std::string& class_name
         ) const;

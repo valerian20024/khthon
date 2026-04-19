@@ -343,11 +343,45 @@ namespace Khthon {
     void TypesVisitor::visit(CallExpr& node) { 
         trace("TypesVisitor visits CallExpr");
 
+        // Visiting the object receving the call.
         node.receiver()->accept(*this);
+
+        // Visiting all the arguments of the call.
         for (const auto& arg : node.args())
             arg->accept(*this);
-        
-        // Do something with dispatching
+
+        const Type& receiver_type = node.receiver()->type();
+
+        // Only class types have methods.
+        if (!receiver_type.is_custom()) {
+            driver_.semantic_error(
+                node.location(),
+                "cannot call method '" + node.name()
+                + "' on non-class type '"
+                + receiver_type.to_string() + "'"
+            );
+            node.set_type(Type::Object());
+            return;
+        }
+
+        auto method = checker_.lookup_method(
+            node.name(), 
+            receiver_type.custom_name()
+        );
+
+        if (!method) {
+            driver_.semantic_error(
+                node.location(),
+                "class '" + receiver_type.custom_name()
+                + "' has no method '" + node.name() + "'"
+            );
+            node.set_type(Type::Object());
+            return;
+        }
+
+        check_formals(method.value(), node.args(), node.location());
+
+        node.set_type(method->return_type());
     }
 
     void TypesVisitor::visit(SelfExpr& node) { 
