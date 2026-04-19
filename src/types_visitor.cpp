@@ -257,7 +257,42 @@ namespace Khthon {
     void TypesVisitor::visit(AssignExpr& node) {
         trace("TypesVisitor visits AssignExpr");
 
+        // self is not assignable in VSOP.
+        if (node.name() == "self") {
+            driver_.semantic_error(
+                node.location(),
+                "cannot assign to 'self'"
+            );
+            node.set_type(Type::Object());  // error recovery
+            return;
+        }
+
+        // Resolve the declared type of the target identifier.
+        auto target_type = checker_.resolve(node.name(), current_class_name_);
+        if (!target_type) {
+            driver_.semantic_error(
+                node.location(),
+                "undefined identifier '" + node.name() + "'"
+            );
+            node.set_type(Type::Object());  // error recovery
+            return;
+        }
+
         node.value()->accept(*this);
+
+        const Type& value_type = node.value()->type();
+
+        if (!conforms(value_type, target_type.value())) {
+            driver_.semantic_error(
+                node.location(),
+                "cannot assign value of type '" + value_type.to_string()
+                + "' to identifier '" + node.name()
+                + "' of type '" + target_type->to_string() + "'"
+            );
+        }
+
+        // Assignment yields the type of the assigned value.
+        node.set_type(value_type);
     }
 
     void TypesVisitor::visit(NewExpr& node) {
@@ -393,14 +428,33 @@ namespace Khthon {
     void TypesVisitor::visit(LetExpr& node) { 
         trace("TypesVisitor visits LetExpr");
 
-        // New scope
-
-        if (node.has_initializer())
+        // Visit initializer in the outer scope, before binding x.
+        if (node.has_initializer()) {
             node.initializer().value()->accept(*this);
 
+            const Type& init_type = node.initializer().value()->type();
+            const Type& declared_type = node.type();
+
+            if (!conforms(init_type, declared_type)) {
+                driver_.semantic_error(
+                    node.location(),
+                    "initializer of '" + node.name()
+                    + "' has type '" + init_type.to_string()
+                    + "' but declared type is '" + declared_type.to_string() + "'"
+                );
+            }
+        }
+
+        // Bind x in a new inner scope, only visible to the scope expression.
+        checker_.push_scope();
+        checker_.add_binding(node.name(), node.type());
+
         node.scope()->accept(*this);
-        
-        // Pop scope
+
+        checker_.pop_scope();
+
+        // The type of a let expression is the type of its scope.
+        node.set_type(node.scope()->type());
     }
 
     void TypesVisitor::visit(WhileExpr& node) { 
