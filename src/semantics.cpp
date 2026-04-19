@@ -17,6 +17,47 @@ namespace Khthon {
         ||                CORE PROCEDURES                 ||
         ++================================================*/
 
+    bool ClassManager::add_class(ClassInfo c) {
+        auto [it, inserted] = class_table_.emplace(c.name(), std::move(c));
+        return inserted;
+    }
+
+    bool ClassManager::class_exists(const std::string& name) const { 
+        return class_table_.count(name) > 0; 
+    }
+
+    const std::optional<ClassInfo> ClassManager::get_class(const std::string& name) const {
+        auto it = class_table_.find(name);
+        if (it == class_table_.end())
+            return std::nullopt;
+        return it->second;
+    }
+
+    const optional<bool> ClassManager::is_subtype(const Type& given, const Type& compared_to) const {
+        
+        // Subtyping is only available for classes.
+        if (!given.is_custom() || !compared_to.is_custom())
+            return nullopt;
+
+        string current = given.custom_name();
+        while (true) {
+
+            if (current == compared_to.custom_name())
+                return true;
+            
+            if (current == "Object")
+                return false;
+            
+            if (!class_exists(current))
+                return nullopt;
+
+            auto info = get_class(current);
+            if (!info)
+                return nullopt;
+
+            current = info->parent();
+        }
+    }
 
     optional<Type> ScopeManager::lookup(const string& name) const {
         // Walk the stack from innermost to outermost scope.
@@ -214,7 +255,7 @@ namespace Khthon {
         ||                 TYPESVISITOR                   ||
         ++================================================*/
 
-        
+
     bool TypesVisitor::conforms(const Type& given, const Type& expected) const {
         
         // Undefined types should never reach type checking.
@@ -229,43 +270,9 @@ namespace Khthon {
 
 
         // Types are custom so we check for subtyping.
-        return is_subtype(given, expected);
-    }
+        //return is_subtype(given, expected);
 
-    bool TypesVisitor::is_subtype(const Type& given, const Type& compared_to) const {
-        
-        // Subtyping is only available for classes.
-        if (!given.is_custom() || !compared_to.is_custom()) {
-            driver_.internal_error("is_subtype(): called with non custom types");
-            return false;
-        }
-
-        string current = given.custom_name();
-        while (true) {
-
-            if (current == compared_to.custom_name())
-                return true;
-            
-            if (current == "Object")
-                return false;
-            
-            if (!checker_.class_exists(current)) {
-                driver_.internal_error(
-                    "is_subtype(): class '" + current + "'not found in class table"
-                );
-                return false;
-            }
-
-            auto info = checker_.get_class(current);
-            if (!info) {
-                driver_.internal_error(
-                    "is_subtype(): unable to get class'" + current + "'"
-                );
-                return false;
-            }
-
-            current = info->parent();
-        }
+        return checker_.is_subtype(given, expected);
     }
 
     Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
@@ -621,7 +628,7 @@ namespace Khthon {
     void ClassesVisitor::visit(const ProgramNode& node) const {
         
         // Inject the built-in Object class
-        Khthon::location builtin_loc;  // default location, no source file
+        Khthon::location builtin_loc = driver_.default_location();
         ClassInfo object_info("Object", "Object", builtin_loc);
 
         // Object's built-in methods
@@ -731,7 +738,6 @@ namespace Khthon {
             }
         }
 
-        //class_table_.emplace(class_name, std::move(class_info));
         checker_.add_class(class_info);
     }
 

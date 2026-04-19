@@ -139,8 +139,11 @@ namespace Khthon {
      * @brief Manages the scope symbol table.
      */
     class ScopeManager {
+    public:
+        using ScopeSymbolTable = std::vector<std::map<std::string, Type>>;
+
     private:
-        std::vector<std::map<std::string, Type>> scope_table_;
+        ScopeSymbolTable scope_table_;
 
     public:
         void push_scope() { 
@@ -166,105 +169,31 @@ namespace Khthon {
     };
 
     class ClassManager {
+    public:
+        using ClassSymbolTable = std::map<std::string, ClassInfo>;
+
     private:
-        std::map<std::string, ClassInfo> class_table_;
+        ClassSymbolTable class_table_;
 
     public:
+        /// @brief Tries to insert new class information into the table.
         /// @return false if a class with that name already exists.
-        bool add_class(ClassInfo c) {
-            auto [it, inserted] = class_table_.emplace(c.name(), std::move(c));
-            return inserted;
-        }
-
-        bool class_exists(const std::string& name) const {
-            return class_table_.count(name) > 0;
-        }
+        bool add_class(ClassInfo c);
         
-        const std::optional<ClassInfo> get_class(const std::string& name) const {
-            auto it = class_table_.find(name);
-            if (it == class_table_.end())
-                return std::nullopt;
-            return it->second;
-        }
+        /// @brief Whether a class with this name already exists in the table.
+        bool class_exists(const std::string& name) const;
+        
+        /// @brief Tries to get the information of class with name `name`.
+        /// @return `nullopt` if not found. 
+        const std::optional<ClassInfo> get_class(const std::string& name) const;
 
         /// @return The whole classes symbol table.
-        const std::map<std::string, ClassInfo>& table() const {
-            return class_table_;
-        }
+        const ClassSymbolTable& table() const { return class_table_; }
+
+        /// @brief Checks whether `given` is a subtype of `compared_to` using class inheritance.
+        /// @return `nullopt` if an error occured.
+        const std::optional<bool> is_subtype(const Type& given, const Type& compared_to) const;
         
-        /* 
-        /// Walks the ancestor chain to find a field, returns nullopt if not found.
-        std::optional<FieldInfo> lookup_field(
-            const std::string& class_name,
-            const std::string& field_name
-        ) const {
-            std::string current = class_name;
-            while (true) {
-                if (!exists(current)) return std::nullopt;
-                const auto& fields = get(current).fields();
-                auto it = fields.find(field_name);
-                if (it != fields.end()) return it->second;
-                const std::string& parent = get(current).parent();
-                if (parent == current) return std::nullopt; // reached Object
-                current = parent;
-            }
-        }
-
-        /// Walks the ancestor chain to find a method, returns nullopt if not found.
-        std::optional<MethodInfo> lookup_method(
-            const std::string& class_name,
-            const std::string& method_name
-        ) const {
-            std::string current = class_name;
-            while (true) {
-                if (!exists(current)) return std::nullopt;
-                const auto& methods = get(current).methods();
-                auto it = methods.find(method_name);
-                if (it != methods.end()) return it->second;
-                const std::string& parent = get(current).parent();
-                if (parent == current) return std::nullopt; // reached Object
-                current = parent;
-            }
-        }
-
-        /// Returns the full ancestor chain from class_name up to and including Object.
-        std::vector<std::string> ancestors(const std::string& class_name) const {
-            std::vector<std::string> chain;
-            std::string current = class_name;
-            while (true) {
-                chain.push_back(current);
-                if (current == "Object") break;
-                if (!exists(current)) break; // safety
-                current = get(current).parent();
-            }
-            return chain;
-        }
-
-        /// Returns true if `given` is a subtype of `compared_to`.
-        bool is_subtype(const std::string& given, const std::string& compared_to) const {
-            std::string current = given;
-            while (true) {
-                if (current == compared_to) return true;
-                if (current == "Object")    return false;
-                if (!exists(current))       return false;
-                current = get(current).parent();
-            }
-        }
-
-        /// Returns the least common ancestor of two class types.
-        std::string ancestor(const std::string& t1, const std::string& t2) const {
-            if (t1 == t2) return t1;
-            auto chain = ancestors(t1);
-            std::unordered_set<std::string> chain_set(chain.begin(), chain.end());
-            std::string current = t2;
-            while (true) {
-                if (chain_set.count(current)) return current;
-                if (current == "Object")      return "Object";
-                if (!exists(current))         return "Object"; // safety
-                current = get(current).parent();
-            }
-        }
-        */
     };
 
     /** 
@@ -294,7 +223,7 @@ namespace Khthon {
         void print_class_table() const;
 
     public:
-        explicit SemanticChecker(Driver& driver) : driver_(driver) {}
+        explicit SemanticChecker(Driver& driver) : driver_(driver) { }
 
         /// @brief Orchestrator for semantic analysis checks.
         void analyze(const std::shared_ptr<ProgramNode>& root);
@@ -324,6 +253,15 @@ namespace Khthon {
             return class_manager_.get_class(name); 
         }
 
+        bool is_subtype(const Type& given, const Type& compared_to) const {
+            auto result = class_manager_.is_subtype(given, compared_to);
+            if (!result) {
+                driver_.internal_error("is_subtype(): class not found in table");
+                return false;
+            }
+            return result.value();
+        }
+
         std::optional<Type> resolve(
             const std::string& name, 
             const std::string& current_class
@@ -344,14 +282,11 @@ namespace Khthon {
     class ClassesVisitor : public Visitor<void> {
     private:
         Driver& driver_;
-
         SemanticChecker& checker_;
-        //std::map<std::string, ClassInfo>& class_table_;
 
     public:
         explicit ClassesVisitor(
             Driver& d, 
-            //std::map<std::string, ClassInfo>& table
             SemanticChecker& sc
         ) : 
             driver_(d), 
@@ -379,9 +314,6 @@ namespace Khthon {
 
         /// @brief Checks the `actual` type conforms to the one `expected`.
         bool conforms(const Type& actual, const Type& expected) const;
-
-        /// @brief Checks whether `given` is a subtype of `compared_to` using class inheritance.
-        bool is_subtype(const Type& given, const Type& compared_to) const;
 
         /// @brief Finds the least common ancestor of `t1` and `t2`
         Type ancestor(const Type& t1, const Type& t2) const;
