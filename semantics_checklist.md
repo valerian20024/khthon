@@ -1,3 +1,7 @@
+# Legacy checklist of rules to enforce during the semantic analysis.
+
+Might become irrelevant shortly.
+
 # 4.1. Classes
 
 4100 | TODO

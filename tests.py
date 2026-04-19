@@ -17,6 +17,12 @@ examples
         ├── 3_semantic
         └── 4_generation
 
+!!!
+This script is buggy.
+Don't take its output seriously.
+I will debug it when I have time.
+!!!
+
 """
 
 import sys
