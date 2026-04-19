@@ -202,8 +202,16 @@ namespace Khthon {
         /// ancestors up to Object included).
         ///
         /// @return `nullopt` if not found.
+        //todo make it return the FieldInfo itself
         std::optional<Type> lookup_field(
             const std::string& name, 
+            const std::string& class_name
+        ) const;
+
+        /// @brief Tries to find a method of a given class.
+        /// @return `nullopt` if not found.
+        std::optional<MethodInfo> lookup_method(
+            const std::string& name,
             const std::string& class_name
         ) const;
     };
@@ -284,6 +292,16 @@ namespace Khthon {
             const std::string& name, 
             const std::string& current_class
         ) const;
+
+        std::optional<Type> lookup_field(
+            const std::string& name, 
+            const std::string& class_name
+        ) const;
+
+        std::optional<MethodInfo> lookup_method(
+            const std::string& name,
+            const std::string& class_name
+        ) const;
     };
 
 
@@ -348,7 +366,7 @@ namespace Khthon {
             const Type& t_right
         ) const;
 
-        
+
         bool check_formals(
             const MethodInfo& method,
             const std::vector<std::shared_ptr<Expr>>& args,

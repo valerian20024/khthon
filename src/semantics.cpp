@@ -139,6 +139,30 @@ namespace Khthon {
         return nullopt;
     }
 
+    optional<MethodInfo> ClassManager::lookup_method(
+        const string& name,
+        const string& class_name
+    ) const {
+        string candidate = class_name;
+        while (!candidate.empty()) {
+            auto info = get_class(candidate);
+            if (!info)
+                return nullopt;
+
+            const auto& methods = info->methods();
+            auto it = methods.find(name);
+            if (it != methods.end())
+                return it->second;
+
+            // Stop after Object, but check its methods first.
+            if (candidate == "Object")
+                break;
+
+            candidate = info->parent();
+        }
+        return nullopt;
+    }
+
 
 
     /*================================================++
@@ -420,7 +444,7 @@ namespace Khthon {
         return class_manager_.ancestor(t1, t2);
     }
 
-    std::optional<Type> SemanticChecker::resolve(
+    optional<Type> SemanticChecker::resolve(
         const std::string& name, 
         const std::string& current_class
     ) const {
@@ -431,5 +455,19 @@ namespace Khthon {
 
         // Looking for fields in the class hierarchy.
         return class_manager_.lookup_field(name, current_class);
+    }
+
+    optional<Type> SemanticChecker::lookup_field(
+        const string& name,
+        const string& class_name
+    ) const {
+        return class_manager_.lookup_field(name, class_name);
+    }
+
+    optional<MethodInfo> SemanticChecker::lookup_method(
+        const string& name,
+        const string& class_name
+    ) const {
+        return class_manager_.lookup_method(name, class_name);
     }
 }

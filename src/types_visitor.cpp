@@ -81,7 +81,7 @@ namespace Khthon {
             if (!conforms(actual, expected)) {
                 driver_.semantic_error(
                     loc,
-                    "argument " + std::to_string(i + 1)
+                    "argument " + to_string(i + 1)
                     + " of method '" + method.name()
                     + "' expects type '" + expected.to_string()
                     + "', got '" + actual.to_string() + "'"
@@ -93,9 +93,9 @@ namespace Khthon {
         return all_conform;
     }
 
-    void TypesVisitor::trace(const std::string& message) const { 
+    void TypesVisitor::trace(const string& message) const { 
         if (Khthon::enable_advanced_logging)
-            std::cout << message << std::endl;
+            cout << message << endl;
     }
 
     void TypesVisitor::visit(ProgramNode& node) {
