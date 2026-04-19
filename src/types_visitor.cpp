@@ -93,6 +93,26 @@ namespace Khthon {
         return all_conform;
     }
 
+    bool TypesVisitor::check_type_exists(
+        const Type& type, 
+        const Khthon::location& loc
+    ) const {
+        // Primitive types are always valid.
+        if (type.is_primitive() || type.is_unit())
+            return true;
+
+        // Custom types must exist in the class table.
+        if (type.is_custom() && !checker_.class_exists(type.custom_name())) {
+            driver_.semantic_error(
+                loc,
+                "use of undefined type '" + type.custom_name() + "'"
+            );
+            return false;
+        }
+
+        return true;
+    }
+
     void TypesVisitor::trace(const string& message) const { 
         if (Khthon::enable_advanced_logging)
             cout << message << endl;
@@ -121,6 +141,10 @@ namespace Khthon {
 
     void TypesVisitor::visit(MethodNode& node) {
         trace("TypesVisitor visits MethodNode");
+
+        check_type_exists(node.type(), node.location());
+        for (const auto& formal : node.formals())
+            check_type_exists(formal->type(), formal->location());
 
         checker_.push_scope();
 
@@ -158,6 +182,8 @@ namespace Khthon {
 
     void TypesVisitor::visit(FieldNode& node) {
         trace("TypesVisitor visits FieldNode");
+
+        check_type_exists(node.type(), node.location());
 
         if (node.has_init())
             node.initializer().value()->accept(*this);
@@ -427,6 +453,8 @@ namespace Khthon {
 
     void TypesVisitor::visit(LetExpr& node) { 
         trace("TypesVisitor visits LetExpr");
+    
+        check_type_exists(node.type(), node.location());
 
         // Visit initializer in the outer scope, before binding x.
         if (node.has_initializer()) {

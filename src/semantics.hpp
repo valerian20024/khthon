@@ -372,6 +372,8 @@ namespace Khthon {
             const Khthon::location& loc
         ) const;
 
+        bool check_type_exists(const Type& type, const Khthon::location& loc) const;
+
 
         /// @brief Prints a tracing message when debugging is enabled.
         void trace(const std::string& message) const;
