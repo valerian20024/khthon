@@ -148,9 +148,11 @@ namespace Khthon {
         /// @param _source_file The file containing the source code.
         Driver(const std::string &_source_file) : source_file(_source_file) {}
 
-        /// @brief Get the source file.
-        /// @return The source file.
+        /// @return The compiled source file.
         const std::string &get_source_file() { return source_file; }
+
+        /// @brief Returns the default location: current_source_file: 1: 1.
+        Khthon::location default_location() const;
 
         /**
          * @brief Run the lexer on the source file.

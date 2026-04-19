@@ -169,7 +169,7 @@ namespace Khthon {
         auto main_info = get_class("Main");
         if (!main_info) {
             driver_.semantic_error(
-                Khthon::location(),  // no meaningful location
+                driver_.default_location(),  // no meaningful location
                 "no 'Main' class defined"
             );
             return;

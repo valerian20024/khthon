@@ -13,7 +13,6 @@ namespace Khthon {
 
     class Node;
     class Expr;
-
     class ProgramNode;
     class ClassNode;
     class FieldNode;

@@ -274,7 +274,6 @@ namespace Khthon {
     private:
         Driver& driver_;
         
-        //std::map<std::string, ClassInfo> class_table_;
         ClassManager class_manager_;
         ScopeManager scope_manager_;
 

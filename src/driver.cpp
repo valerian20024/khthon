@@ -65,6 +65,24 @@ namespace Khthon {
         {Parser::token::STRING_LITERAL,     "string-literal"},
     };
 
+    Khthon::location Driver::default_location() const {
+        Khthon::location loc;
+
+        auto filename_ptr = std::make_shared<string>(source_file.empty() 
+            ? "<unknown>"
+            : source_file);
+
+        loc.begin.filename = filename_ptr.get();
+        loc.end.filename   = filename_ptr.get();
+    
+        loc.begin.line   = 1;
+        loc.begin.column = 1;
+        loc.end.line     = 1;
+        loc.end.column   = 1;
+
+        return loc;
+    }
+
 
     int Driver::lex() {
         scan_begin();
