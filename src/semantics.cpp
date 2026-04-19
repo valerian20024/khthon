@@ -81,6 +81,66 @@ namespace Khthon {
     }
 
 
+    Type ClassManager::ancestor(const Type& t1, const Type& t2) const {
+        
+        // Collect the full ancestry chain of t1 into an ordered list.
+        vector<string> ancestors;
+        
+        string current = t1.custom_name();
+        while (true) {
+            ancestors.push_back(current);
+            if (current == "Object")
+                break;
+
+            current = get_class(current)->parent(); 
+        }
+
+        // Walk up t2's ancestors and return the first class found in t1's ancestors
+        unordered_set<string>ancestors_set(
+            ancestors.begin(), 
+            ancestors.end()
+        );
+
+        current = t2.custom_name();
+        while (true) {
+            if (ancestors_set.count(current))
+                return Type(current);
+
+            if (current == "Object")
+                return Type("Object");  // Fallback
+
+            current = get_class(current)->parent(); 
+        }
+    }
+
+    optional<Type> ClassManager::lookup_field(
+        const string& name,
+        const string& class_name
+    ) const {
+
+        string candidate = class_name;
+        while (!candidate.empty()) {
+            auto info = get_class(candidate);
+            if (!info)
+                return nullopt;
+
+            const auto& fields = info->fields();
+            auto it = fields.find(name);
+            if (it != fields.end())
+                return it->second.type();
+
+            // Stop after Object, but still check it first.
+            if (candidate == "Object")
+                break;
+
+            candidate = info->parent();
+        }
+
+        return nullopt;
+    }
+
+
+
     /*================================================++
     ||                 SCOPE MANAGER                  ||
     ++================================================*/
@@ -338,14 +398,38 @@ namespace Khthon {
         return result.value();
     }
 
+    Type SemanticChecker::ancestor(const Type& t1, const Type& t2) const {
+        
+        // This method only applies to custom types.
+        if (!t1.is_custom() || !t2.is_custom()) {
+            driver_.internal_error("ancestor(): called with non custom types");
+            return Type::Object();
+        }
+
+        if (   !class_exists(t1.custom_name()) 
+            || !class_exists(t2.custom_name())
+        ) {
+            driver_.internal_error("ancestor(): unknown custom types.");
+            return Type::Object();
+        }
+        
+        // Types agree so their common ancestor is themselves.
+        if (t1 == t2)
+            return t1;
+
+        return class_manager_.ancestor(t1, t2);
+    }
+
     std::optional<Type> SemanticChecker::resolve(
         const std::string& name, 
         const std::string& current_class
     ) const {
+        // Looking in the local scope.
+        auto local = scope_manager_.lookup(name);
+        if (local)
+            return local;
 
-        (void) name;
-        (void) current_class;
-
-        return nullopt;
+        // Looking for fields in the class hierarchy.
+        return class_manager_.lookup_field(name, current_class);
     }
 }

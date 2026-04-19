@@ -5,11 +5,6 @@ using namespace Khthon;
 
 namespace Khthon {
 
-    void TypesVisitor::trace(const std::string& message) const { 
-        if (Khthon::enable_advanced_logging)
-            std::cout << message << std::endl;
-    }
-
     bool TypesVisitor::conforms(const Type& given, const Type& expected) const {
         
         // Undefined types should never reach type checking.
@@ -24,50 +19,6 @@ namespace Khthon {
 
         // Types are custom so we check for subtyping.
         return checker_.is_subtype(given, expected);
-    }
-
-    Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
-
-        // This method only applies to custom types.
-        if (!t1.is_custom() || !t2.is_custom()) {
-            driver_.internal_error("ancestor(): called with non custom types");
-            return Type::Object();
-        }
-
-        // Types agree so their common ancestor is themselves.
-        if (t1 == t2)
-            return t1;
-        
-        // Collect the full ancestry chain of t1 into an ordered list.
-        vector<string> ancestors;
-        
-        string current = t1.custom_name();
-        while (true) {
-
-            ancestors.push_back(current);
-            if (current == "Object")
-                break;
-
-            auto info = checker_.get_class(current); 
-            current = info.parent();
-        }
-
-        // Walk up t2's ancestors and return the first class found in t1's ancestors
-        unordered_set<string>ancestors_set(
-            ancestors.begin(), ancestors.end());
-
-        current = t2.custom_name();
-        while (true) {
-
-            if (ancestors_set.count(current))
-                return Type(current);
-
-            if (current == "Object")
-                return Type("Object");  // Fallback
-
-            auto info = checker_.get_class(current);
-            current = info.parent();
-        }
     }
 
     bool TypesVisitor::check_unop_operand(
@@ -101,6 +52,52 @@ namespace Khthon {
         return false;
     }
 
+    bool TypesVisitor::check_formals(
+        const MethodInfo& method,
+        const vector<shared_ptr<Expr>>& args,
+        const location& loc
+    ) const {
+
+        const auto& formals = method.formals();
+
+        // Check argument count first, as a mismatch makes type checking meaningless.
+        if (args.size() != formals.size()) {
+            driver_.semantic_error(
+                loc,
+                "method '" + method.name() + "' expects "
+                + to_string(formals.size())
+                + " argument(s), got "
+                + to_string(args.size())
+            );
+            return false;
+        }
+
+        // Reporting each formal type mismatch.
+        bool all_conform = true;
+        for (size_t i = 0; i < formals.size(); ++i) {
+            const Type& expected = formals[i].type();
+            const Type& actual = args[i]->type();
+
+            if (!conforms(actual, expected)) {
+                driver_.semantic_error(
+                    loc,
+                    "argument " + std::to_string(i + 1)
+                    + " of method '" + method.name()
+                    + "' expects type '" + expected.to_string()
+                    + "', got '" + actual.to_string() + "'"
+                );
+                all_conform = false;
+            }
+        }
+
+        return all_conform;
+    }
+
+    void TypesVisitor::trace(const std::string& message) const { 
+        if (Khthon::enable_advanced_logging)
+            std::cout << message << std::endl;
+    }
+
     void TypesVisitor::visit(ProgramNode& node) {
         trace("TypesVisitor visits ProgramNode");
 
@@ -125,13 +122,31 @@ namespace Khthon {
     void TypesVisitor::visit(MethodNode& node) {
         trace("TypesVisitor visits MethodNode");
 
-        // New scope
+        checker_.push_scope();
 
-        //? visiting formals?
+        // Bind self to the current class type.
+        checker_.add_binding("self", Type(current_class_name_));
+
+        // Bind each formal to its declared type.
+        for (const auto& formal : node.formals())
+            checker_.add_binding(formal->name(), formal->type());
 
         node.body()->accept(*this);
-        
-        // Pop scope 
+
+        const Type& declared = node.type();
+        const Type& actual = node.body()->type();
+
+        if (!actual.is_undefined() && !conforms(actual, declared)) {
+            driver_.semantic_error(
+                node.location(),
+                "method '" + node.name() + "' has return type '"
+                + declared.to_string()
+                + "' but body has type '"
+                + actual.to_string() + "'"
+            );
+        }
+
+        checker_.pop_scope();
     }
 
     void TypesVisitor::visit(FormalNode& node) {
@@ -219,7 +234,7 @@ namespace Khthon {
 
         // If branches have class types, the node has the type of their ancestor.
         } else if (consequent_type.is_custom() && alternative_type.is_custom()) {
-            node.set_type(ancestor(consequent_type, alternative_type));
+            node.set_type(checker_.ancestor(consequent_type, alternative_type));
 
         // If branches have non-unit, primitive types.
         } else if (consequent_type == alternative_type) {
@@ -248,8 +263,18 @@ namespace Khthon {
     void TypesVisitor::visit(NewExpr& node) {
         trace("TypesVisitor visits NewExpr");
 
-        (void) node;
-        return;
+        const string& class_name = node.identifier();
+
+        if (!checker_.class_exists(class_name)) {
+            driver_.semantic_error(
+                node.location(),
+                "unknown class '" + class_name + "' in 'new' expression"
+            );
+            node.set_type(Type::Object());  // error recovery
+            return;
+        }
+
+        node.set_type(Type(class_name));
     }
 
     void TypesVisitor::visit(UnOpExpr& node) { 
@@ -302,8 +327,17 @@ namespace Khthon {
     void TypesVisitor::visit(VariableExpr& node) { 
         trace("TypesVisitor visits VariableExpr");
 
-        (void) node;
-        return;
+        auto type = checker_.resolve(node.identifier(), current_class_name_);
+        if (!type) {
+            driver_.semantic_error(
+                node.location(),
+                "undefined identifier '" + node.identifier() + "'"
+            );
+            node.set_type(Type::Object());  // error recovery
+            return;
+        }
+
+        node.set_type(type.value());
     }
 
     void TypesVisitor::visit(CallExpr& node) { 
@@ -319,8 +353,7 @@ namespace Khthon {
     void TypesVisitor::visit(SelfExpr& node) { 
         trace("TypesVisitor visits SelfExpr");
 
-        (void) node;
-        return;
+        node.set_type(Type(current_class_name_));
     }
 
     void TypesVisitor::visit(LetExpr& node) { 

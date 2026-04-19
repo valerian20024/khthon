@@ -1,8 +1,6 @@
 #include "ast.hpp"
 
 /*
-? Is it safe to use a for each loop instead of size_t etc. in printNode methods 
-?   of FieldNode and MethodNode
 
 */
 

@@ -5,6 +5,10 @@
 using namespace std;
 using namespace colors;
 
+/*
+
+*/
+
 namespace Khthon {
 
     template<typename T> string 

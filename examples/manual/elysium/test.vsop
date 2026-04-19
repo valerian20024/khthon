@@ -1,5 +1,9 @@
 class MyClass {
     myField : int32 <- if true then 42 else 0;
+
+    method(x : int32) : unit { 
+
+    }
 }
 
 class Main { main() : int32 { 0 } }

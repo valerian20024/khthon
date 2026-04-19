@@ -160,6 +160,9 @@ namespace Khthon {
         std::optional<Type> lookup(const std::string& name) const;
     };
 
+    /**
+     * @brief Manages the classes symbol table.
+     */
     class ClassManager {
     public:
         using ClassSymbolTable = std::map<std::string, ClassInfo>;
@@ -186,6 +189,23 @@ namespace Khthon {
         /// @return `nullopt` if an error occured.
         const std::optional<bool> is_subtype(const Type& given, const Type& compared_to) const;
         
+        /// @brief Returns the least common ancestor between `t1` and `t2`.
+        /// @note Will return `Object` if no other ancestor is found.
+        /// @warning Assumes types are custom and they exist in the table.
+        /// Prefer using the wrapper SemanticChecker::ancestor if unsure about it.
+        Type ancestor(const Type& custom_type1, const Type& custom_type2) const;
+
+        /// @brief Finds the type of a field of a class.
+        /// 
+        /// Tries to find the type of a field with name `name` in the 
+        /// hierarchy of classes starting at `class_name` (looking into 
+        /// ancestors up to Object included).
+        ///
+        /// @return `nullopt` if not found.
+        std::optional<Type> lookup_field(
+            const std::string& name, 
+            const std::string& class_name
+        ) const;
     };
 
     /** 
@@ -247,13 +267,17 @@ namespace Khthon {
         /// @note Delegates to ClassManager.
         bool class_exists(const std::string& name) const;
 
-        /// @brief Tries to get the class.
+        /// @brief Get the class with name `name`.
         /// @note Delegates to ClassManager.
         /// @return A dummy ClassInfo if not found.
         ClassInfo get_class(const std::string& name) const;
 
         /// @return `true` if `given` is a subtype of `compared_to`, false otherwise.
         bool is_subtype(const Type& given, const Type& compared_to) const;
+
+        /// @brief Find the common ancestor class type to `t1` and `t2`.
+        /// @note Delegates to ClassManager.
+        Type ancestor(const Type& t1, const Type& t2) const;
 
         /// @brief Resolves an identifier binding to the closest one available.
         std::optional<Type> resolve(
@@ -309,9 +333,6 @@ namespace Khthon {
         /// @brief Checks the `actual` type conforms to the one `expected`.
         bool conforms(const Type& actual, const Type& expected) const;
 
-        /// @brief Finds the least common ancestor of `t1` and `t2`
-        Type ancestor(const Type& t1, const Type& t2) const;
-
         /// @brief Checks whether the operand conforms to the ones expected by 
         /// the unary operator.
         bool check_unop_operand(
@@ -326,6 +347,14 @@ namespace Khthon {
             const Type& t_left,
             const Type& t_right
         ) const;
+
+        
+        bool check_formals(
+            const MethodInfo& method,
+            const std::vector<std::shared_ptr<Expr>>& args,
+            const Khthon::location& loc
+        ) const;
+
 
         /// @brief Prints a tracing message when debugging is enabled.
         void trace(const std::string& message) const;
