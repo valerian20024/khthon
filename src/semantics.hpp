@@ -9,12 +9,13 @@
 
 namespace Khthon {
 
-    constexpr bool enable_advanced_logging =
+    inline constexpr bool enable_advanced_logging =
 #ifdef DEBUG
     true;
 #else
     false;
 #endif
+
 
     /*================================================++
     ||                  STRUCTURES                    ||
@@ -403,7 +404,7 @@ namespace Khthon {
 
         /// @brief Prints a tracing message when debugging is enabled.
         void trace(const std::string& message) const { 
-            if (enable_advanced_logging)
+            if (Khthon::enable_advanced_logging)
                 std::cout << message << std::endl;
         }
 

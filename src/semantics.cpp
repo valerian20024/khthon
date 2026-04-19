@@ -6,733 +6,725 @@
 #include <functional>
 #include <map>
 
-    bool constexpr enable_advanced_logging = 
-#ifdef DEBUG
-    true;
-#else
-    false;
-#endif
-
 using namespace std;
 
 using Khthon::Type;
 
-//todo put it at the end of the file
-
-//todo put in a namespace (and the ifdef as well)
-
-void ClassesVisitor::visit(const ProgramNode& node) const {
-    
-    // Inject the built-in Object class
-    Khthon::location builtin_loc;  // default location, no source file
-    ClassInfo object_info("Object", "Object", builtin_loc);
-
-    // Object's built-in methods
-    object_info.add_method(MethodInfo(
-        "print",
-        Type("Object"),
-        { FormalInfo("s", Type::String(), builtin_loc) },
-        builtin_loc
-    ));
-
-    object_info.add_method(MethodInfo(
-        "printBool",
-        Type("Object"),
-        { FormalInfo("b", Type::Bool(), builtin_loc) },
-        builtin_loc
-    ));
-
-    object_info.add_method(MethodInfo(
-        "printInt32",
-        Type("Object"),
-        { FormalInfo("i", Type::Int32(), builtin_loc) },
-        builtin_loc
-    ));
-
-    object_info.add_method(MethodInfo(
-        "inputLine",
-        Type::String(),
-        {},  // no formals
-        builtin_loc
-    ));
-
-    object_info.add_method(MethodInfo(
-        "inputBool",
-        Type::Bool(),
-        {},
-        builtin_loc
-    ));
-
-    object_info.add_method(MethodInfo(
-        "inputInt32",
-        Type::Int32(),
-        {},
-        builtin_loc
-    ));
-
-    checker_.add_class(object_info);
-
-    // Reading concrete classes of the program.
-    for (const auto& c : node.classes())
-        c->accept(*this);
-}
-
-void ClassesVisitor::visit(const ClassNode& node) const {
-    const string& class_name = node.name();
-
-    // Not adding duplicate classes.
-    if (checker_.class_exists(class_name)) {
-        driver_.semantic_error(
-            node.location(), 
-            "class '" + class_name + "' is defined more than once"
-        );
-        return;
-    }
-
-    ClassInfo class_info(class_name, node.parent(), node.location());
-
-    // Fields.
-    for (const auto& field : node.fields()) {
-        FieldInfo field_info(
-            field->name(), 
-            field->type(), 
-            field->location()
-        );
-
-        if (!class_info.add_field(std::move(field_info))) {
-            driver_.semantic_error(
-                field->location(), 
-                "field '" + field->name() + "' is defined more than once"
-            );
-        }
-    }
-
-    // Methods.
-    for (const auto& method : node.methods()) {
-        // Formals.
-        vector<FormalInfo> formals_infos;
-        for (const auto& formal : method->formals()) {
-            formals_infos.emplace_back(
-                formal->name(), 
-                formal->type(), 
-                formal->location()
-            );
-        }
+namespace Khthon {
+    //todo put it at the end of the file
+    void ClassesVisitor::visit(const ProgramNode& node) const {
         
-        MethodInfo method_info(
-            method->name(), 
-            method->type(), 
-            std::move(formals_infos), 
-            method->location()
-        );
+        // Inject the built-in Object class
+        Khthon::location builtin_loc;  // default location, no source file
+        ClassInfo object_info("Object", "Object", builtin_loc);
 
-        if (!class_info.add_method(std::move(method_info))) {
+        // Object's built-in methods
+        object_info.add_method(MethodInfo(
+            "print",
+            Type("Object"),
+            { FormalInfo("s", Type::String(), builtin_loc) },
+            builtin_loc
+        ));
+
+        object_info.add_method(MethodInfo(
+            "printBool",
+            Type("Object"),
+            { FormalInfo("b", Type::Bool(), builtin_loc) },
+            builtin_loc
+        ));
+
+        object_info.add_method(MethodInfo(
+            "printInt32",
+            Type("Object"),
+            { FormalInfo("i", Type::Int32(), builtin_loc) },
+            builtin_loc
+        ));
+
+        object_info.add_method(MethodInfo(
+            "inputLine",
+            Type::String(),
+            {},  // no formals
+            builtin_loc
+        ));
+
+        object_info.add_method(MethodInfo(
+            "inputBool",
+            Type::Bool(),
+            {},
+            builtin_loc
+        ));
+
+        object_info.add_method(MethodInfo(
+            "inputInt32",
+            Type::Int32(),
+            {},
+            builtin_loc
+        ));
+
+        checker_.add_class(object_info);
+
+        // Reading concrete classes of the program.
+        for (const auto& c : node.classes())
+            c->accept(*this);
+    }
+
+    void ClassesVisitor::visit(const ClassNode& node) const {
+        const string& class_name = node.name();
+
+        // Not adding duplicate classes.
+        if (checker_.class_exists(class_name)) {
             driver_.semantic_error(
-                method->location(),
-                "method '" + method->name() + "' is defined more than once"
+                node.location(), 
+                "class '" + class_name + "' is defined more than once"
             );
-        }
-    }
-
-    //class_table_.emplace(class_name, std::move(class_info));
-    checker_.add_class(class_info);
-}
-
-
-    /*================================================++
-    ||                CORE PROCEDURES                 ||
-    ++================================================*/
-
-
-optional<Type> ScopeManager::lookup(const string& name) const {
-    // Walk the stack from innermost to outermost scope.
-    for (auto it = scope_table_.rbegin(); it != scope_table_.rend(); ++it) {
-        auto found = it->find(name);
-
-        if (found != it->end())
-            return found->second;
-    }
-    return std::nullopt;
-}
-
-void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
-    if (!root)
-        driver_.internal_error("SemanticChecker::analyze(): No ast root.");
-
-    ClassesVisitor cv = ClassesVisitor(driver_, *this);
-    root->accept(cv);
-
-    check_main();
-    check_parent_classes_exist();
-    check_inheritance_cycles();
-
-    TypesVisitor tv = TypesVisitor(driver_, *this);
-    root->accept(tv);
-
-    if (enable_advanced_logging)
-        print_class_table();
-}
-
-void SemanticChecker::check_main() const {
-    
-    auto main_info = get_class("Main");
-    if (!main_info) {
-        driver_.semantic_error(
-            Khthon::location(),  // no meaningful location
-            "no 'Main' class defined"
-        );
-        return;
-    }
-
-    // Check main method exists
-    const auto& methods = main_info->methods();
-    auto main_method = methods.find("main");
-    if (main_method == methods.end()) {
-        driver_.semantic_error(
-            main_info->location(),
-            "class 'Main' has no 'main' method"
-        );
-        return;
-    }
-
-    const MethodInfo& method_info = main_method->second;
-
-    // Check main takes no formals
-    if (!method_info.formals().empty()) {
-        driver_.semantic_error(
-            method_info.location(),
-            "method 'main' must take no arguments"
-        );
-    }
-
-    // Check main returns int32
-    const Type& return_type = method_info.return_type();
-    if (!return_type.is_int32()) {
-        driver_.semantic_error(
-            method_info.location(),
-            "method 'main' must return 'int32', found '" 
-            + return_type.to_string() + "'"
-        );
-    }
-}
-
-void SemanticChecker::check_parent_classes_exist() const {
-    for (const auto& [name, info] : class_manager_.table()) {
-        const string& parent = info.parent();
-        
-        // built-in root, always valid
-        if (parent == "Object") 
-            continue;
-        
-        if (!class_exists(parent)) {
-            driver_.semantic_error(
-                info.location(),
-                "class '" + name + "' extends unknown class '" + parent + "'"
-            );
-        }
-    }
-}
-
-bool SemanticChecker::cycle_check(
-    const string& name,
-    map<string, VisitState>& states
-) const {
-
-    states[name] = VisitState::Visiting;
-
-    auto info = get_class(name);
-    if (!info) {
-        driver_.internal_error(
-            "cycle_check(): unable to get class '" + name + "'"
-        );
-        return false;
-    }
-
-    const string& parent = info->parent();
-
-    if (parent != "Object" && parent != "") {
-
-        if (!class_exists(parent)) {
-            driver_.internal_error(
-                "class '" + parent + "' is not part of the symbol table."
-            );
-            return true;
+            return;
         }
 
-        if (states[parent] == VisitState::Visiting) {
-            driver_.semantic_error(
-                info->location(),
-                "inheritance cycle detected involving class '" + name + "'"
-            );
-            return false;
-        }
-
-        if (states[parent] == VisitState::Unvisited)
-            if (!cycle_check(parent, states))
-                return false;
-
-        // VisitState::Visited means already fully explored, safe to skip
-    }
-
-    states[name] = VisitState::Visited;
-    return true;
-}
-
-void SemanticChecker::check_inheritance_cycles() {
-    map<string, VisitState> states;
-
-    for (const auto& [name, info] : class_manager_.table())
-        states[name] = VisitState::Unvisited;
-
-    for (const auto& [name, info] : class_manager_.table())
-        if (states[name] == VisitState::Unvisited)
-            cycle_check(name, states);
-}
-
-void SemanticChecker::print_class_table() const {
-    for (const auto& [class_name, class_info] : class_manager_.table()) {
-        // Class and inheritance.
-        cout << "-------------------------\n"
-            << "Class: " << class_name 
-            << " extends " << class_info.parent() << "\n";
+        ClassInfo class_info(class_name, node.parent(), node.location());
 
         // Fields.
-        cout << "  Fields:\n";
-        if (class_info.fields().empty()) {
-            cout << "    (none)\n";
-        } else {
-            for (const auto& [field_name, field_info] : class_info.fields()) {
-                cout << "    " 
-                    << field_info.name() 
-                    << " : " 
-                    << field_info.type().to_string() << "\n";
+        for (const auto& field : node.fields()) {
+            FieldInfo field_info(
+                field->name(), 
+                field->type(), 
+                field->location()
+            );
+
+            if (!class_info.add_field(std::move(field_info))) {
+                driver_.semantic_error(
+                    field->location(), 
+                    "field '" + field->name() + "' is defined more than once"
+                );
             }
         }
 
         // Methods.
-        cout << "  Methods:\n";
-        if (class_info.methods().empty()) {/*  */
-            cout << "    (none)\n";
-        } else {
-            for (const auto& [method_name, method_info] : class_info.methods()) {
-                cout << "    " 
-                    << method_info.name()
-                    << "(";
-                
-                // Formals.
-                const auto& formals = method_info.formals();
-                for (size_t i = 0; i < formals.size(); ++i) {
-                    if (i > 0) cout << ", ";
-                    cout << formals[i].name() 
-                        << " : " 
-                        << formals[i].type().to_string();
-                }
+        for (const auto& method : node.methods()) {
+            // Formals.
+            vector<FormalInfo> formals_infos;
+            for (const auto& formal : method->formals()) {
+                formals_infos.emplace_back(
+                    formal->name(), 
+                    formal->type(), 
+                    formal->location()
+                );
+            }
+            
+            MethodInfo method_info(
+                method->name(), 
+                method->type(), 
+                std::move(formals_infos), 
+                method->location()
+            );
 
-                cout << ") : " << method_info.return_type().to_string() << "\n";
+            if (!class_info.add_method(std::move(method_info))) {
+                driver_.semantic_error(
+                    method->location(),
+                    "method '" + method->name() + "' is defined more than once"
+                );
             }
         }
-        cout << "-------------------------\n" << endl;
+
+        //class_table_.emplace(class_name, std::move(class_info));
+        checker_.add_class(class_info);
     }
-}
 
 
-    /*================================================++
-    ||                 TYPESVISITOR                   ||
-    ++================================================*/
+        /*================================================++
+        ||                CORE PROCEDURES                 ||
+        ++================================================*/
 
-bool TypesVisitor::conforms(const Type& given, const Type& expected) const {
-    
-    // Undefined types should never reach type checking.
-    if (given.is_undefined() || expected.is_undefined()) {
-        driver_.internal_error("conforms(): encountered an undefined type");
+
+    optional<Type> ScopeManager::lookup(const string& name) const {
+        // Walk the stack from innermost to outermost scope.
+        for (auto it = scope_table_.rbegin(); it != scope_table_.rend(); ++it) {
+            auto found = it->find(name);
+
+            if (found != it->end())
+                return found->second;
+        }
+        return std::nullopt;
+    }
+
+    void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
+        if (!root)
+            driver_.internal_error("SemanticChecker::analyze(): No ast root.");
+
+        ClassesVisitor cv = ClassesVisitor(driver_, *this);
+        root->accept(cv);
+
+        check_main();
+        check_parent_classes_exist();
+        check_inheritance_cycles();
+
+        TypesVisitor tv = TypesVisitor(driver_, *this);
+        root->accept(tv);
+
+        if (enable_advanced_logging)
+            print_class_table();
+    }
+
+    void SemanticChecker::check_main() const {
+        
+        auto main_info = get_class("Main");
+        if (!main_info) {
+            driver_.semantic_error(
+                Khthon::location(),  // no meaningful location
+                "no 'Main' class defined"
+            );
+            return;
+        }
+
+        // Check main method exists
+        const auto& methods = main_info->methods();
+        auto main_method = methods.find("main");
+        if (main_method == methods.end()) {
+            driver_.semantic_error(
+                main_info->location(),
+                "class 'Main' has no 'main' method"
+            );
+            return;
+        }
+
+        const MethodInfo& method_info = main_method->second;
+
+        // Check main takes no formals
+        if (!method_info.formals().empty()) {
+            driver_.semantic_error(
+                method_info.location(),
+                "method 'main' must take no arguments"
+            );
+        }
+
+        // Check main returns int32
+        const Type& return_type = method_info.return_type();
+        if (!return_type.is_int32()) {
+            driver_.semantic_error(
+                method_info.location(),
+                "method 'main' must return 'int32', found '" 
+                + return_type.to_string() + "'"
+            );
+        }
+    }
+
+    void SemanticChecker::check_parent_classes_exist() const {
+        for (const auto& [name, info] : class_manager_.table()) {
+            const string& parent = info.parent();
+            
+            // built-in root, always valid
+            if (parent == "Object") 
+                continue;
+            
+            if (!class_exists(parent)) {
+                driver_.semantic_error(
+                    info.location(),
+                    "class '" + name + "' extends unknown class '" + parent + "'"
+                );
+            }
+        }
+    }
+
+    bool SemanticChecker::cycle_check(
+        const string& name,
+        map<string, VisitState>& states
+    ) const {
+
+        states[name] = VisitState::Visiting;
+
+        auto info = get_class(name);
+        if (!info) {
+            driver_.internal_error(
+                "cycle_check(): unable to get class '" + name + "'"
+            );
+            return false;
+        }
+
+        const string& parent = info->parent();
+
+        if (parent != "Object" && parent != "") {
+
+            if (!class_exists(parent)) {
+                driver_.internal_error(
+                    "class '" + parent + "' is not part of the symbol table."
+                );
+                return true;
+            }
+
+            if (states[parent] == VisitState::Visiting) {
+                driver_.semantic_error(
+                    info->location(),
+                    "inheritance cycle detected involving class '" + name + "'"
+                );
+                return false;
+            }
+
+            if (states[parent] == VisitState::Unvisited)
+                if (!cycle_check(parent, states))
+                    return false;
+
+            // VisitState::Visited means already fully explored, safe to skip
+        }
+
+        states[name] = VisitState::Visited;
+        return true;
+    }
+
+    void SemanticChecker::check_inheritance_cycles() {
+        map<string, VisitState> states;
+
+        for (const auto& [name, info] : class_manager_.table())
+            states[name] = VisitState::Unvisited;
+
+        for (const auto& [name, info] : class_manager_.table())
+            if (states[name] == VisitState::Unvisited)
+                cycle_check(name, states);
+    }
+
+    void SemanticChecker::print_class_table() const {
+        for (const auto& [class_name, class_info] : class_manager_.table()) {
+            // Class and inheritance.
+            cout << "-------------------------\n"
+                << "Class: " << class_name 
+                << " extends " << class_info.parent() << "\n";
+
+            // Fields.
+            cout << "  Fields:\n";
+            if (class_info.fields().empty()) {
+                cout << "    (none)\n";
+            } else {
+                for (const auto& [field_name, field_info] : class_info.fields()) {
+                    cout << "    " 
+                        << field_info.name() 
+                        << " : " 
+                        << field_info.type().to_string() << "\n";
+                }
+            }
+
+            // Methods.
+            cout << "  Methods:\n";
+            if (class_info.methods().empty()) {/*  */
+                cout << "    (none)\n";
+            } else {
+                for (const auto& [method_name, method_info] : class_info.methods()) {
+                    cout << "    " 
+                        << method_info.name()
+                        << "(";
+                    
+                    // Formals.
+                    const auto& formals = method_info.formals();
+                    for (size_t i = 0; i < formals.size(); ++i) {
+                        if (i > 0) cout << ", ";
+                        cout << formals[i].name() 
+                            << " : " 
+                            << formals[i].type().to_string();
+                    }
+
+                    cout << ") : " << method_info.return_type().to_string() << "\n";
+                }
+            }
+            cout << "-------------------------\n" << endl;
+        }
+    }
+
+
+        /*================================================++
+        ||                 TYPESVISITOR                   ||
+        ++================================================*/
+
+    bool TypesVisitor::conforms(const Type& given, const Type& expected) const {
+        
+        // Undefined types should never reach type checking.
+        if (given.is_undefined() || expected.is_undefined()) {
+            driver_.internal_error("conforms(): encountered an undefined type");
+            return false;
+        }
+
+        // Primitive types conform only with themselves.
+        if (given.is_primitive() || expected.is_primitive())
+            return given == expected;
+
+
+        // Types are custom so we check for subtyping.
+        return is_subtype(given, expected);
+    }
+
+    bool TypesVisitor::is_subtype(const Type& given, const Type& compared_to) const {
+        
+        // Subtyping is only available for classes.
+        if (!given.is_custom() || !compared_to.is_custom()) {
+            driver_.internal_error("is_subtype(): called with non custom types");
+            return false;
+        }
+
+        string current = given.custom_name();
+        while (true) {
+
+            if (current == compared_to.custom_name())
+                return true;
+            
+            if (current == "Object")
+                return false;
+            
+            if (!checker_.class_exists(current)) {
+                driver_.internal_error(
+                    "is_subtype(): class '" + current + "'not found in class table"
+                );
+                return false;
+            }
+
+            auto info = checker_.get_class(current);
+            if (!info) {
+                driver_.internal_error(
+                    "is_subtype(): unable to get class'" + current + "'"
+                );
+                return false;
+            }
+
+            current = info->parent();
+        }
+    }
+
+    Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
+
+        // This method only applies to custom types.
+        if (!t1.is_custom() || !t2.is_custom()) {
+            driver_.internal_error("ancestor(): called with non custom types");
+            return Type::Object();
+        }
+
+        // Types agree so their common ancestor is themselves.
+        if (t1 == t2)
+            return t1;
+        
+        // Collect the full ancestry chain of t1 into an ordered list.
+        vector<string> ancestors;
+        
+        string current = t1.custom_name();
+        while (true) {
+
+            ancestors.push_back(current);
+            if (current == "Object")
+                break;
+
+            auto info = checker_.get_class(current);
+            if (!info) {
+                driver_.internal_error(
+                    "ancestor(): unable to find '" + current + "'"
+                );
+                return Type::Object();
+            } 
+
+            current = info->parent();
+        }
+
+        // Walk up t2's ancestors and return the first class found in t1's ancestors
+        unordered_set<string>ancestors_set(
+            ancestors.begin(), ancestors.end());
+
+        current = t2.custom_name();
+        while (true) {
+
+            if (ancestors_set.count(current))
+                return Type(current);
+
+            if (current == "Object")
+                return Type("Object");  // Fallback
+
+            auto info = checker_.get_class(current);
+            if (!info) {
+                driver_.internal_error(
+                    "ancestor(): unable to find '" + current + "'"
+                );
+                return Type::Object();
+            }
+
+            current = info->parent();
+        }
+    }
+
+    bool TypesVisitor::check_unop_operand(
+        const UnaryOperation& operation,
+        const Type& t_operand
+    ) const {
+        
+        // If the given operand is one of those expected by the operation.
+        for (const auto& expected : operation.valid_operand_types()) {
+            if (conforms(t_operand, expected))
+                return true;
+        }
         return false;
     }
 
-    // Primitive types conform only with themselves.
-    if (given.is_primitive() || expected.is_primitive())
-        return given == expected;
+    bool TypesVisitor::check_binop_operands(
+        const BinaryOperation& op,
+        const Type& t_left,
+        const Type& t_right
+    ) const {
 
+        // Handling the special case of equality.
+        if (op.is_equality())
+            return (t_left == t_right) || (t_left.is_custom() && t_right.is_custom());
 
-    // Types are custom so we check for subtyping.
-    return is_subtype(given, expected);
-}
-
-bool TypesVisitor::is_subtype(const Type& given, const Type& compared_to) const {
-    
-    // Subtyping is only available for classes.
-    if (!given.is_custom() || !compared_to.is_custom()) {
-        driver_.internal_error("is_subtype(): called with non custom types");
+        // If the given operands are among the pairs expected by the operation.
+        for (const auto& [expected_left, expected_right] : op.valid_operand_types()) {
+            if (conforms(t_left, expected_left) && conforms(t_right, expected_right))
+                return true;
+        }
         return false;
     }
 
-    string current = given.custom_name();
-    while (true) {
+    void TypesVisitor::visit(ProgramNode& node) {
+        trace("TypesVisitor visits ProgramNode");
 
-        if (current == compared_to.custom_name())
-            return true;
+        for (const auto& c : node.classes())
+            c->accept(*this);
+    }
+
+    void TypesVisitor::visit(ClassNode& node) {
+        trace("TypesVisitor visits ClassNode");
         
-        if (current == "Object")
-            return false;
+        current_class_name_ = node.name();
+        // Have fresh scope for new class
         
-        if (!checker_.class_exists(current)) {
-            driver_.internal_error(
-                "is_subtype(): class '" + current + "'not found in class table"
-            );
-            return false;
+        for (const auto& f : node.fields())
+            f->accept(*this);
+
+        for (const auto& m : node.methods())
+            m->accept(*this);
+    }
+
+    void TypesVisitor::visit(MethodNode& node) {
+        trace("TypesVisitor visits MethodNode");
+
+        // New scope
+
+        //? visiting formals?
+
+        node.body()->accept(*this);
+        
+        // Pop scope 
+    }
+
+    void TypesVisitor::visit(FormalNode& node) {
+        trace("TypesVisitor visits FormalNode");
+
+        (void) node;
+        return;
+    }
+
+    void TypesVisitor::visit(FieldNode& node) {
+        trace("TypesVisitor visits FieldNode");
+
+        if (node.has_init())
+            node.initializer().value()->accept(*this);
+    }
+
+    void TypesVisitor::visit(BlockExpr& node) {
+        trace("TypesVisitor visits BlockExpr");
+
+        // Empty blocks yield unit.
+        if (node.is_empty()) {
+            node.set_type(Type::Unit());
+            return;
         }
 
-        auto info = checker_.get_class(current);
-        if (!info) {
-            driver_.internal_error(
-                "is_subtype(): unable to get class'" + current + "'"
-            );
-            return false;
-        }
-
-        current = info->parent();
-    }
-}
-
-Type TypesVisitor::ancestor(const Type& t1, const Type& t2) const {
-
-    // This method only applies to custom types.
-    if (!t1.is_custom() || !t2.is_custom()) {
-        driver_.internal_error("ancestor(): called with non custom types");
-        return Type::Object();
+        for (const auto& e : node.expressions())
+            e->accept(*this);
+        
+        // The type of a block is the type of its last expression.
+        const auto& last_expression = node.last_expression();
+        node.set_type(last_expression->type());
     }
 
-    // Types agree so their common ancestor is themselves.
-    if (t1 == t2)
-        return t1;
-    
-    // Collect the full ancestry chain of t1 into an ordered list.
-    vector<string> ancestors;
-    
-    string current = t1.custom_name();
-    while (true) {
+    void TypesVisitor::visit(StringLiteralExpr& node) { 
+        trace("TypesVisitor visits StringLiteralExpr");
 
-        ancestors.push_back(current);
-        if (current == "Object")
-            break;
-
-        auto info = checker_.get_class(current);
-        if (!info) {
-            driver_.internal_error(
-                "ancestor(): unable to find '" + current + "'"
-            );
-            return Type::Object();
-        } 
-
-        current = info->parent();
+        node.set_type(Type::String());
     }
 
-    // Walk up t2's ancestors and return the first class found in t1's ancestors
-    unordered_set<string>ancestors_set(
-        ancestors.begin(), ancestors.end());
+    void TypesVisitor::visit(IntegerLiteralExpr& node) { 
+        trace("TypesVisitor visits IntegerLiteralExpr");
 
-    current = t2.custom_name();
-    while (true) {
-
-        if (ancestors_set.count(current))
-            return Type(current);
-
-        if (current == "Object")
-            return Type("Object");  // Fallback
-
-        auto info = checker_.get_class(current);
-        if (!info) {
-            driver_.internal_error(
-                "ancestor(): unable to find '" + current + "'"
-            );
-            return Type::Object();
-        }
-
-        current = info->parent();
+        node.set_type(Type::Int32());
     }
-}
 
-bool TypesVisitor::check_unop_operand(
-    const UnaryOperation& operation,
-    const Type& t_operand
-) const {
-    
-    // If the given operand is one of those expected by the operation.
-    for (const auto& expected : operation.valid_operand_types()) {
-        if (conforms(t_operand, expected))
-            return true;
+    void TypesVisitor::visit(BoolLiteralExpr& node) { 
+        trace("TypesVisitor visits BoolLiteralExpr");
+
+        node.set_type(Type::Bool());
     }
-    return false;
-}
 
-bool TypesVisitor::check_binop_operands(
-    const BinaryOperation& op,
-    const Type& t_left,
-    const Type& t_right
-) const {
+    void TypesVisitor::visit(UnitLiteralExpr& node) { 
+        trace("TypesVisitor visits UnitLiteralExpr");
 
-    // Handling the special case of equality.
-    if (op.is_equality())
-        return (t_left == t_right) || (t_left.is_custom() && t_right.is_custom());
-
-    // If the given operands are among the pairs expected by the operation.
-    for (const auto& [expected_left, expected_right] : op.valid_operand_types()) {
-        if (conforms(t_left, expected_left) && conforms(t_right, expected_right))
-            return true;
-    }
-    return false;
-}
-
-void TypesVisitor::visit(ProgramNode& node) {
-    trace("TypesVisitor visits ProgramNode");
-
-    for (const auto& c : node.classes())
-        c->accept(*this);
-}
-
-void TypesVisitor::visit(ClassNode& node) {
-    trace("TypesVisitor visits ClassNode");
-    
-    current_class_name_ = node.name();
-    // Have fresh scope for new class
-    
-    for (const auto& f : node.fields())
-        f->accept(*this);
-
-    for (const auto& m : node.methods())
-        m->accept(*this);
-}
-
-void TypesVisitor::visit(MethodNode& node) {
-    trace("TypesVisitor visits MethodNode");
-
-    // New scope
-
-    //? visiting formals?
-
-    node.body()->accept(*this);
-    
-    // Pop scope 
-}
-
-void TypesVisitor::visit(FormalNode& node) {
-    trace("TypesVisitor visits FormalNode");
-
-    (void) node;
-    return;
-}
-
-void TypesVisitor::visit(FieldNode& node) {
-    trace("TypesVisitor visits FieldNode");
-
-    if (node.has_init())
-        node.initializer().value()->accept(*this);
-}
-
-void TypesVisitor::visit(BlockExpr& node) {
-    trace("TypesVisitor visits BlockExpr");
-
-    // Empty blocks yield unit.
-    if (node.is_empty()) {
         node.set_type(Type::Unit());
+    }
+
+    void TypesVisitor::visit(IfExpr& node) { 
+        trace("TypesVisitor visits IfExpr");
+
+        node.guardian()->accept(*this);
+        node.consequent()->accept(*this);
+        
+        if (node.alternative().has_value())
+            node.alternative().value()->accept(*this);
+        
+        // Guardian must have type bool.
+        if (!conforms(node.guardian()->type(), Type::Bool())) {
+            driver_.semantic_error(
+                node.location(),
+                "condition of 'if' must be of type 'bool', found '"
+                + node.guardian()->type().to_string()
+                + "'"
+            );
+        }
+
+        const Type consequent_type = node.consequent()->type();
+        const Type alternative_type = node.alternative().has_value()
+            ? node.alternative().value()->type()
+            : Type::Unit();
+        
+        // If at least one branch is unit, the node is unit.
+        if (consequent_type.is_unit() || alternative_type.is_unit()) {
+            node.set_type(Type::Unit());
+
+        // If branches have class types, the node has the type of their ancestor.
+        } else if (consequent_type.is_custom() && alternative_type.is_custom()) {
+            node.set_type(ancestor(consequent_type, alternative_type));
+
+        // If branches have non-unit, primitive types.
+        } else if (consequent_type == alternative_type) {
+            node.set_type(consequent_type);
+
+        } else {
+            driver_.semantic_error(
+                node.location(),
+                "branches of 'if' have incompatible types '"
+                + consequent_type.to_string()
+                + "' and '"
+                + alternative_type.to_string()
+                + "'"
+            );
+
+            node.set_type(Type::Object());  // error recovery
+        }
+    }
+
+    void TypesVisitor::visit(AssignExpr& node) {
+        trace("TypesVisitor visits AssignExpr");
+
+        node.value()->accept(*this);
+    }
+
+    void TypesVisitor::visit(NewExpr& node) {
+        trace("TypesVisitor visits NewExpr");
+
+        (void) node;
         return;
     }
 
-    for (const auto& e : node.expressions())
-        e->accept(*this);
-    
-    // The type of a block is the type of its last expression.
-    const auto& last_expression = node.last_expression();
-    node.set_type(last_expression->type());
-}
+    void TypesVisitor::visit(UnOpExpr& node) { 
+        trace("TypesVisitor visits UnOpExpr");
 
-void TypesVisitor::visit(StringLiteralExpr& node) { 
-    trace("TypesVisitor visits StringLiteralExpr");
+        node.operand()->accept(*this);
 
-    node.set_type(Type::String());
-}
+        const Type& t_operand = node.operand()->type();
 
-void TypesVisitor::visit(IntegerLiteralExpr& node) { 
-    trace("TypesVisitor visits IntegerLiteralExpr");
+        if(!check_unop_operand(node.operation(), t_operand)) {
+            driver_.semantic_error(
+                node.location(),
+                "operator '" + node.operation().to_string()
+                + "' cannot be applied to type '"
+                + t_operand.to_string() + "'"
+            );
 
-    node.set_type(Type::Int32());
-}
+            node.set_type(Type::Object());
+            return;
+        }
 
-void TypesVisitor::visit(BoolLiteralExpr& node) { 
-    trace("TypesVisitor visits BoolLiteralExpr");
-
-    node.set_type(Type::Bool());
-}
-
-void TypesVisitor::visit(UnitLiteralExpr& node) { 
-    trace("TypesVisitor visits UnitLiteralExpr");
-
-    node.set_type(Type::Unit());
-}
-
-void TypesVisitor::visit(IfExpr& node) { 
-    trace("TypesVisitor visits IfExpr");
-
-    node.guardian()->accept(*this);
-    node.consequent()->accept(*this);
-    
-    if (node.alternative().has_value())
-        node.alternative().value()->accept(*this);
-    
-    // Guardian must have type bool.
-    if (!conforms(node.guardian()->type(), Type::Bool())) {
-        driver_.semantic_error(
-            node.location(),
-            "condition of 'if' must be of type 'bool', found '"
-            + node.guardian()->type().to_string()
-            + "'"
-        );
+        node.set_type(node.operation().result_type());
     }
 
-    const Type consequent_type = node.consequent()->type();
-    const Type alternative_type = node.alternative().has_value()
-        ? node.alternative().value()->type()
-        : Type::Unit();
-    
-    // If at least one branch is unit, the node is unit.
-    if (consequent_type.is_unit() || alternative_type.is_unit()) {
+    void TypesVisitor::visit(BinOpExpr& node) { 
+        trace("TypesVisitor visits BinOpExpr");
+
+        node.left()->accept(*this);
+        node.right()->accept(*this);  
+        
+        const Type& t_left  = node.left()->type();
+        const Type& t_right = node.right()->type();
+
+        if (!check_binop_operands(node.operation(), t_left, t_right)) {
+            driver_.semantic_error(
+                node.location(),
+                "operator '" + node.operation().to_string()
+                + "' cannot be applied to types '"
+                + t_left.to_string() + "' and '"
+                + t_right.to_string() + "'"
+            );
+
+            node.set_type(Type::Object());
+            return;
+        }
+
+        node.set_type(node.operation().result_type());
+    }
+
+    void TypesVisitor::visit(VariableExpr& node) { 
+        trace("TypesVisitor visits VariableExpr");
+
+        (void) node;
+        return;
+    }
+
+    void TypesVisitor::visit(CallExpr& node) { 
+        trace("TypesVisitor visits CallExpr");
+
+        node.receiver()->accept(*this);
+        for (const auto& arg : node.args())
+            arg->accept(*this);
+        
+        // Do something with dispatching
+    }
+
+    void TypesVisitor::visit(SelfExpr& node) { 
+        trace("TypesVisitor visits SelfExpr");
+
+        (void) node;
+        return;
+    }
+
+    void TypesVisitor::visit(LetExpr& node) { 
+        trace("TypesVisitor visits LetExpr");
+
+        // New scope
+
+        if (node.has_initializer())
+            node.initializer().value()->accept(*this);
+
+        node.scope()->accept(*this);
+        
+        // Pop scope
+    }
+
+    void TypesVisitor::visit(WhileExpr& node) { 
+        trace("TypesVisitor visits WhileExpr");
+        
+        node.condition()->accept(*this);
+        node.body()->accept(*this);
+
+        if (!conforms(node.condition()->type(), Type::Bool())) {
+            driver_.semantic_error(
+                node.location(),
+                "condition of 'while' must be of type 'bool', found '"
+                + node.condition()->type().to_string()
+                + "'"
+            );
+        }
+
+        if (node.body()->type().is_undefined())
+            driver_.internal_error("visiting WhileExpr found an undefined type");
+
         node.set_type(Type::Unit());
-
-    // If branches have class types, the node has the type of their ancestor.
-    } else if (consequent_type.is_custom() && alternative_type.is_custom()) {
-        node.set_type(ancestor(consequent_type, alternative_type));
-
-    // If branches have non-unit, primitive types.
-    } else if (consequent_type == alternative_type) {
-        node.set_type(consequent_type);
-
-    } else {
-        driver_.semantic_error(
-            node.location(),
-            "branches of 'if' have incompatible types '"
-            + consequent_type.to_string()
-            + "' and '"
-            + alternative_type.to_string()
-            + "'"
-        );
-
-        node.set_type(Type::Object());  // error recovery
     }
-}
-
-void TypesVisitor::visit(AssignExpr& node) {
-    trace("TypesVisitor visits AssignExpr");
-
-    node.value()->accept(*this);
-}
-
-void TypesVisitor::visit(NewExpr& node) {
-    trace("TypesVisitor visits NewExpr");
-
-    (void) node;
-    return;
-}
-
-void TypesVisitor::visit(UnOpExpr& node) { 
-    trace("TypesVisitor visits UnOpExpr");
-
-    node.operand()->accept(*this);
-
-    const Type& t_operand = node.operand()->type();
-
-    if(!check_unop_operand(node.operation(), t_operand)) {
-        driver_.semantic_error(
-            node.location(),
-            "operator '" + node.operation().to_string()
-            + "' cannot be applied to type '"
-            + t_operand.to_string() + "'"
-        );
-
-        node.set_type(Type::Object());
-        return;
-    }
-
-    node.set_type(node.operation().result_type());
-}
-
-void TypesVisitor::visit(BinOpExpr& node) { 
-    trace("TypesVisitor visits BinOpExpr");
-
-    node.left()->accept(*this);
-    node.right()->accept(*this);  
-    
-    const Type& t_left  = node.left()->type();
-    const Type& t_right = node.right()->type();
-
-    if (!check_binop_operands(node.operation(), t_left, t_right)) {
-        driver_.semantic_error(
-            node.location(),
-            "operator '" + node.operation().to_string()
-            + "' cannot be applied to types '"
-            + t_left.to_string() + "' and '"
-            + t_right.to_string() + "'"
-        );
-
-        node.set_type(Type::Object());
-        return;
-    }
-
-    node.set_type(node.operation().result_type());
-}
-
-void TypesVisitor::visit(VariableExpr& node) { 
-    trace("TypesVisitor visits VariableExpr");
-
-    (void) node;
-    return;
-}
-
-void TypesVisitor::visit(CallExpr& node) { 
-    trace("TypesVisitor visits CallExpr");
-
-    node.receiver()->accept(*this);
-    for (const auto& arg : node.args())
-        arg->accept(*this);
-    
-    // Do something with dispatching
-}
-
-void TypesVisitor::visit(SelfExpr& node) { 
-    trace("TypesVisitor visits SelfExpr");
-
-    (void) node;
-    return;
-}
-
-void TypesVisitor::visit(LetExpr& node) { 
-    trace("TypesVisitor visits LetExpr");
-
-    // New scope
-
-    if (node.has_initializer())
-        node.initializer().value()->accept(*this);
-
-    node.scope()->accept(*this);
-    
-    // Pop scope
-}
-
-void TypesVisitor::visit(WhileExpr& node) { 
-    trace("TypesVisitor visits WhileExpr");
-    
-    node.condition()->accept(*this);
-    node.body()->accept(*this);
-
-    if (!conforms(node.condition()->type(), Type::Bool())) {
-        driver_.semantic_error(
-            node.location(),
-            "condition of 'while' must be of type 'bool', found '"
-            + node.condition()->type().to_string()
-            + "'"
-        );
-    }
-
-    if (node.body()->type().is_undefined())
-        driver_.internal_error("visiting WhileExpr found an undefined type");
-
-    node.set_type(Type::Unit());
 }

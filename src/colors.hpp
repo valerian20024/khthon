@@ -3,11 +3,11 @@
 /// @brief Contains methods printing in the terminal.
 namespace colors {
 
-    constexpr bool enable_colors =
+    inline constexpr bool enable_colors =
 #ifdef DEBUG
-    true;   // colors ON when debugging
+    true;
 #else
-    false;  // colors OFF when submitting 
+    false;
 #endif
 
     /// @brief Applies ANSI color codes `code` to `text`.
