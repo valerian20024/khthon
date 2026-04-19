@@ -6,6 +6,7 @@
 
 #include <map>
 #include <string>
+#include <unordered_set>
 
 namespace Khthon {
 
@@ -15,12 +16,6 @@ namespace Khthon {
 #else
     false;
 #endif
-
-
-    /*================================================++
-    ||                  STRUCTURES                    ||
-    ++================================================*/
-
 
     class FieldInfo {
     private:
@@ -239,14 +234,13 @@ namespace Khthon {
         }
 
         // Class Management is delegated to ClassManager
-
-        //? ClassInfo& c ?
-        bool add_class(ClassInfo c) {
-            return class_manager_.add_class(c);
+        
+        bool add_class(ClassInfo c) { 
+            return class_manager_.add_class(c); 
         }        
 
         bool class_exists(const std::string& name) const { 
-            return class_manager_.class_exists(name);
+            return class_manager_.class_exists(name); 
         }
 
         std::optional<ClassInfo> get_class(const std::string& name) const { 
@@ -334,10 +328,7 @@ namespace Khthon {
         ) const;
 
         /// @brief Prints a tracing message when debugging is enabled.
-        void trace(const std::string& message) const { 
-            if (Khthon::enable_advanced_logging)
-                std::cout << message << std::endl;
-        }
+        void trace(const std::string& message) const;
 
     public:
         explicit TypesVisitor(

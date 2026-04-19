@@ -22,7 +22,7 @@ ARCHIVE    = vsopcompiler.tar.xz
 #  Sources
 # -----------------------------------------------------------------------------
 
-SRC        = main.cpp driver.cpp ast.cpp parser.cpp lexer.cpp semantics.cpp visitors.cpp
+SRC        = main.cpp driver.cpp ast.cpp parser.cpp lexer.cpp semantics.cpp visitors.cpp types_visitor.cpp classes_visitor.cpp
 OBJ        = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SRC))
 
 # -----------------------------------------------------------------------------
@@ -36,6 +36,7 @@ ARCHIVE_FILES = \
 	$(SRC_DIR)/ast.cpp \
 	$(SRC_DIR)/semantics.hpp \
 	$(SRC_DIR)/semantics.cpp \
+	$(SRC_DIR)/types_visitor.cpp \
 	$(SRC_DIR)/visitors.hpp \
 	$(SRC_DIR)/visitors.cpp \
 	$(SRC_DIR)/colors.hpp \
@@ -99,31 +100,33 @@ $(SRC_DIR)/lexer.cpp: $(SRC_DIR)/lexer.lex
 #  Per-file header dependencies
 # -----------------------------------------------------------------------------
 
-$(BUILD_DIR)/main.o:		$(SRC_DIR)/main.cpp \
-							$(SRC_DIR)/driver.hpp \
-							$(SRC_DIR)/parser.hpp
-$(BUILD_DIR)/driver.o:		$(SRC_DIR)/driver.cpp \
-							$(SRC_DIR)/driver.hpp \
-							$(SRC_DIR)/parser.hpp \
-							$(SRC_DIR)/ast.hpp \
-							$(SRC_DIR)/colors.hpp \
-							$(SRC_DIR)/semantics.hpp
-$(BUILD_DIR)/parser.o:		$(SRC_DIR)/parser.cpp \
-							$(SRC_DIR)/driver.hpp \
-							$(SRC_DIR)/parser.hpp
-$(BUILD_DIR)/lexer.o: 		$(SRC_DIR)/lexer.cpp \
-							$(SRC_DIR)/driver.hpp \
-							$(SRC_DIR)/parser.hpp
-$(BUILD_DIR)/ast.o:			$(SRC_DIR)/ast.cpp \
-							$(SRC_DIR)/ast.hpp \
-							$(SRC_DIR)/location.hh
-$(BUILD_DIR)/semantics.o:	$(SRC_DIR)/semantics.cpp \
-							$(SRC_DIR)/semantics.hpp \
-							$(SRC_DIR)/ast.hpp \
-							$(SRC_DIR)/driver.hpp
-$(BUILD_DIR)/visitors.o:    $(SRC_DIR)/visitors.cpp \
-                            $(SRC_DIR)/visitors.hpp \
-                            $(SRC_DIR)/ast.hpp
+$(BUILD_DIR)/main.o:			$(SRC_DIR)/main.cpp \
+								$(SRC_DIR)/driver.hpp \
+								$(SRC_DIR)/parser.hpp
+$(BUILD_DIR)/driver.o:			$(SRC_DIR)/driver.cpp \
+								$(SRC_DIR)/driver.hpp \
+								$(SRC_DIR)/parser.hpp \
+								$(SRC_DIR)/ast.hpp \
+								$(SRC_DIR)/colors.hpp \
+								$(SRC_DIR)/semantics.hpp
+$(BUILD_DIR)/parser.o:			$(SRC_DIR)/parser.cpp \
+								$(SRC_DIR)/driver.hpp \
+								$(SRC_DIR)/parser.hpp
+$(BUILD_DIR)/lexer.o: 			$(SRC_DIR)/lexer.cpp \
+								$(SRC_DIR)/driver.hpp \
+								$(SRC_DIR)/parser.hpp
+$(BUILD_DIR)/ast.o:				$(SRC_DIR)/ast.cpp \
+								$(SRC_DIR)/ast.hpp \
+								$(SRC_DIR)/location.hh
+$(BUILD_DIR)/semantics.o:		$(SRC_DIR)/semantics.cpp \
+								$(SRC_DIR)/semantics.hpp \
+								$(SRC_DIR)/ast.hpp \
+								$(SRC_DIR)/driver.hpp
+$(BUILD_DIR)/types_visitor.o:	$(SRC_DIR)/semantics.hpp
+$(BUILD_DIR)/classes_visitor.o:	$(SRC_DIR)/semantics.hpp
+$(BUILD_DIR)/visitors.o:		$(SRC_DIR)/visitors.cpp \
+								$(SRC_DIR)/visitors.hpp \
+								$(SRC_DIR)/ast.hpp
 
 # -----------------------------------------------------------------------------
 #  Utility targets
