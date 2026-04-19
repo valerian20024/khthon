@@ -14,8 +14,29 @@ namespace Khthon {
 
 
         /*================================================++
-        ||                CORE PROCEDURES                 ||
+        ||                  CLASS INFO                    ||
         ++================================================*/
+    
+    
+    ClassInfo ClassInfo::Dummy() {
+        return ClassInfo("Dummy", "Object", Khthon::location());
+    }
+
+    bool ClassInfo::add_field(FieldInfo f) {
+        auto [it, inserted] = fields_.emplace(f.name(), std::move(f));
+        return inserted;
+    }
+
+    bool ClassInfo::add_method(MethodInfo m) {
+        auto [it, inserted] = methods_.emplace(m.name(), std::move(m));
+        return inserted;
+    }
+
+
+        /*================================================++
+        ||                  CLASS MANAGER                 ||
+        ++================================================*/
+
 
     bool ClassManager::add_class(ClassInfo c) {
         auto [it, inserted] = class_table_.emplace(c.name(), std::move(c));
@@ -59,6 +80,23 @@ namespace Khthon {
         }
     }
 
+
+    /*================================================++
+    ||                 SCOPE MANAGER                  ||
+    ++================================================*/
+
+    void ScopeManager::push_scope() { 
+        scope_table_.push_back({}); 
+    }
+    
+    void ScopeManager::pop_scope() { 
+        scope_table_.pop_back(); 
+    }
+    
+    void ScopeManager::add_binding(const std::string& name, const Type& type) {
+        scope_table_.back()[name] = type;
+    }
+
     optional<Type> ScopeManager::lookup(const string& name) const {
         // Walk the stack from innermost to outermost scope.
         for (auto it = scope_table_.rbegin(); it != scope_table_.rend(); ++it) {
@@ -70,27 +108,15 @@ namespace Khthon {
         return std::nullopt;
     }
 
-    void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
-        if (!root)
-            driver_.internal_error("SemanticChecker::analyze(): No ast root.");
 
-        ClassesVisitor cv = ClassesVisitor(driver_, *this);
-        root->accept(cv);
+    /*================================================++
+    ||               SEMANTIC CHECKER                 ||
+    ++================================================*/
 
-        check_main();
-        check_parent_classes_exist();
-        check_inheritance_cycles();
-
-        TypesVisitor tv = TypesVisitor(driver_, *this);
-        root->accept(tv);
-
-        if (enable_advanced_logging)
-            print_class_table();
-    }
 
     void SemanticChecker::check_main() const {
         
-        auto main_info = get_class("Main");
+        auto main_info = class_manager_.get_class("Main");
         if (!main_info) {
             driver_.semantic_error(
                 driver_.default_location(),  // no meaningful location
@@ -155,7 +181,7 @@ namespace Khthon {
 
         states[name] = VisitState::Visiting;
 
-        auto info = get_class(name);
+        auto info = class_manager_.get_class(name);
         if (!info) {
             driver_.internal_error(
                 "cycle_check(): unable to get class '" + name + "'"
@@ -250,4 +276,76 @@ namespace Khthon {
         }
     }
 
+    void SemanticChecker::analyze(const shared_ptr<ProgramNode>& root) {
+        if (!root)
+            driver_.internal_error("SemanticChecker::analyze(): No ast root.");
+
+        ClassesVisitor cv = ClassesVisitor(driver_, *this);
+        root->accept(cv);
+
+        check_main();
+        check_parent_classes_exist();
+        check_inheritance_cycles();
+
+        TypesVisitor tv = TypesVisitor(driver_, *this);
+        root->accept(tv);
+
+        if (enable_advanced_logging)
+            print_class_table();
+    }
+
+    void SemanticChecker::push_scope() { 
+        scope_manager_.push_scope(); 
+    }
+
+    void SemanticChecker::pop_scope() { 
+        scope_manager_.pop_scope(); 
+    }
+    
+    void SemanticChecker::add_binding(
+        const std::string& name, 
+        const Type& t
+    ) { 
+        scope_manager_.add_binding(name, t); 
+    }
+    
+    bool SemanticChecker::add_class(ClassInfo c) { 
+        return class_manager_.add_class(c); 
+    }        
+
+    bool SemanticChecker::class_exists(const std::string& name) const { 
+        return class_manager_.class_exists(name); 
+    }
+
+    ClassInfo SemanticChecker::get_class(const std::string& name) const { 
+        auto info = class_manager_.get_class(name); 
+        if (!info) {
+            driver_.internal_error("get_class(): class not found in the table");
+            return ClassInfo::Dummy();
+        }
+        return info.value();
+    }
+
+    bool SemanticChecker::is_subtype(
+        const Type& given, 
+        const Type& compared_to
+    ) const {
+        auto result = class_manager_.is_subtype(given, compared_to);
+        if (!result) {
+            driver_.internal_error("is_subtype(): class not found in table");
+            return false;
+        }
+        return result.value();
+    }
+
+    std::optional<Type> SemanticChecker::resolve(
+        const std::string& name, 
+        const std::string& current_class
+    ) const {
+
+        (void) name;
+        (void) current_class;
+
+        return nullopt;
+    }
 }

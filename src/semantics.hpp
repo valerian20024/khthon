@@ -34,9 +34,9 @@ namespace Khthon {
             location_(std::move(loc)) 
         {}
 
-        const std::string& name() const { return name_; }
-        const Khthon::Type& type() const { return type_; }
-        const Khthon::location& location() const { return location_; }
+        const std::string& name() const             { return name_; }
+        const Khthon::Type& type() const            { return type_; }
+        const Khthon::location& location() const    { return location_; }
     };
 
     class FormalInfo {
@@ -56,9 +56,9 @@ namespace Khthon {
             location_(std::move(l))
         {}
         
-        const std::string& name() const { return name_; }
-        const Khthon::Type& type() const { return type_; }
-        const Khthon::location& location() const { return location_; }
+        const std::string& name() const             { return name_; }
+        const Khthon::Type& type() const            { return type_; }
+        const Khthon::location& location() const    { return location_; }
     };
 
    class MethodInfo {
@@ -81,19 +81,23 @@ namespace Khthon {
             location_(std::move(loc))
         {}
 
-        const std::string& name() const { return name_; }
-        const Khthon::Type& return_type() const { return return_type_; }
-        const std::vector<FormalInfo>& formals() const { return formals_; }
-        const Khthon::location& location() const { return location_; }
+        const std::string& name() const                 { return name_; }
+        const Khthon::Type& return_type() const         { return return_type_; }
+        const std::vector<FormalInfo>& formals() const  { return formals_; }
+        const Khthon::location& location() const        { return location_; }
     };
 
     class ClassInfo {
+    public:
+        using FieldsMap = std::map<std::string, FieldInfo>;
+        using MethodsMap = std::map<std::string, MethodInfo>;
+
     private:
         std::string name_;
         std::string parent_;
         Khthon::location location_;
-        std::map<std::string, FieldInfo> fields_;
-        std::map<std::string, MethodInfo> methods_;
+        FieldsMap fields_;
+        MethodsMap methods_;
 
     public:
         ClassInfo(
@@ -106,23 +110,23 @@ namespace Khthon {
             location_(std::move(loc)) 
         {}
 
-        /// @return false if a field with that name already exists. true otherwise.
-        bool add_field(FieldInfo f) {
-            auto [it, inserted] = fields_.emplace(f.name(), std::move(f));
-            return inserted;
-        }
+        /// @brief Factory method for dummies used for error recovery.
+        /// @return A ClassInfo with no valuable information.
+        static ClassInfo Dummy();
 
-        /// @return false if a method with that name already exists. true otherwise.
-        bool add_method(MethodInfo m) {
-            auto [it, inserted] = methods_.emplace(m.name(), std::move(m));
-            return inserted;
-        }
+        /// @return `false` if a field with that name already exists. 
+        /// `true` otherwise.
+        bool add_field(FieldInfo f);
 
-        const std::string name() const                              { return name_; }
-        const std::string& parent() const                           { return parent_; }
-        const Khthon::location& location() const                    { return location_; }
-        const std::map<std::string, FieldInfo>& fields() const      { return fields_; }
-        const std::map<std::string, MethodInfo>& methods() const    { return methods_; }
+        /// @return `false` if a method with that name already exists. 
+        /// `true` otherwise.
+        bool add_method(MethodInfo m);
+
+        const std::string name() const              { return name_; }
+        const std::string& parent() const           { return parent_; }
+        const Khthon::location& location() const    { return location_; }
+        const FieldsMap& fields() const             { return fields_; }
+        const MethodsMap& methods() const           { return methods_; }
     };
  
 
@@ -137,24 +141,21 @@ namespace Khthon {
         ScopeSymbolTable scope_table_;
 
     public:
-        void push_scope() { 
-            scope_table_.push_back({}); 
-        }
+        /// @brief Creates a new local scope.
+        void push_scope();
+
+        /// @brief Pops the innermost scope.
+        void pop_scope();
         
-        void pop_scope() { 
-            scope_table_.pop_back(); 
-        }
-        
-        void add_binding(const std::string& name, const Type& type) {
-            scope_table_.back()[name] = type;
-        }
+        /// @brief Adds an identifier binding to the current scope.
+        void add_binding(const std::string& name, const Type& type);
 
         /** @brief Looks for a identifier's type.
          *
          * It will first look for variables in local scope, then upward, up
          * to global scope. This allows to implement shadowing.
          * 
-         * @return The identifier's type, or nullopt if not found.
+         * @return The identifier's type, or `nullopt` if not found.
          */
         std::optional<Type> lookup(const std::string& name) const;
     };
@@ -189,11 +190,13 @@ namespace Khthon {
 
     /** 
      * @brief Main orchestrator of the semantic analysis.
+     * 
+     * Scope management and class management are delegated to ScopeManager 
+     * and ClassManager but this acts as a handle for Visitors.
      */
     class SemanticChecker {
     private:
         Driver& driver_;
-        
         ClassManager class_manager_;
         ScopeManager scope_manager_;
 
@@ -201,16 +204,21 @@ namespace Khthon {
         enum class VisitState { Unvisited, Visiting, Visited };
 
         /// @brief Helper function implementing depth-first search for finding cycles.
-        bool cycle_check(const std::string& name, 
-            std::map<std::string, VisitState>& states) const;
+        bool cycle_check(
+            const std::string& name, 
+            std::map<std::string, VisitState>& states
+        ) const;
         
+        /// @brief Procedure checking the conformance of the Main class.
         void check_main() const;
 
+        /// @brief Procedure checking the existence of all the parent classes.
         void check_parent_classes_exist() const;
         
+        /// @brief Procedure checking cycles in classes inheritance.
         void check_inheritance_cycles();
         
-        /// @brief Debugging purpose.
+        /// @note For debugging purpose.
         void print_class_table() const;
 
     public:
@@ -219,39 +227,35 @@ namespace Khthon {
         /// @brief Orchestrator for semantic analysis checks.
         void analyze(const std::shared_ptr<ProgramNode>& root);
 
-        // Scope management is delegated to ScopeManager
+        /// @brief Creates a new scope.
+        /// @note Delegates to ScopeManager.
+        void push_scope();
+
+        /// @brief Pops the current scope.
+        /// @note Delegates to ScopeManager.
+        void pop_scope();
         
-        void push_scope() { scope_manager_.push_scope(); }
+        /// @brief Adds a new binding to the identifier to the current scope.
+        /// @note Delegates to ScopeManager.
+        void add_binding(const std::string& name, const Type& t);
 
-        void pop_scope() { scope_manager_.pop_scope(); }
-        
-        void add_binding(const std::string& name, const Type& t) { 
-            scope_manager_.add_binding(name, t); 
-        }
+        /// @brief Adds a class to the table.
+        /// @note Delegates to ClassManager.
+        bool add_class(ClassInfo c);
 
-        // Class Management is delegated to ClassManager
-        
-        bool add_class(ClassInfo c) { 
-            return class_manager_.add_class(c); 
-        }        
+        /// @brief Checks whether this class exists in the table.
+        /// @note Delegates to ClassManager.
+        bool class_exists(const std::string& name) const;
 
-        bool class_exists(const std::string& name) const { 
-            return class_manager_.class_exists(name); 
-        }
+        /// @brief Tries to get the class.
+        /// @note Delegates to ClassManager.
+        /// @return A dummy ClassInfo if not found.
+        ClassInfo get_class(const std::string& name) const;
 
-        std::optional<ClassInfo> get_class(const std::string& name) const { 
-            return class_manager_.get_class(name); 
-        }
+        /// @return `true` if `given` is a subtype of `compared_to`, false otherwise.
+        bool is_subtype(const Type& given, const Type& compared_to) const;
 
-        bool is_subtype(const Type& given, const Type& compared_to) const {
-            auto result = class_manager_.is_subtype(given, compared_to);
-            if (!result) {
-                driver_.internal_error("is_subtype(): class not found in table");
-                return false;
-            }
-            return result.value();
-        }
-
+        /// @brief Resolves an identifier binding to the closest one available.
         std::optional<Type> resolve(
             const std::string& name, 
             const std::string& current_class

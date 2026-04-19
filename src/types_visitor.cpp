@@ -48,15 +48,8 @@ namespace Khthon {
             if (current == "Object")
                 break;
 
-            auto info = checker_.get_class(current);
-            if (!info) {
-                driver_.internal_error(
-                    "ancestor(): unable to find '" + current + "'"
-                );
-                return Type::Object();
-            } 
-
-            current = info->parent();
+            auto info = checker_.get_class(current); 
+            current = info.parent();
         }
 
         // Walk up t2's ancestors and return the first class found in t1's ancestors
@@ -73,14 +66,7 @@ namespace Khthon {
                 return Type("Object");  // Fallback
 
             auto info = checker_.get_class(current);
-            if (!info) {
-                driver_.internal_error(
-                    "ancestor(): unable to find '" + current + "'"
-                );
-                return Type::Object();
-            }
-
-            current = info->parent();
+            current = info.parent();
         }
     }
 
