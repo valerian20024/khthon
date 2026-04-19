@@ -1,8 +1,6 @@
 #ifndef VISITORS_HPP
 #define VISITORS_HPP
 
-//#include "ast.hpp"
-
 #include <string>
 #include <vector>
 #include <memory>
@@ -160,7 +158,6 @@ namespace Khthon {
         virtual void visit(const WhileExpr&) const          { return; }
     };
 
-
     /**
      * @brief Visitor responsible for printing an Abstract Syntax Tree.
      */
@@ -199,7 +196,6 @@ namespace Khthon {
         std::string visit(const LetExpr&) const override;
         std::string visit(const WhileExpr&) const override;
     };
-
 }
 
 #endif

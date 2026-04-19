@@ -22,10 +22,7 @@ namespace Khthon {
         if (given.is_primitive() || expected.is_primitive())
             return given == expected;
 
-
         // Types are custom so we check for subtyping.
-        //return is_subtype(given, expected);
-
         return checker_.is_subtype(given, expected);
     }
 
@@ -129,7 +126,8 @@ namespace Khthon {
         trace("TypesVisitor visits ClassNode");
         
         current_class_name_ = node.name();
-        // Have fresh scope for new class
+        
+        //todo Have fresh scope for new class
         
         for (const auto& f : node.fields())
             f->accept(*this);

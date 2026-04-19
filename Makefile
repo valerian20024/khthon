@@ -22,8 +22,17 @@ ARCHIVE    = vsopcompiler.tar.xz
 #  Sources
 # -----------------------------------------------------------------------------
 
-SRC        = main.cpp driver.cpp ast.cpp parser.cpp lexer.cpp semantics.cpp visitors.cpp types_visitor.cpp classes_visitor.cpp
-OBJ        = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SRC))
+SRC = 	main.cpp \
+		driver.cpp \
+		ast.cpp \
+		parser.cpp \
+		lexer.cpp \
+		semantics.cpp \
+		print_visitor.cpp \
+		types_visitor.cpp \
+		classes_visitor.cpp
+
+OBJ = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SRC))
 
 # -----------------------------------------------------------------------------
 #  Archive
@@ -37,8 +46,9 @@ ARCHIVE_FILES = \
 	$(SRC_DIR)/semantics.hpp \
 	$(SRC_DIR)/semantics.cpp \
 	$(SRC_DIR)/types_visitor.cpp \
+	$(SRC_DIR)/classes_visitor.cpp \
+	$(SRC_DIR)/print_visitor.cpp \
 	$(SRC_DIR)/visitors.hpp \
-	$(SRC_DIR)/visitors.cpp \
 	$(SRC_DIR)/colors.hpp \
 	$(SRC_DIR)/main.cpp \
 	$(SRC_DIR)/lexer.lex \
@@ -124,9 +134,10 @@ $(BUILD_DIR)/semantics.o:		$(SRC_DIR)/semantics.cpp \
 								$(SRC_DIR)/driver.hpp
 $(BUILD_DIR)/types_visitor.o:	$(SRC_DIR)/semantics.hpp
 $(BUILD_DIR)/classes_visitor.o:	$(SRC_DIR)/semantics.hpp
-$(BUILD_DIR)/visitors.o:		$(SRC_DIR)/visitors.cpp \
+$(BUILD_DIR)/print_visitor.o:	$(SRC_DIR)/print_visitor.cpp \
 								$(SRC_DIR)/visitors.hpp \
-								$(SRC_DIR)/ast.hpp
+								$(SRC_DIR)/ast.hpp \
+								$(SRC_DIR)/colors.hpp
 
 # -----------------------------------------------------------------------------
 #  Utility targets

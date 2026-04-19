@@ -1,6 +1,6 @@
-#include "visitors.hpp"
 #include "ast.hpp"
 #include "colors.hpp"
+#include "visitors.hpp"
 
 using namespace std;
 using namespace colors;
