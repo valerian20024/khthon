@@ -2,10 +2,15 @@
 #  Compiler / Tools
 # -----------------------------------------------------------------------------
 
-CXX        = clang++
-CXXFLAGS   = -Wall -Wextra -g -std=c++17 -gdwarf-4
+CXX 		= clang++
+LLVM_CONFIG	= llvm-config
+
+CXXFLAGS    = $(shell ${LLVM_CONFIG} --cppflags) -Wall -Wextra -g -std=c++17 -gdwarf-4 
+
+LDFLAGS	    = $(shell ${LLVM_CONFIG} --ldflags --system-libs --libs all)
 
 BISONFLAGS = -d
+
 FLEXFLAGS  =
 
 # -----------------------------------------------------------------------------
@@ -13,7 +18,9 @@ FLEXFLAGS  =
 # -----------------------------------------------------------------------------
 
 EXEC       = vsopc
+
 SRC_DIR    = src
+
 BUILD_DIR  = build
 
 ARCHIVE    = vsopcompiler.tar.xz
@@ -60,9 +67,6 @@ ARCHIVE_FILES = \
 #-----------------------------------------------------------------------------
 
 # ANSI escape sequences. 
-# 	38: foreground
-#	5: extended 256 colors space
-#	e.g. 203: the color code
 
 C_BLUE    	:= "\e[38;5;27m"
 C_GREEN     := "\e[38;5;35m"
@@ -83,7 +87,7 @@ all: $(EXEC)
 # Link
 $(EXEC): $(OBJ)
 	@echo -e $(C_LAVANDER)"Linking..."$(C_END);
-	$(CXX) -o $@ $(LDFLAGS) $(OBJ)
+	$(CXX) -o $@ $(OBJ) $(LDFLAGS)
 
 # Compile (generic rule for all .cpp -> build/*.o)
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)

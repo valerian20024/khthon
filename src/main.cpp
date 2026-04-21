@@ -7,8 +7,7 @@
 
 using namespace std;
 
-enum class Mode
-{
+enum class Mode {
     LEX,
     PARSE,
     ANALYZE,
