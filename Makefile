@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 
 CXX 		= clang++
-LLVM_CONFIG	= llvm-config
+LLVM_CONFIG	= /data/data/com.termux/files/usr/bin/llvm-config
 
 CXXFLAGS    = $(shell ${LLVM_CONFIG} --cppflags) -Wall -Wextra -g -std=c++17 -gdwarf-4 
 
