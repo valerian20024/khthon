@@ -31,8 +31,6 @@ namespace Khthon {
         // Maps class name -> the global vtable instance
         std::map<std::string, llvm::GlobalVariable*> vtable_instances_;
 
-        // --- private helpers ---
-
         /// Pass 1: create opaque struct types for every class.
         void create_class_type(const ClassNode& node);
 

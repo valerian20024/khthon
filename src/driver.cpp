@@ -7,6 +7,7 @@
 #include "ast.hpp"
 #include "colors.hpp"
 #include "semantics.hpp"
+#include "generation.hpp"
 
 using namespace std;
 using namespace Khthon;
@@ -172,6 +173,26 @@ namespace Khthon {
     }
 
     int Driver::generate() {
+        scan_begin();
+        parser = new Parser(*this);
+        parser->parse();
+        scan_end();
+        delete parser;
+
+        // Semantic analysis must run first.
+        // Codegen assumes the AST is clean.
+        SemanticChecker checker(*this);
+        checker.analyze(ast_root);
+
+        if (error_count_ > 0) {
+            print_diagnostics();
+            return 1;
+        }
+
+        CodeGenOrchestrator codegen(*this, checker);
+        codegen.generate(ast_root);
+        codegen.print_ir(llvm::outs());
+
         return 0;
     }
 
