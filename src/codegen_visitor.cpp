@@ -17,7 +17,7 @@ namespace Khthon
     {}
 
     /// @brief Passes over the AST to fetch data for the generation pass.
-    /// @param root is the AST root.
+    /// @param root The AST root.
     void CodeGenOrchestrator::generate(
         const shared_ptr<ProgramNode>& root
     ) {
@@ -25,7 +25,7 @@ namespace Khthon
         for (const auto& c : root->classes())
             create_class_type(*c);
         
-        // Pass 2 — set vtable bodies (empty for now)
+        // Pass 2 — set vtable bodies
         for (const auto& c : root->classes())
             finalize_vtable(*c);
         
@@ -36,6 +36,12 @@ namespace Khthon
         // Pass 4 — emit vtable globals
         for (const auto& c : root->classes())
             emit_vtable_global(*c);
+        
+        // Temporary: force-print the struct layout
+        class_types_["Main"]->print(llvm::errs());
+        llvm::errs() << "\n";
+
+        // todo call in the CodeGen visitor
     }
 
     // ---------------------------------------------------------------
@@ -96,8 +102,7 @@ namespace Khthon
         StructType* vtable_ty = vtable_types_[name];
 
         // zeroinitializer is the correct constant for an empty struct.
-        Constant* init = 
-            ConstantAggregateZero::get(vtable_ty);
+        Constant* init = ConstantAggregateZero::get(vtable_ty);
 
         GlobalVariable* vtable_global = new GlobalVariable(
             *module_,

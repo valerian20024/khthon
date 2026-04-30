@@ -91,8 +91,7 @@ namespace Khthon {
         //todo use the new error mecanism instead of the one of the old calc 
         int res = 0;
 
-        while (true)
-        {
+        while (true) {
             Parser::symbol_type token = yylex(*this);
 
             if ((Parser::token_type)token.type_get() == Parser::token::YYEOF)
@@ -101,7 +100,6 @@ namespace Khthon {
             // Push back the new token with the others, or error
             if ((Parser::token_type)token.type_get() != Parser::token::YYerror)
                 tokens.push_back(token);
-
             else
                 res = 1;
         }
