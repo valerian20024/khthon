@@ -37,7 +37,8 @@ SRC = 	main.cpp \
 		semantics.cpp \
 		print_visitor.cpp \
 		types_visitor.cpp \
-		classes_visitor.cpp
+		classes_visitor.cpp \
+		codegen_visitor.cpp
 
 OBJ = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SRC))
 
@@ -52,9 +53,11 @@ ARCHIVE_FILES = \
 	$(SRC_DIR)/ast.cpp \
 	$(SRC_DIR)/semantics.hpp \
 	$(SRC_DIR)/semantics.cpp \
+	$(SRC_DIR)/generation.hpp \
 	$(SRC_DIR)/types_visitor.cpp \
 	$(SRC_DIR)/classes_visitor.cpp \
 	$(SRC_DIR)/print_visitor.cpp \
+	$(SRC_DIR)/codegen_visitor.cpp \
 	$(SRC_DIR)/visitors.hpp \
 	$(SRC_DIR)/colors.hpp \
 	$(SRC_DIR)/main.cpp \
@@ -114,6 +117,8 @@ $(SRC_DIR)/lexer.cpp: $(SRC_DIR)/lexer.lex
 #  Per-file header dependencies
 # -----------------------------------------------------------------------------
 
+#todo check dependencies such as file.o : file.cpp
+
 $(BUILD_DIR)/main.o:			$(SRC_DIR)/main.cpp \
 								$(SRC_DIR)/driver.hpp \
 								$(SRC_DIR)/parser.hpp
@@ -142,6 +147,8 @@ $(BUILD_DIR)/print_visitor.o:	$(SRC_DIR)/print_visitor.cpp \
 								$(SRC_DIR)/visitors.hpp \
 								$(SRC_DIR)/ast.hpp \
 								$(SRC_DIR)/colors.hpp
+$(BUILD_DIR)/codegen_visitor.o: $(SRC_DIR)/codegen_visitor.cpp \
+								$(SRC_DIR)/generation.hpp
 
 # -----------------------------------------------------------------------------
 #  Utility targets
