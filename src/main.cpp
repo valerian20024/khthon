@@ -3,10 +3,6 @@
 #include <iostream>
 #include <string>
 
-#include "llvm/Support/TargetSelect.h"
-#include "llvm/Support/Host.h"
-#include "llvm/IR/LLVMContext.h"
-
 #include "driver.hpp"
 
 using namespace std;
@@ -31,16 +27,6 @@ int main(int argc, char const *argv[]) {
 
     Mode mode = Mode::GENERATE;
     string source_file;
-
-    // LLVM Verification Code
-    cout << "Verifying LLVM connection..." << endl;
-    llvm::InitializeAllTargetInfos();
-    string targetTriple = llvm::sys::getDefaultTargetTriple();
-    cout << "LLVM Default Target Triple: " << targetTriple << endl;
-    
-    // Create a dummy context to test IR headers
-    llvm::LLVMContext context;
-    cout << "LLVM Context initialized successfully." << endl;
 
     if (argc < 2 || argc > 3) {
         cerr << "Usage: " 

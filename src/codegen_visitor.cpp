@@ -24,7 +24,7 @@ namespace Khthon
         // Pass 1 — create opaque types for every class
         for (const auto& c : root->classes())
             create_class_type(*c);
-        /*
+        
         // Pass 2 — set vtable bodies (empty for now)
         for (const auto& c : root->classes())
             finalize_vtable(*c);
@@ -36,7 +36,7 @@ namespace Khthon
         // Pass 4 — emit vtable globals
         for (const auto& c : root->classes())
             emit_vtable_global(*c);
-        */
+        
     }
 
     // ---------------------------------------------------------------
