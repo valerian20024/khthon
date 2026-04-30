@@ -148,7 +148,9 @@ $(BUILD_DIR)/print_visitor.o:	$(SRC_DIR)/print_visitor.cpp \
 								$(SRC_DIR)/ast.hpp \
 								$(SRC_DIR)/colors.hpp
 $(BUILD_DIR)/codegen_visitor.o: $(SRC_DIR)/codegen_visitor.cpp \
-								$(SRC_DIR)/generation.hpp
+								$(SRC_DIR)/generation.hpp \
+								$(SRC_DIR)/driver.hpp \
+								$(SRC_DIR)/semantics.hpp
 
 # -----------------------------------------------------------------------------
 #  Utility targets
