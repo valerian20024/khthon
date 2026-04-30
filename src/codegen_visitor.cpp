@@ -36,7 +36,6 @@ namespace Khthon
         // Pass 4 — emit vtable globals
         for (const auto& c : root->classes())
             emit_vtable_global(*c);
-        
     }
 
     // ---------------------------------------------------------------
@@ -48,11 +47,11 @@ namespace Khthon
 
         // Create named but empty (opaque) struct types.
         // setBody() is called later in passes 2 and 3.
-        StructType* class_ty  = 
-            StructType::create(context_, name);
+        StructType* class_ty = StructType::create(context_, name);
 
-        StructType* vtable_ty = 
-            StructType::create(context_, name + "_vtable_type");
+        StructType* vtable_ty = StructType::create(
+            context_, name + "_vtable_type"
+        );
 
         class_types_[name]  = class_ty;
         vtable_types_[name] = vtable_ty;
@@ -67,7 +66,7 @@ namespace Khthon
 
         // No methods yet: empty body.
         // Later: push one function pointer type per method here.
-        vtable_ty->setBody({});
+        vtable_ty->setBody(llvm::ArrayRef<llvm::Type*>());
     }
 
     // ---------------------------------------------------------------
