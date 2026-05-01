@@ -59,7 +59,8 @@ namespace Khthon {
     public:
         CodeGenOrchestrator(Driver& driver, SemanticChecker& checker);
 
-        /// Top-level entry point.
+        /// @brief Passes over the AST to fetch data for the generation pass.
+        /// @param root The AST root.
         void generate(const std::shared_ptr<ProgramNode>& root);
 
         /// Print the LLVM IR to the given stream.

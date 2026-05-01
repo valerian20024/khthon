@@ -13,100 +13,82 @@ namespace Khthon
         driver_(driver),
         checker_(checker),
         context_(),
-        module_(std::make_unique<Module>("vsop_module", context_))  // vsopc_module is just a label
+        module_(std::make_unique<Module>("vsop_module", context_))
     {}
 
-    /// @brief Passes over the AST to fetch data for the generation pass.
-    /// @param root The AST root.
     void CodeGenOrchestrator::generate(
         const shared_ptr<ProgramNode>& root
     ) {
-        // Pass 1 — create opaque types for every class
+        // Multiple passes are required to properly gather data.
+        
+        // Creating opaque structure for each class.
         for (const auto& c : root->classes())
             create_class_type(*c);
         
-        // Pass 2 — set vtable bodies
+        // Fill in each class vtable bodies.
         for (const auto& c : root->classes())
             finalize_vtable(*c);
         
-        // Pass 3 — set class struct bodies
+        // Fill in the rest of the class structure (i.e., fields).
         for (const auto& c : root->classes())
             finalize_class(*c);
         
-        // Pass 4 — emit vtable globals
+        // Emit the vtable globals.
         for (const auto& c : root->classes())
             emit_vtable_global(*c);
         
-        // Temporary: force-print the struct layout
+        // Debug: force-print the struct layout.
         class_types_["Main"]->print(llvm::errs());
         llvm::errs() << "\n";
 
         // todo call in the CodeGen visitor
     }
 
-    // ---------------------------------------------------------------
-    // Pass 1: create opaque struct types
-    // ---------------------------------------------------------------
-
     void CodeGenOrchestrator::create_class_type(const ClassNode& node) {
-        const string& name = node.name();
+        const string name = node.name();
 
-        // Create named but empty (opaque) struct types.
-        // setBody() is called later in passes 2 and 3.
-        StructType* class_ty = StructType::create(context_, name);
-
-        StructType* vtable_ty = StructType::create(
+        // Creating named but empty opaque struct types.
+        StructType* class_type = StructType::create(context_, name);
+        StructType* vtable_type = StructType::create(
             context_, name + "_vtable_type"
         );
 
-        class_types_[name]  = class_ty;
-        vtable_types_[name] = vtable_ty;
+        class_types_[name]  = class_type;
+        vtable_types_[name] = vtable_type;
     }
 
-    // ---------------------------------------------------------------
-    // Pass 2: fill in vtable body
-    // ---------------------------------------------------------------
-
     void CodeGenOrchestrator::finalize_vtable(const ClassNode& node) {
-        StructType* vtable_ty = vtable_types_[node.name()];
+        StructType* vtable_type = vtable_types_[node.name()];
 
         // No methods yet: empty body.
         // Later: push one function pointer type per method here.
-        vtable_ty->setBody(llvm::ArrayRef<llvm::Type*>());
+        vtable_type->setBody(ArrayRef<llvm::Type*>());
     }
 
-    // ---------------------------------------------------------------
-    // Pass 3: fill in class struct body
-    // ---------------------------------------------------------------
-
     void CodeGenOrchestrator::finalize_class(const ClassNode& node) {
-        const string& name = node.name();
+        const string name = node.name();
 
-        StructType* class_ty  = class_types_[name];
-        StructType* vtable_ty = vtable_types_[name];
+        StructType* class_type  = class_types_[name];
+        StructType* vtable_type = vtable_types_[name];
 
         // For now: only the vtable pointer.
         // Later: inherited fields and own fields follow here.
         vector<llvm::Type*> fields;
-        fields.push_back(vtable_ty->getPointerTo());
+        fields.push_back(vtable_type->getPointerTo());
 
-        class_ty->setBody(fields);
+        class_type->setBody(fields);
     }
 
-    // ---------------------------------------------------------------
-    // Pass 4: emit the vtable global
-    // ---------------------------------------------------------------
-
     void CodeGenOrchestrator::emit_vtable_global(const ClassNode& node) {
-        const string& name = node.name();
-        StructType* vtable_ty = vtable_types_[name];
+        const string name = node.name();
+        StructType* vtable_type = vtable_types_[name];
 
         // zeroinitializer is the correct constant for an empty struct.
-        Constant* init = ConstantAggregateZero::get(vtable_ty);
+        Constant* init = ConstantAggregateZero::get(vtable_type);
 
         GlobalVariable* vtable_global = new GlobalVariable(
             *module_,
-            vtable_ty,
+            vtable_type,
             true,                                   // isConstant
             GlobalValue::InternalLinkage,
             init,
@@ -115,10 +97,6 @@ namespace Khthon
 
         vtable_instances_[name] = vtable_global;
     }
-
-    // ---------------------------------------------------------------
-    // Print
-    // ---------------------------------------------------------------
 
     void CodeGenOrchestrator::print_ir(raw_ostream& out) const {
         module_->print(out, nullptr);
