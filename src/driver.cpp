@@ -119,11 +119,11 @@ namespace Khthon {
         scan_begin();
 
         parser = new Parser(*this);    
-        int parse_result = parser->parse();
-        if (parse_result) 
+        int error = parser->parse();
+        if (error) 
             internal_error(
                 "Driver::parse(): Bison parse returned with:" 
-                + to_string(parse_result)
+                + to_string(error)
             );
         
         scan_end();
@@ -143,12 +143,12 @@ namespace Khthon {
     int Driver::analyze() {
         scan_begin();
         parser = new Parser(*this);    
-        int parse_result = parser->parse();
+        int error = parser->parse();
         
-        if (parse_result) {
+        if (error) {
             internal_error(
                 "Driver::analyze(): Bison parse returned with:" 
-                + to_string(parse_result)
+                + to_string(error)
             );
         }
         
