@@ -29,41 +29,39 @@ ARCHIVE    = vsopcompiler.tar.xz
 #  Sources
 # -----------------------------------------------------------------------------
 
-SRC = 	main.cpp \
-		driver.cpp \
-		ast.cpp \
-		parser.cpp \
-		lexer.cpp \
-		semantics.cpp \
-		print_visitor.cpp \
-		types_visitor.cpp \
+SRC = 	ast.cpp \
 		classes_visitor.cpp \
-		codegen_visitor.cpp
+		codegen_visitor.cpp \
+		driver.cpp \
+		main.cpp \
+		print_visitor.cpp \
+		semantics.cpp \
+		types_visitor.cpp
 
-OBJ = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SRC))
+HEADERS =	ast.hpp \
+			colors.hpp \
+			driver.hpp \
+			generation.hpp \
+			semantics.hpp \
+			visitors.hpp
+
+GENERATED_SRC = parser.cpp lexer.cpp
+
+ALL_SRC = $(SRC) $(GENERATED_SRC)
+
+OBJ = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(ALL_SRC))
 
 # -----------------------------------------------------------------------------
 #  Archive
 #-----------------------------------------------------------------------------
 
-ARCHIVE_FILES = \
-	$(SRC_DIR)/driver.cpp \
-	$(SRC_DIR)/driver.hpp \
-	$(SRC_DIR)/ast.hpp \
-	$(SRC_DIR)/ast.cpp \
-	$(SRC_DIR)/semantics.hpp \
-	$(SRC_DIR)/semantics.cpp \
-	$(SRC_DIR)/generation.hpp \
-	$(SRC_DIR)/types_visitor.cpp \
-	$(SRC_DIR)/classes_visitor.cpp \
-	$(SRC_DIR)/print_visitor.cpp \
-	$(SRC_DIR)/codegen_visitor.cpp \
-	$(SRC_DIR)/visitors.hpp \
-	$(SRC_DIR)/colors.hpp \
-	$(SRC_DIR)/main.cpp \
-	$(SRC_DIR)/lexer.lex \
-	$(SRC_DIR)/parser.y \
-	Makefile
+ARCHIVE_FILES = Makefile \
+			$(addprefix $(SRC_DIR)/, \
+				$(SRC) \
+				$(HEADERS) \
+				lexer.lex \
+				parser.y \
+			)
 
 # -----------------------------------------------------------------------------
 #  Colors
@@ -89,7 +87,7 @@ all: $(EXEC)
 
 # Link the object files.
 $(EXEC): $(OBJ)
-	@echo -e $(C_GOLDEN)"Linking:  "$(C_END) $@;
+	@echo -e $(C_GOLDEN)"Linking:   "$(C_END) $@;
 	@$(CXX) -o $@ $(OBJ) $(LDFLAGS)
 
 # Compile each .cpp file to .o file.
