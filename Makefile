@@ -5,10 +5,10 @@
 CXX 		= clang++
 LLVM_CONFIG	= llvm-config
 
-CXXFLAGS    = $(shell ${LLVM_CONFIG} --cppflags) \
+CXXFLAGS	= $(shell ${LLVM_CONFIG} --cppflags) \
 				-Wall -Wextra -std=c++17 -MMD -MP
 
-LDFLAGS	    = $(shell ${LLVM_CONFIG} --ldflags --system-libs --libs all)
+LDFLAGS		= $(shell ${LLVM_CONFIG} --ldflags --system-libs --libs all)
 
 BISONFLAGS	= -d
 
@@ -71,15 +71,15 @@ ARCHIVE_FILES = Makefile \
 
 # ANSI escape sequences. 
 
-C_BLUE    	:= "\e[0;34m"
-C_GREEN     := "\e[0;32m"
-C_RED    	:= "\e[0;31m"
-C_LAVANDER  := "\e[38;5;141m"
-C_FUCHSIA   := "\e[38;5;161m"
-C_SALMON    := "\e[38;5;203m"
+C_BLUE		:= "\e[0;34m"
+C_GREEN		:= "\e[0;32m"
+C_RED		:= "\e[0;31m"
+C_LAVANDER	:= "\e[38;5;141m"
+C_FUCHSIA	:= "\e[38;5;161m"
+C_SALMON	:= "\e[38;5;203m"
 C_GOLDEN	:= "\e[38;5;208m"
-C_PEACH     := "\e[38;5;216m"
-C_END 		:= "\e[0m"
+C_PEACH		:= "\e[38;5;216m"
+C_END		:= "\e[0m"
 
 # -----------------------------------------------------------------------------
 #  Main targets
