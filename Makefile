@@ -34,6 +34,7 @@ SRC = 	ast.cpp \
 		classes_visitor.cpp \
 		codegen_visitor.cpp \
 		driver.cpp \
+		generation.cpp \
 		main.cpp \
 		print_visitor.cpp \
 		semantics.cpp \
