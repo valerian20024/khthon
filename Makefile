@@ -5,25 +5,26 @@
 CXX 		= clang++
 LLVM_CONFIG	= llvm-config
 
-CXXFLAGS    = $(shell ${LLVM_CONFIG} --cppflags) -Wall -Wextra -g -std=c++17 -gdwarf-4 -MMD -MP
+CXXFLAGS    = $(shell ${LLVM_CONFIG} --cppflags) \
+				-Wall -Wextra -std=c++17 -MMD -MP
 
 LDFLAGS	    = $(shell ${LLVM_CONFIG} --ldflags --system-libs --libs all)
 
-BISONFLAGS = -d
+BISONFLAGS	= -d
 
-FLEXFLAGS  =
+FLEXFLAGS	=
 
 # -----------------------------------------------------------------------------
 #  Paths
 # -----------------------------------------------------------------------------
 
-EXEC       = vsopc
+EXEC		= vsopc
 
-SRC_DIR    = src
+SRC_DIR		= src
 
-BUILD_DIR  = build
+BUILD_DIR	= build
 
-ARCHIVE    = vsopcompiler.tar.xz
+ARCHIVE		= vsopcompiler.tar.xz
 
 # -----------------------------------------------------------------------------
 #  Sources
@@ -45,6 +46,7 @@ HEADERS =	ast.hpp \
 			semantics.hpp \
 			visitors.hpp
 
+# The software (Bison, Flex) generated code.
 GENERATED_SRC = parser.cpp lexer.cpp
 
 ALL_SRC = $(SRC) $(GENERATED_SRC)
@@ -52,7 +54,7 @@ ALL_SRC = $(SRC) $(GENERATED_SRC)
 OBJ = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(ALL_SRC))
 
 # -----------------------------------------------------------------------------
-#  Archive
+#  Archiving
 #-----------------------------------------------------------------------------
 
 ARCHIVE_FILES = Makefile \
@@ -128,15 +130,16 @@ install-tools:
 clean:
 	@rm -f $(EXEC)
 	@rm -rf $(BUILD_DIR)
-	@rm -f \
-		$(SRC_DIR)/lexer.cpp \
-		$(SRC_DIR)/parser.cpp \
-		$(SRC_DIR)/parser.hpp \
-		$(SRC_DIR)/location.hh
+	@rm -f	$(SRC_DIR)/lexer.cpp \
+			$(SRC_DIR)/parser.cpp \
+			$(SRC_DIR)/parser.hpp \
+			$(SRC_DIR)/location.hh
 	@rm -f $(ARCHIVE)
 
-# Target specific variable assignment for debugging
-debug: CXXFLAGS += -DDEBUG
+# Target specific variable assignment for debugging.
+# All compiled code will be compiled with the DEBUG variable and debugging symbols.
+# Using gdward-4 for backward compatibility with the Container test environment.
+debug: CXXFLAGS += -DDEBUG -g -gdwarf-4
 
 debug: print_debug $(EXEC)
 
