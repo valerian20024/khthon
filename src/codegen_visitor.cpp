@@ -80,8 +80,8 @@ namespace Khthon
     }
 
     void CodeGenOrchestrator::emit_vtable_global(const ClassNode& node) {
-        const string name = node.name();
-        StructType* vtable_type = vtable_types_[name];
+        const string myname = node.name();
+        StructType* vtable_type = vtable_types_[myname];
 
         // zeroinitializer is the correct constant for an empty struct.
         Constant* init = ConstantAggregateZero::get(vtable_type);
@@ -92,10 +92,10 @@ namespace Khthon
             true,                                   // isConstant
             GlobalValue::InternalLinkage,
             init,
-            name + "_vtable"
+            myname + "_vtable"
         );
 
-        vtable_instances_[name] = vtable_global;
+        vtable_instances_[myname] = vtable_global;
     }
 
     void CodeGenOrchestrator::print_ir(raw_ostream& out) const {
