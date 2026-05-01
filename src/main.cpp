@@ -7,69 +7,69 @@
 
 using namespace std;
 
-enum class Mode {
+enum class Action {
     LEX,
     PARSE,
     ANALYZE,
     GENERATE,
-    EXTEND
-};
-
-static const map<string, Mode> flag_to_mode = {
-    {"-l", Mode::LEX},
-    {"-p", Mode::PARSE},
-    {"-c", Mode::ANALYZE},
-    {"-i", Mode::GENERATE},
-    {"-e", Mode::EXTEND}
+    NATIVE
 };
 
 int main(int argc, char const *argv[]) {
 
-    Mode mode = Mode::GENERATE;
-    string source_file;
+    Action action = Action::NATIVE;
+    bool extended_VSOP = false;
+    string source_file = {};
 
-    if (argc < 2 || argc > 3) {
+    if (argc < 2 || argc > 4) {
         cerr << "Usage: " 
              << argv[0]
-             << " [-l|-p|-c|-i|-e] <source_file>" 
+             << " [-e] [-l|-p|-c|-i] <source_file>"
              << endl;
         return -1;
     }
+    
+    for (int i = 1; i < argc; ++i) {
+        string arg = argv[i];
 
-    if (argc == 3 && flag_to_mode.count(argv[1]) == 0) {
-        cerr << "Invalid mode: " 
-             << argv[1] 
-             << endl;
+        // Handling flags arguments.
+        if (arg[0] == '-' && arg.length() == 2) {
+            switch (arg[1]) {
+                case 'e':   extended_VSOP = true;           break;
+                case 'l':   action = Action::LEX;           break;
+                case 'p':   action = Action::PARSE;         break;
+                case 'c':   action = Action::ANALYZE;       break;
+                case 'i':   action = Action::GENERATE;      break;
+                default: {
+                    cerr << "Unknown flag." << endl;
+                    return -1;
+                }
+            }
+        }
+        
+        // Handling other arguments, i.e., source file name.
+        else {
+            source_file = arg;
+        }
+    }
+
+    if (source_file.empty()) {
+        cerr << "Error: No source file specified." << endl;
         return -1;
     }
 
-    if (argc == 2) {
-        source_file = argv[1];
-    } else {
-        mode = flag_to_mode.at(argv[1]);
-        source_file = argv[2];
-    }
+    Khthon::Driver driver(source_file);
 
-    Khthon::Driver driver = Khthon::Driver(source_file);
+    if (extended_VSOP)
+        driver.enable_extensions();
 
-    switch (mode) {
-    case Mode::LEX:
-        return driver.lex();
-
-    case Mode::PARSE:
-        return driver.parse();
-    
-    case Mode::ANALYZE:
-        return driver.analyze();
-
-    case Mode::GENERATE:
-        return driver.generate();
-    
-    case Mode::EXTEND:
-        cout << "Extended VSOP mode is not yet supported." << endl;
-        return 0;
-    
-    default:
-        return -1;
+    switch (action) {
+        case Action::LEX:       return driver.lex();
+        case Action::PARSE:     return driver.parse();
+        case Action::ANALYZE:   return driver.analyze();
+        case Action::GENERATE:  return driver.generate();
+        case Action::NATIVE:    return driver.generate();
+        default: 
+            return -1;
     }
 }

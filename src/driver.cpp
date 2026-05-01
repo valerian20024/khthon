@@ -86,10 +86,9 @@ namespace Khthon {
 
 
     int Driver::lex() {
-        scan_begin();
-
-        //todo use the new error mecanism instead of the one of the old calc 
         int res = 0;
+
+        scan_begin();
 
         while (true) {
             Parser::symbol_type token = yylex(*this);
@@ -289,6 +288,10 @@ namespace Khthon {
             warning_count_++;
 
         diagnostics_.push_back(std::move(d));
+    }
+
+    void Driver::enable_extensions() {
+        return;
     }
 
     void Driver::lexical_note(const location& l, const std::string& reason) {

@@ -5,7 +5,7 @@ using namespace std;
 
 namespace Khthon
 {
-        CodeGenOrchestrator::CodeGenOrchestrator(
+    CodeGenOrchestrator::CodeGenOrchestrator(
         Driver& driver, 
         SemanticChecker& checker
     ) :

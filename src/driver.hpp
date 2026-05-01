@@ -61,7 +61,6 @@ namespace Khthon {
         const ErrorLevel& level() const { return level_; };
     };
 
-
     class LexicalDiagnostic : public Diagnostic {
     private:
         std::string reason_;
@@ -93,7 +92,6 @@ namespace Khthon {
     
         std::string to_string() const override;
     };
-
     
     class SemanticDiagnostic : public Diagnostic {
     private:
@@ -146,46 +144,34 @@ namespace Khthon {
     public:
         /// @brief Construct a new Driver.
         /// @param _source_file The file containing the source code.
-        Driver(const std::string &_source_file) : source_file(_source_file) {}
+        Driver(const std::string &source_file_) : source_file(source_file_) {}
 
         /// @return The compiled source file.
-        const std::string &get_source_file() { return source_file; }
+        //const std::string &get_source_file() { return source_file; }
 
         /// @brief Returns the default location: current_source_file: 1: 1.
         Khthon::location default_location() const;
 
-        /**
-         * @brief Run the lexer on the source file.
-         *
-         * @return 0 if no error happened during compilation. Non-zero otherwise.
-         */
+        /// @brief The root of the AST. Used as a handle to parse the whole tree.
+        std::shared_ptr<ProgramNode> ast_root;
+
+        /// @brief Run the lexer on the source file.
+        /// @return 0 if no error happened during compilation. Non-zero otherwise.
         int lex();
 
-        /**
-         * @brief Run the lexer and the parser on the source file.
-         * 
-         * @note Requires the lexer to run first.
-         *
-         * @return 0 if no error happened during compilation. Non-zero otherwise.
-         */
+        /// @brief Run the lexer and the parser on the source file.
+        /// @note Requires the lexer to run first.
+        /// @return 0 if no error happened during compilation. Non-zero otherwise.
         int parse();
 
-        /**
-         * @brief Checks semantics on the source file.
-         * 
-         * @note Requires the lexer and the parser to run first.
-         *
-         * @return 0 if no error happened during compilation. Non-zero otherwise.
-         */
+        /// @brief Checks semantics on the source file.
+        /// @note Requires the lexer and the parser to run first.
+        /// @return 0 if no error happened during compilation. Non-zero otherwise.
         int analyze();
 
-        /**
-         * @brief Run the lexer, parser on the source file. Checks semantics and generate intermediate representation.
-         * 
-         * @note Requires the lexer, parser, and semantic checker to run first.
-         * 
-         * @return 0 if no error happened during compilation. Non-zero otherwise.
-         */
+        /// @brief Run the lexer, parser on the source file. Checks semantics and generate intermediate representation.
+        /// @note Requires the lexer, parser, and semantic checker to run first.
+        /// @return 0 if no error happened during compilation. Non-zero otherwise.
         int generate();
 
         /// @brief Print all the tokens, that is the output of the lexical analysis
@@ -195,11 +181,12 @@ namespace Khthon {
         /// @param annotate: print with or without annotations.
         void print_AST(bool annotate, std::ostream& out);
 
-        /// @brief The root of the AST. Used as a handle to parse the whole tree.
-        std::shared_ptr<ProgramNode> ast_root;
-
         /// @brief Adds a new diagnostic to the list.
         void report(std::shared_ptr<Diagnostic> diagnostic);
+
+        /// @brief Sets up the driver to include necessary VSOP extensions.
+        /// @note This method is a stub for now.
+        void enable_extensions();
 
         /// @brief Logs an internal error.
         /// @note When debugging is activated, will directly print the error on stderr.
