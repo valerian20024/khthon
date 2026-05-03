@@ -36,7 +36,7 @@ namespace Khthon
         for (const auto& c : root->classes())
             emit_vtable_global(*c);
         
-        // Debug: force-print the struct layout.
+        //! Debug: force-print the struct layout.
         class_types_["Main"]->print(llvm::errs());
         llvm::errs() << "\n";
 
@@ -79,8 +79,8 @@ namespace Khthon
     }
 
     void CodeGenOrchestrator::emit_vtable_global(const ClassNode& node) {
-        const string myname = node.name();
-        StructType* vtable_type = vtable_types_[myname];
+        const string name = node.name();
+        StructType* vtable_type = vtable_types_[name];
 
         // zeroinitializer is the correct constant for an empty struct.
         Constant* init = ConstantAggregateZero::get(vtable_type);
@@ -88,13 +88,13 @@ namespace Khthon
         GlobalVariable* vtable_global = new GlobalVariable(
             *module_,
             vtable_type,
-            true,                                   // isConstant
+            true,  // isConstant
             GlobalValue::InternalLinkage,
             init,
-            myname + "_vtable"
+            name + "_vtable"
         );
 
-        vtable_instances_[myname] = vtable_global;
+        vtable_instances_[name] = vtable_global;
     }
 
     void CodeGenOrchestrator::print_ir(raw_ostream& out) const {
