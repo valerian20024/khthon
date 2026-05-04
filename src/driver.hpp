@@ -12,7 +12,6 @@
 /*
 ? Who should have driver as reference to be able to send InternalDiagnostics ?
     Instead, create a DiagnosticHandler class that has the duty to log new diags, etc.
-todo add a _ after the name
 */
 
 // Give prototype of yylex() function, then declare it.

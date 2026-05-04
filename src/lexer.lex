@@ -34,7 +34,6 @@
     /**
      * @brief Prints the whole stack content. Used for debugging nested
      * comments start positions.
-     * todo: making it static triggers [-Wunused-function] warning. Make it static without triggering a warning
      */
     void dump_stack_content(std::stack<position> s);
 

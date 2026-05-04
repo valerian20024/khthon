@@ -252,7 +252,6 @@ namespace Khthon {
      * @brief Print the information about a token
      *
      * @param token the token
-     * todo make it a method of Driver
      */
     static void print_token(Parser::symbol_type token, std::ostream& out) {
         position pos = token.location.begin;

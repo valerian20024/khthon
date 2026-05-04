@@ -15,6 +15,8 @@
 
 ? Is it better to keep make_shared or use unique ptr?
 
+? Merging both UnaryOp and BinaryOp into Operator?
+
 ? add driver reference in classes to be able to log internal errors?
 */
 
@@ -124,7 +126,6 @@ namespace Khthon {
     };
 
     /// @brief Represents an unary operation in VSOP.
-    // todo Merge with Binary Operator ?
     class UnaryOperation {
     private:
         enum class Kind {
