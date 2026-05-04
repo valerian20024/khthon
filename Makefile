@@ -25,6 +25,8 @@ SRC_DIR		= src
 
 BUILD_DIR	= build
 
+REPORT_DIR	= doc/report
+
 #-----------------------------------------------------------------------------
 #  Runtime
 #-----------------------------------------------------------------------------
@@ -69,8 +71,6 @@ OBJ = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(ALL_SRC))
 #  Archiving
 #------------------------------------------------------------------------------
 
-#todo Add `report.pdf` to the archive.
-#todo Add runtime to the archive.
 ARCHIVE = vsopcompiler.tar.xz
 
 ARCHIVE_FILES = Makefile \
@@ -79,7 +79,10 @@ ARCHIVE_FILES = Makefile \
 				$(HEADERS) \
 				lexer.lex \
 				parser.y \
-			)
+			) \
+			$(RUNTIME_DIR)/object.c \
+			$(RUNTIME_DIR)/object.h \
+			$(REPORT_DIR)/report.pdf
 
 # -----------------------------------------------------------------------------
 #  Colors

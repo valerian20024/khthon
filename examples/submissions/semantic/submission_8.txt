@@ -1,0 +1,33 @@
+Tests run on Mon May  4 14:29:38 UTC 2026
+
+Decompressing your archive...
+Entering vsopcompiler folder...
+Installing build tools...
+If this fails because of an invalid Realease file in the future, please tell us about it !
+Building your VSOP compiler...
+-e [0;32mCreating build directory...[0m
+-e [38;5;216mBison:     [0m src/parser.hpp
+-e [38;5;216mFlex:      [0m src/lexer.cpp
+-e [38;5;141mCompiling: [0m build/ast.o
+-e [38;5;141mCompiling: [0m build/classes_visitor.o
+-e [38;5;141mCompiling: [0m build/codegen_visitor.o
+-e [38;5;141mCompiling: [0m build/diagnostics.o
+-e [38;5;141mCompiling: [0m build/driver.o
+-e [38;5;141mCompiling: [0m build/generation.o
+In file included from src/generation.cpp:1:
+src/generation.hpp:32:17: warning: private field 'driver_' is not used [-Wunused-private-field]
+        Driver& driver_;
+                ^
+src/generation.hpp:33:26: warning: private field 'checker_' is not used [-Wunused-private-field]
+        SemanticChecker& checker_;
+                         ^
+2 warnings generated.
+-e [38;5;141mCompiling: [0m build/main.o
+-e [38;5;141mCompiling: [0m build/print_visitor.o
+-e [38;5;141mCompiling: [0m build/semantics.o
+-e [38;5;141mCompiling: [0m build/types_visitor.o
+-e [38;5;141mCompiling: [0m build/parser.o
+-e [38;5;141mCompiling: [0m build/lexer.o
+make: *** No rule to make target 'src/runtime/object.c', needed by 'build/object.o'.  Stop.
+Error: could not build the compiler!
+This is a fatal error, aborting other tests.
