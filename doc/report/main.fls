@@ -1,7 +1,7 @@
-PWD /home/valerian/Documents/dev/github/khthon/report
+PWD /home/valerian/Documents/dev/github/khthon/doc/report
 INPUT /usr/share/texmf-dist/web2c/texmf.cnf
 INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
-INPUT /home/valerian/Documents/dev/github/khthon/report/main.tex
+INPUT /home/valerian/Documents/dev/github/khthon/doc/report/main.tex
 OUTPUT main.log
 INPUT /usr/share/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/share/texmf-dist/tex/latex/base/article.cls
