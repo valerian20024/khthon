@@ -6,7 +6,8 @@ CXX 		= clang++
 LLVM_CONFIG	= llvm-config
 
 CXXFLAGS	= $(shell ${LLVM_CONFIG} --cppflags) \
-				-Wall -Wextra -std=c++17 -MMD -MP
+				-Wall -Wextra -std=c++17 -MMD -MP \
+				-DRUNTIME_PATH=\"$(abspath $(RUNTIME_OBJ))\"
 
 LDFLAGS		= $(shell ${LLVM_CONFIG} --ldflags --system-libs --libs all)
 
@@ -67,6 +68,7 @@ OBJ = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(ALL_SRC))
 #------------------------------------------------------------------------------
 
 #todo Add `report.pdf` to the archive.
+#todo Add runtime to the archive.
 ARCHIVE = vsopcompiler.tar.xz
 
 ARCHIVE_FILES = Makefile \
