@@ -24,11 +24,18 @@ declare i32 @ungetc(i32, %_IO_FILE*)
 ; Types for Object instances and vtable
 
 %Object = type { %ObjectVTable* }
-%ObjectVTable = type { %Object* (%Object*, i8*)*, %Object* (%Object*, i1)*, %Object* (%Object*, i32)*, i8* (%Object*)*, i1 (%Object*)*, i32 (%Object*)* }
+%ObjectVTable = type { 
+  %Object* (%Object*, i8*)*,  ; print
+  %Object* (%Object*, i1)*,   ; printBool
+  %Object* (%Object*, i32)*,  ; printInt32
+  i8* (%Object*)*,            ; inputLine
+  i1 (%Object*)*,             ; inputBool
+  i32 (%Object*)*             ; inputInt32
+}
 
 ; String literals
 
-@.str = constant [3 x i8] c"%s\00"
+@.str   = constant [3 x i8] c"%s\00"
 @.str.1 = constant [5 x i8] c"true\00"
 @.str.2 = constant [6 x i8] c"false\00"
 @.str.3 = constant [3 x i8] c"%d\00"
@@ -41,7 +48,14 @@ declare i32 @ungetc(i32, %_IO_FILE*)
 
 ; Object's shared vtable instance
 
-@Object___vtable = constant %ObjectVTable { %Object* (%Object*, i8*)* @Object__print, %Object* (%Object*, i1)* @Object__printBool, %Object* (%Object*, i32)* @Object__printInt32, i8* (%Object*)* @Object__inputLine, i1 (%Object*)* @Object__inputBool, i32 (%Object*)* @Object__inputInt32 }
+@Object___vtable = constant %ObjectVTable { 
+  %Object* (%Object*, i8*)* @Object__print, 
+  %Object* (%Object*, i1)* @Object__printBool, 
+  %Object* (%Object*, i32)* @Object__printInt32, 
+  i8* (%Object*)* @Object__inputLine, 
+  i1 (%Object*)* @Object__inputBool, 
+  i32 (%Object*)* @Object__inputInt32 
+}
 
 ; Object's methods
 
