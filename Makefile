@@ -42,6 +42,7 @@ RUNTIME_OBJ = $(BUILD_DIR)/object.o
 SRC = 	ast.cpp \
 		classes_visitor.cpp \
 		codegen_visitor.cpp \
+		diagnostics.cpp \
 		driver.cpp \
 		generation.cpp \
 		main.cpp \
@@ -51,6 +52,7 @@ SRC = 	ast.cpp \
 
 HEADERS =	ast.hpp \
 			colors.hpp \
+			diagnostics.hpp \
 			driver.hpp \
 			generation.hpp \
 			semantics.hpp \

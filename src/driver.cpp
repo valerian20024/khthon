@@ -9,6 +9,7 @@
 #include "colors.hpp"
 #include "semantics.hpp"
 #include "generation.hpp"
+#include "diagnostics.hpp"
 
 using namespace std;
 using namespace Khthon;
@@ -245,9 +246,6 @@ namespace Khthon {
         return 0;
     }
 
-
-
-
     /**
      * @brief Print the information about a token
      *
@@ -308,31 +306,12 @@ namespace Khthon {
         }
     }
 
-    void Driver::internal_error(const std::string& reason) {
+    void Driver::internal_error(const string& reason) {
         if (enable_advanced_logging)
             cerr << internal_error_banner() << reason << endl;
     }
 
-    string LexicalDiagnostic::to_string() const {
-        return format_location()
-            + ": lexical error: \n"
-            + header()
-            + bold(reason_);
-    }
-
-    string SyntaxDiagnostic::to_string() const {
-        return format_location()
-            + ": syntax error: \n" 
-            + header()
-            + bold(reason_);
-    }
-
-    string SemanticDiagnostic::to_string() const {
-        return format_location()
-            + ": semantic error: \n"
-            + header()
-            + bold(reason_);
-    }
+    
 
     void Driver::report(std::shared_ptr<Diagnostic> d) {
         if (d->level() == ErrorLevel::Error)
@@ -343,6 +322,8 @@ namespace Khthon {
         diagnostics_.push_back(std::move(d));
     }
 
+    /// @brief Enables Extended VSOP features.
+    /// @warning This method is a stub for now.
     void Driver::enable_extensions() {
         return;
     }
@@ -394,29 +375,5 @@ namespace Khthon {
             cerr << underlined(to_string(error_count_) + " error(s).") << endl;
         if (warning_count_ > 0)
             cerr << underlined(to_string(warning_count_) + " warning(s)") << endl;
-    }
-
-    string Diagnostic::format_location() const {
-        const position& pos = loc_.begin;
-        string filename = (pos.filename && !pos.filename->empty())
-            ? *pos.filename
-            : "<unknown>";
-
-        return filename
-            + ":"
-            + std::to_string(pos.line)
-            + ":"
-            + std::to_string(pos.column);
-    }
-
-    const string Diagnostic::header() const {
-        switch (level_) {
-        case ErrorLevel::Error:     return as_error("Error: ");
-        case ErrorLevel::Warning:   return as_warning("Warning: ");
-        case ErrorLevel::Note:      return as_note("Note: ");
-        default:
-            cerr << "Error in Diagnostic::header(): No such ErrorLevel.";
-            return "";
-        }
     }
 }
