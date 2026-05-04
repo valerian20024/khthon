@@ -37,8 +37,10 @@ namespace Khthon {
         llvm::LLVMContext context_;
         std::unique_ptr<llvm::Module> module_;
 
+        /// @brief Mapping class names to their structures (fields and vtable pointer)
         std::map<std::string, llvm::StructType*> class_types_;
 
+        /// @brief Mapping class names to their vtable.
         std::map<std::string, llvm::StructType*> vtable_types_;
 
         std::map<std::string, llvm::GlobalVariable*> vtable_instances_;
