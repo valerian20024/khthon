@@ -19,6 +19,8 @@
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/GlobalVariable.h"
 #include "llvm/Support/raw_ostream.h"
+// In old versions of LLVM. Used to find LLVM target triple.
+#include "llvm/Support/Host.h"  
 
 #pragma GCC diagnostic pop
 

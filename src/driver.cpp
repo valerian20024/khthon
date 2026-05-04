@@ -86,7 +86,7 @@ namespace Khthon {
         return loc;
     }
 
-    static string derive_output_name(const string& source_file) {
+    static string build_executable_name(const string& source_file) {
         std::filesystem::path p(source_file);
         // stem() gives the filename without extension: "bar.vsop" -> "bar"
         // parent_path() gives the directory: "foo/"
@@ -114,7 +114,7 @@ namespace Khthon {
         }
 
         scan_end();
-        
+
         print_diagnostics();
 
         // All correct tokens must be printed, whatever the error.
@@ -127,14 +127,15 @@ namespace Khthon {
 
     int Driver::parse() {
         scan_begin();
-
         parser = new Parser(*this);    
+
         int error = parser->parse();
-        if (error) 
+        if (error) {
             internal_error(
                 "Driver::parse(): Bison parse returned with:" 
                 + to_string(error)
             );
+        }
         
         scan_end();
         delete parser;
@@ -152,9 +153,9 @@ namespace Khthon {
 
     int Driver::analyze() {
         scan_begin();
-        parser = new Parser(*this);    
+        parser = new Parser(*this);
+
         int error = parser->parse();
-        
         if (error) {
             internal_error(
                 "Driver::analyze(): Bison parse returned with:" 
@@ -182,7 +183,15 @@ namespace Khthon {
     int Driver::generate(bool make_executable) {
         scan_begin();
         parser = new Parser(*this);
-        parser->parse();
+
+        int error = parser->parse();
+        if (error) {
+            internal_error(
+                "Driver::analyze(): Bison parse returned with:" 
+                + to_string(error)
+            );
+        }
+
         scan_end();
         delete parser;
 
@@ -199,18 +208,23 @@ namespace Khthon {
         CodeGenOrchestrator codegen(*this, checker);
         codegen.generate(ast_root);
 
+        bool has_error = error_count_ > 0 || warning_count_ > 0;
+        if (has_error) {
+            internal_error("There should not be any error left in IR.");
+            print_diagnostics();
+            return 1;
+        }
+
+        // Only output IR.
         if (!make_executable) {
             codegen.print_ir(llvm::outs());
             return 0;
         }
 
         // Making an executable file.
-
-        // Step 1: write the IR to a temporary file.
-        // We use a fixed /tmp path for simplicity. 
-        // A more robust approach would use mkstemp().
-        string ir_file  = "build/ir.ll";
-        string exe_file = derive_output_name(source_file_);
+        
+        string ir_file  = "build/output.ll";
+        string exe_file = build_executable_name(source_file_);
 
         cout << exe_file << endl;
 
@@ -225,14 +239,15 @@ namespace Khthon {
         codegen.print_ir(ir_stream);
         ir_stream.flush();
 
-        // Step 2: invoke clang to compile IR + runtime into a native executable.
-        // RUNTIME_OBJECT_PATH is a macro baked in at compile time by the Makefile.
-        std::string cmd = std::string("clang")
-            + " -o " + exe_file
-            + " "   + ir_file
-            + " "   + RUNTIME_PATH;
 
-        int status    = system(cmd.c_str());
+        // RUNTIME_PATH is a macro added at compile time by the Makefile.
+        string cmd = "clang -o " 
+            + exe_file + " "
+            + ir_file + " "
+            + RUNTIME_PATH;
+
+        // Executing the command in a shell.
+        int status = system(cmd.c_str());
         int exit_code = WEXITSTATUS(status);
 
         if (exit_code != 0) {

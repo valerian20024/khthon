@@ -140,7 +140,9 @@ namespace Khthon
         checker_(checker),
         context_(),
         module_(std::make_unique<Module>("vsop_module", context_))
-    {}
+    {
+        module_->setTargetTriple(llvm::sys::getDefaultTargetTriple());
+    }
 
     void CodeGenOrchestrator::generate(
         const shared_ptr<ProgramNode>& root

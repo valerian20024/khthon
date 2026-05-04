@@ -5,4 +5,4 @@
 docker run --rm -it \
   -v "$(pwd):/home/vagrant/compilers" \
   -w "/home/vagrant/compilers" \
-  cffs/compilers /bin/sh
+  cffs/compilers /bin/bash
