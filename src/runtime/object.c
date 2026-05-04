@@ -152,10 +152,10 @@ Object *Object___init(Object *self) {
 // Virtual function table instance --------------------------------------------
 
 const ObjectVTable Object___vtable = {
-    .print = &Object__print,
-    .printBool = &Object__printBool,
+    .print      = &Object__print,
+    .printBool  = &Object__printBool,
     .printInt32 = &Object__printInt32,
-    .inputLine = &Object__inputLine,
-    .inputBool = &Object__inputBool,
+    .inputLine  = &Object__inputLine,
+    .inputBool  = &Object__inputBool,
     .inputInt32 = &Object__inputInt32
 };

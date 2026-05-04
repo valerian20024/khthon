@@ -35,14 +35,14 @@ namespace Khthon {
         llvm::LLVMContext context_;
         std::unique_ptr<llvm::Module> module_;
 
-        // Maps class name -> its LLVM struct type
         std::map<std::string, llvm::StructType*> class_types_;
 
-        // Maps class name -> its vtable struct type
         std::map<std::string, llvm::StructType*> vtable_types_;
 
-        // Maps class name -> the global vtable instance
         std::map<std::string, llvm::GlobalVariable*> vtable_instances_;
+
+        /// @brief Emits declarations for Object.
+        void emit_runtime_declarations();
 
         /// Pass 1: create opaque struct types for every class.
         void create_class_type(const ClassNode& node);
