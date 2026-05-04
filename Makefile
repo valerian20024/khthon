@@ -24,7 +24,15 @@ SRC_DIR		= src
 
 BUILD_DIR	= build
 
-ARCHIVE		= vsopcompiler.tar.xz
+#-----------------------------------------------------------------------------
+#  Runtime
+#-----------------------------------------------------------------------------
+
+RUNTIME_DIR = $(SRC_DIR)/runtime
+
+RUNTIME_SRC = $(RUNTIME_DIR)/object.c
+
+RUNTIME_OBJ = $(BUILD_DIR)/object.o
 
 # -----------------------------------------------------------------------------
 #  Sources
@@ -56,7 +64,9 @@ OBJ = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(ALL_SRC))
 
 # -----------------------------------------------------------------------------
 #  Archiving
-#-----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+
+ARCHIVE = vsopcompiler.tar.xz
 
 ARCHIVE_FILES = Makefile \
 			$(addprefix $(SRC_DIR)/, \
@@ -68,7 +78,7 @@ ARCHIVE_FILES = Makefile \
 
 # -----------------------------------------------------------------------------
 #  Colors
-#-----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 
 # ANSI escape sequences. 
 
@@ -89,9 +99,9 @@ C_END		:= "\e[0m"
 all: $(EXEC)
 
 # Link the object files.
-$(EXEC): $(OBJ)
+$(EXEC): $(OBJ) $(RUNTIME_OBJ)
 	@echo -e $(C_GOLDEN)"Linking:   "$(C_END) $@;
-	@$(CXX) -o $@ $(OBJ) $(LDFLAGS)
+	@$(CXX) -o $@ $(OBJ) $(RUNTIME_OBJ) $(LDFLAGS)
 
 # Compile each .cpp file to .o file.
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
@@ -116,6 +126,10 @@ $(SRC_DIR)/lexer.cpp: $(SRC_DIR)/lexer.lex
 # Ensure parser and lexer are generated before any compilation
 $(OBJ): $(SRC_DIR)/parser.hpp $(SRC_DIR)/lexer.cpp
 
+$(RUNTIME_OBJ): $(RUNTIME_SRC) | $(BUILD_DIR)
+	@echo -e $(C_PEACH)"Runtime:   "$(C_END) $@;
+	@clang -c $< -o $@
+
 # -----------------------------------------------------------------------------
 #  Utility targets
 # -----------------------------------------------------------------------------
@@ -138,7 +152,7 @@ clean:
 	@rm -f $(ARCHIVE)
 
 # Target specific variable assignment for debugging.
-# All compiled code will be compiled with the DEBUG variable and debugging symbols.
+# All compiled code will be compiled with the DEBUG variable and debug symbols.
 # Using gdward-4 for backward compatibility with the Container test environment.
 debug: CXXFLAGS += -DDEBUG -g -gdwarf-4
 
