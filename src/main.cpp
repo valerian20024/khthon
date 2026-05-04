@@ -68,7 +68,7 @@ int main(int argc, char const *argv[]) {
         case Action::PARSE:     return driver.parse();
         case Action::ANALYZE:   return driver.analyze();
         case Action::GENERATE:  return driver.generate();
-        case Action::NATIVE:    return driver.generate();
+        case Action::NATIVE:    return driver.generate(true);
         default: 
             return -1;
     }

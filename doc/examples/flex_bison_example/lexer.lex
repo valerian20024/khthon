@@ -105,13 +105,13 @@ static void print_error(const position &pos, const string &m)
 
 void Driver::scan_begin()
 {
-    loc.initialize(&source_file);
+    loc.initialize(&source_file_);
 
-    if (source_file.empty() || source_file == "-")
+    if (source_file_.empty() || source_file_ == "-")
         yyin = stdin;
-    else if (!(yyin = fopen(source_file.c_str(), "r")))
+    else if (!(yyin = fopen(source_file_.c_str(), "r")))
     {
-        cerr << "cannot open " << source_file << ": " << strerror(errno) << '\n';
+        cerr << "cannot open " << source_file_ << ": " << strerror(errno) << '\n';
         exit(EXIT_FAILURE);
     }
 }

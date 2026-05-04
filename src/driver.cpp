@@ -1,6 +1,7 @@
+#include <filesystem>
 #include <iostream>
-#include <string>
 #include <map>
+#include <string>
 
 #include "driver.hpp"
 #include "parser.hpp"
@@ -69,9 +70,9 @@ namespace Khthon {
     Khthon::location Driver::default_location() const {
         Khthon::location loc;
 
-        auto filename_ptr = std::make_shared<string>(source_file.empty() 
+        auto filename_ptr = std::make_shared<string>(source_file_.empty() 
             ? "<unknown>"
-            : source_file);
+            : source_file_);
 
         loc.begin.filename = filename_ptr.get();
         loc.end.filename   = filename_ptr.get();
@@ -82,6 +83,14 @@ namespace Khthon {
         loc.end.column   = 1;
 
         return loc;
+    }
+
+    static string derive_output_name(const string& source_file) {
+        std::filesystem::path p(source_file);
+        // stem() gives the filename without extension: "bar.vsop" -> "bar"
+        // parent_path() gives the directory: "foo/"
+        // Combining them gives "foo/bar"
+        return (p.parent_path() / p.stem()).string();
     }
 
 
@@ -169,7 +178,7 @@ namespace Khthon {
         return has_error;
     }
 
-    int Driver::generate() {
+    int Driver::generate(bool make_executable) {
         scan_begin();
         parser = new Parser(*this);
         parser->parse();
@@ -188,10 +197,56 @@ namespace Khthon {
 
         CodeGenOrchestrator codegen(*this, checker);
         codegen.generate(ast_root);
-        codegen.print_ir(llvm::outs());
+
+        if (!make_executable) {
+            codegen.print_ir(llvm::outs());
+            return 0;
+        }
+
+        // Making an executable file.
+
+        // Step 1: write the IR to a temporary file.
+        // We use a fixed /tmp path for simplicity. 
+        // A more robust approach would use mkstemp().
+        string ir_file  = "build/ir.ll";
+        string exe_file = derive_output_name(source_file_);
+
+        cout << exe_file << endl;
+
+        error_code ec;
+        llvm::raw_fd_ostream ir_stream(ir_file, ec);
+        if (ec) {
+            internal_error(
+                "generate(): could not open IR temp file: " + ec.message()
+            );
+            return 1;
+        }
+        codegen.print_ir(ir_stream);
+        ir_stream.flush();
+
+        // Step 2: invoke clang to compile IR + runtime into a native executable.
+        // RUNTIME_OBJECT_PATH is a macro baked in at compile time by the Makefile.
+        std::string cmd = std::string("clang")
+            + " -o " + exe_file
+            + " "   + ir_file
+            + " "   + RUNTIME_PATH;
+
+        int status    = system(cmd.c_str());
+        int exit_code = WEXITSTATUS(status);
+
+        if (exit_code != 0) {
+            internal_error(
+                "generate(): clang exited with code " 
+                + std::to_string(exit_code)
+            );
+            return 1;
+        }
 
         return 0;
     }
+
+
+
 
     /**
      * @brief Print the information about a token
@@ -234,7 +289,6 @@ namespace Khthon {
         }
         out << endl;
     }
-
 
     void Driver::print_tokens(std::ostream& out) {    
         for (auto token : tokens)

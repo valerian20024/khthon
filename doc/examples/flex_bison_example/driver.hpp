@@ -29,16 +29,16 @@ namespace VSOP
         /**
          * @brief Construct a new Driver.
          *
-         * @param _source_file The file containing the source code.
+         * @param source_file The file containing the source code.
          */
-        Driver(const std::string &_source_file) : source_file(_source_file) {}
+        Driver(const std::string &source_file) : source_file_(source_file) {}
 
         /**
          * @brief Get the source file.
          *
          * @return const std::string& The source file.
          */
-        const std::string &get_source_file() { return source_file; }
+        const std::string &get_source_file() { return source_file_; }
 
         /**
          * @brief Add a new integer variable.
@@ -95,7 +95,7 @@ namespace VSOP
         /**
          * @brief The source file.
          */
-        std::string source_file;
+        std::string source_file_;
 
         /**
          * @brief The parser.

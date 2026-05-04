@@ -19,8 +19,8 @@ We simply tell it is duplicated and return early, not adding this class to the s
 If I had more time I would have enhanced the code in the following ways : 
 
 \begin{enumerate}
-    \item Make dedicated src, build folders and update the Makefile.
     \item Change the lexer to only take one keyword token and use a has table to decide its content.
+    \item Create a dedicated ErrorLogger class (and file) instead of putting the responsibility of error related mechanics to Driver.
 \end{enumerate}
 
 \section{Course improvements}

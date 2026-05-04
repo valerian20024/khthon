@@ -118,7 +118,7 @@ namespace Khthon {
     class Driver {
     private:
         /// @brief The source file to compile.
-        std::string source_file;
+        std::string source_file_;
 
         /// @brief The parser.
         Khthon::Parser *parser;
@@ -143,11 +143,11 @@ namespace Khthon {
 
     public:
         /// @brief Construct a new Driver.
-        /// @param _source_file The file containing the source code.
-        Driver(const std::string &source_file_) : source_file(source_file_) {}
+        /// @param source_file The file containing the source code.
+        Driver(const std::string &source_file) : source_file_(source_file) {}
 
         /// @return The compiled source file.
-        //const std::string &get_source_file() { return source_file; }
+        const std::string source_file() { return source_file_; }
 
         /// @brief Returns the default location: current_source_file: 1: 1.
         Khthon::location default_location() const;
@@ -172,7 +172,7 @@ namespace Khthon {
         /// @brief Run the lexer, parser on the source file. Checks semantics and generate intermediate representation.
         /// @note Requires the lexer, parser, and semantic checker to run first.
         /// @return 0 if no error happened during compilation. Non-zero otherwise.
-        int generate();
+        int generate(bool make_executable = false);
 
         /// @brief Print all the tokens, that is the output of the lexical analysis
         void print_tokens(std::ostream& out);

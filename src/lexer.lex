@@ -390,16 +390,17 @@ ASSIGN                          "<-"
     ++================================================*/
 
 void Driver::scan_begin() {
-    loc.initialize(&source_file);
+    
+    loc.initialize(&(Driver::source_file_));
 
     // When no file is provided, defaults to stdin
-    if (source_file.empty() || source_file == "-")
+    if (Driver::source_file_.empty() || Driver::source_file_ == "-")
         yyin = stdin;
-    else if (!(yyin = fopen(source_file.c_str(), "r"))) {
+    else if (!(yyin = fopen(Driver::source_file_.c_str(), "r"))) {
         
         //todo use the error system.
         cerr << "cannot open " 
-             << source_file 
+             << Driver::source_file_ 
              << ": " 
              << strerror(errno) << endl;
         exit(EXIT_FAILURE);
@@ -413,7 +414,7 @@ void Driver::scan_end() {
 static string printable_hex_value(const string& hex_string) {
     // Verify input
     if (hex_string.size() < 4 || hex_string.substr(0, 2) != "\\x") {
-        cerr << "error in printable_hex_value: "
+        cerr << "Error in printable_hex_value: "
                 "incorrect escaped character" 
              << endl;
     }
