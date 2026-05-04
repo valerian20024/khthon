@@ -7,11 +7,15 @@ namespace Khthon
 {
     void CodeGenOrchestrator::emit_runtime_declarations() {
         
-        // Creating Object and its vtable.
+        // Creating Object and its vtable as opaque types.
+        // This avoids a chicken and egg problem: we can use pointers to 
+        // the vtable and object type before constructing them concretely.
         StructType* object_vtable = StructType::create(context_, "ObjectVTable");
         StructType* object_type = StructType::create(context_, "Object");
 
-        // We take the handle to Object to be able to use it in methods declarations.
+        // We take the handle to Object to be able to use it in methods 
+        // declarations. Pointers have a fixed size so it's fine even though
+        // Object is is not yet built.
         llvm::Type* object_ptr = object_type->getPointerTo();
         llvm::Type* i8_ptr     = llvm::Type::getInt8PtrTy(context_);
         llvm::Type* i1         = llvm::Type::getInt1Ty(context_);
@@ -29,7 +33,7 @@ namespace Khthon
         object_vtable->setBody(vtable_methods);
 
         // Object contains only a pointer to its vtable.
-        object_type->setBody({ object_vtable->getPointerTo() });
+        object_type->setBody(object_vtable->getPointerTo());
 
         // Register Object type and its vtable.
         class_types_["Object"]  = object_type;
@@ -45,9 +49,9 @@ namespace Khthon
             auto* method_type = llvm::FunctionType::get(ret, params, false);
             
             // Inserting the declaration into the module.
-            llvm::Function::Create(
+            Function::Create(
                 method_type,
-                llvm::GlobalValue::ExternalLinkage, 
+                GlobalValue::ExternalLinkage, 
                 name,
                 *module_
             );
@@ -63,12 +67,12 @@ namespace Khthon
         declare("Object___init",      object_ptr, {object_ptr});
 
         // Declaring the vtable global as external.
-        new llvm::GlobalVariable(
+        new GlobalVariable(
             *module_,
             object_vtable,
-            true,                               // isConstant
-            llvm::GlobalValue::ExternalLinkage,
-            nullptr,                            // no initializer = external
+            true,                           // It is constant.
+            GlobalValue::ExternalLinkage,
+            nullptr,                        // Linker provides the initializer.
             "Object___vtable"
         );
     }
@@ -141,7 +145,8 @@ namespace Khthon
     void CodeGenOrchestrator::generate(
         const shared_ptr<ProgramNode>& root
     ) {
-        // Multiple passes are required to properly gather data.
+        // First we emit the Object class content.
+        emit_runtime_declarations();
         
         // Creating opaque structure for each class.
         for (const auto& c : root->classes())

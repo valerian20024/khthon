@@ -6,7 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Utility functions ----------------------------------------------------------
+    /*================================================++
+    ||              UTILITY FUNCTIONS                 ||
+    ++================================================*/
 
 // Read characters from stdin until EOF is reached, or the given predicate
 // returns true. The character for which the predicate returns true is not
@@ -47,10 +49,12 @@ static int is_eol(int c) {
     return c == '\n';
 }
 
-// Methods --------------------------------------------------------------------
+    /*================================================++
+    ||                   METHODS                      ||
+    ++================================================*/
 
 Object *Object__print(Object *self, const char *s) {
-    printf("%s", s); // Note that printf(s) would allow format-string attacks
+    printf("%s", s);  // Note that printf(s) would allow format-string attacks
     return self;
 }
 
@@ -60,7 +64,7 @@ Object *Object__printBool(Object *self, bool b) {
 }
 
 Object *Object__printInt32(Object *self, int32_t i) {
-    printf("%" PRId32, i); // PRId32 is the printf sequence for int32_t
+    printf("%" PRId32, i);  // PRId32 is the printf sequence for int32_t
     return self;
 }
 
@@ -105,30 +109,35 @@ int32_t Object__inputInt32(Object *self __attribute__((unused))) {
     char *p;
     long long int i;
     size_t len = strlen(word);
-    // We can't use strtoll base detection since it also allows octal, contrary
-    // to VSOP
-    bool is_hex =
-        (len > 2 && word[0] == '0' && word[1] == 'x')
-        || (len > 3 && (word[0] == '+' || word[0] == '-') && word[1] == '0'
-                && word[2] == 'x');
-    if (is_hex) {
+    // We cannot use strtoll base detection since it also allows octal, 
+    // on the contrary to to VSOP.
+    bool is_hex = (len > 2 
+                    && word[0] == '0' 
+                    && word[1] == 'x'
+                ) || (len > 3 
+                    && (word[0] == '+' || word[0] == '-') 
+                    && word[1] == '0'
+                    && word[2] == 'x'
+                );
+    if (is_hex)
         i = strtoll(word, &p, 16);
-    } else {
+    else
         i = strtoll(word, &p, 10);
-    }
 
     if (*p != '\0' || p == word) {
         fprintf(stderr,
-                "Object::inputInt32: `%s` is not a valid integer literal!\n",
-                word);
+            "Object::inputInt32: `%s` is not a valid integer literal!\n",
+            word
+        );
         free(word);
         exit(EXIT_FAILURE);
     }
 
     if (i < INT32_MIN || i > INT32_MAX) {
         fprintf(stderr,
-                "Object::inputInt32: `%s` does not fit a 32-bit integer!\n",
-                word);
+            "Object::inputInt32: `%s` does not fit a 32-bit integer!\n",
+            word
+        );
         free(word);
         exit(EXIT_FAILURE);
     }
@@ -136,7 +145,10 @@ int32_t Object__inputInt32(Object *self __attribute__((unused))) {
     return (int32_t) i;
 }
 
-// Constructor ----------------------------------------------------------------
+    /*================================================++
+    ||                 CONSTRUCTOR                    ||
+    ++================================================*/
+
 
 Object *Object___new(void) {
     Object *ret = malloc(sizeof (Object));
@@ -149,7 +161,9 @@ Object *Object___init(Object *self) {
     return self;
 }
 
-// Virtual function table instance --------------------------------------------
+    /*================================================++
+    ||          VTABLE FUNCTIONS INSTANCE             ||
+    ++================================================*/
 
 const ObjectVTable Object___vtable = {
     .print      = &Object__print,
