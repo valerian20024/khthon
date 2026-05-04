@@ -66,6 +66,7 @@ OBJ = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(ALL_SRC))
 #  Archiving
 #------------------------------------------------------------------------------
 
+#todo Add `report.pdf` to the archive.
 ARCHIVE = vsopcompiler.tar.xz
 
 ARCHIVE_FILES = Makefile \
