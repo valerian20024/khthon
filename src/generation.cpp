@@ -132,6 +132,18 @@ namespace Khthon
         vtable_instances_[name] = vtable_global;
     }
 
+    llvm::Type* CodeGenOrchestrator::llvm_type(const Khthon::Type& t) {
+        if (t.is_int32())   return llvm::Type::getInt32Ty(context_);
+        if (t.is_bool())    return llvm::Type::getInt1Ty(context_);
+        if (t.is_unit())    return llvm::Type::getVoidTy(context_);
+        if (t.is_string())  return llvm::Type::getInt8PtrTy(context_);
+        if (t.is_custom())  return class_types_.at(t.custom_name())->getPointerTo();
+
+        driver_.internal_error("llvm_type(): unknown type " + t.to_string());
+        
+        return llvm::Type::getVoidTy(context_);
+    }
+
     CodeGenOrchestrator::CodeGenOrchestrator(
         Driver& driver, 
         SemanticChecker& checker

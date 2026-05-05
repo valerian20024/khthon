@@ -60,6 +60,10 @@ namespace Khthon {
         /// Pass 4: emit the vtable global constant.
         void emit_vtable_global(const ClassNode& node);
 
+        /// @brief Helper to convert from VSOP types to LLVM types.
+        llvm::Type* llvm_type(const Khthon::Type& t);
+
+
     public:
         CodeGenOrchestrator(Driver& driver, SemanticChecker& checker);
 
