@@ -43,21 +43,36 @@ namespace Khthon {
         /// @brief Mapping class names to their vtable.
         std::map<std::string, llvm::StructType*> vtable_types_;
 
-        std::map<std::string, llvm::GlobalVariable*> vtable_instances_;
+        /// @brief Mapping class names to their vtable globals.
+        std::map<std::string, llvm::GlobalVariable*> vtable_globals_;
+
+        // Maps class name -> (method name -> vtable slot index)
+        // Needed for virtual dispatch codegen later.
+        std::map<std::string, std::map<std::string, unsigned>> vtable_indices_;
+
+        // Maps mangled function name -> llvm::Function*
+        // Needed so emit_vtable_global can reference already-emitted methods.
+        std::map<std::string, llvm::Function*> functions_;
 
         /// @brief Emits declarations for Object.
         void emit_runtime_declarations();
 
-        /// Pass 1: create opaque struct types for every class.
+        /// @brief Creates opaque struct types for every class.
         void create_class_type(const ClassNode& node);
 
-        /// Pass 2: fill in vtable body (empty for now).
+        /// @brief Fill in the vtable body.
         void finalize_vtable(const ClassNode& node);
 
-        /// Pass 3: fill in class struct body (vtable ptr only for now).
+        /// Pass 5: emit a stub body for one method.
+        void emit_method(const ClassNode& class_node, const MethodNode& method_node);
+
+        /// Pass 5 (driver): emit all methods of a class.
+        void emit_methods(const ClassNode& node);
+
+        /// @brief Fill in the class struct body.
         void finalize_class(const ClassNode& node);
 
-        /// Pass 4: emit the vtable global constant.
+        /// @brief Emit the vtable global constant.
         void emit_vtable_global(const ClassNode& node);
 
         /// @brief Helper to convert from VSOP types to LLVM types.

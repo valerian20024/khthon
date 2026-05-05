@@ -129,7 +129,7 @@ namespace Khthon
             name + "_vtable"
         );
 
-        vtable_instances_[name] = vtable_global;
+        vtable_globals_[name] = vtable_global;
     }
 
     llvm::Type* CodeGenOrchestrator::llvm_type(const Khthon::Type& t) {
@@ -140,7 +140,7 @@ namespace Khthon
         if (t.is_custom())  return class_types_.at(t.custom_name())->getPointerTo();
 
         driver_.internal_error("llvm_type(): unknown type " + t.to_string());
-        
+
         return llvm::Type::getVoidTy(context_);
     }
 
