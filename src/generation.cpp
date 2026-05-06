@@ -67,6 +67,7 @@ namespace Khthon
         declare("Object___init",      object_ptr, {object_ptr});
 
         // Declaring the vtable global as external.
+        //? why new here?
         new GlobalVariable(
             *module_,
             object_vtable,
@@ -92,11 +93,45 @@ namespace Khthon
     }
 
     void CodeGenOrchestrator::finalize_vtable(const ClassNode& node) {
+        const string class_name = node.name();
         StructType* vtable_type = vtable_types_[node.name()];
+        StructType* class_type = class_types_[class_name];
 
-        //! No methods yet: empty body.
-        //! Later: push one function pointer type per method here.
-        vtable_type->setBody(ArrayRef<llvm::Type*>());
+        // Stores the methods signatures.
+        vector<llvm::Type*> slot_types;
+        
+        // Record the slot index of each method in the vtable.
+        unsigned slot_index = 0;
+
+        for (const auto& method : node.methods()) {
+            const string method_name = method->name();
+
+            // Stores the types of the method's parameters.
+            vector<llvm::Type*> method_parameters;
+
+            // The first parameter is always 'self', a pointer to the class.
+            method_parameters.push_back(class_type->getPointerTo());
+
+            for (const auto& formal : method->formals())
+                method_parameters.push_back(llvm_type(formal->type()));
+
+            // The return type.
+            llvm::Type* return_type = llvm_type(method->type());
+
+            // Create the LLVM construct for this method.
+            llvm::Type* method_ptr_type = FunctionType::get(
+                return_type, 
+                method_parameters, 
+                false               // is not vararg
+            )->getPointerTo();
+
+            slot_types.push_back(method_ptr_type);
+
+            // Record the slot index for this method.
+            vtable_indices_[class_name][method_name] = slot_index++;
+        }
+
+        vtable_type->setBody(slot_types);
     }
 
     void CodeGenOrchestrator::finalize_class(const ClassNode& node) {
@@ -153,6 +188,8 @@ namespace Khthon
         context_(),
         module_(std::make_unique<Module>("vsop_module", context_))
     {
+        // Setting up manually target triple to not trigger an LLVM warning
+        // telling it has overriden it to some value.
         module_->setTargetTriple(llvm::sys::getDefaultTargetTriple());
     }
 

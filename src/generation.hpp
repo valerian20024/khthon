@@ -46,8 +46,7 @@ namespace Khthon {
         /// @brief Mapping class names to their vtable globals.
         std::map<std::string, llvm::GlobalVariable*> vtable_globals_;
 
-        // Maps class name -> (method name -> vtable slot index)
-        // Needed for virtual dispatch codegen later.
+        /// @brief Mapping class name -> (method name -> vtable slot index)
         std::map<std::string, std::map<std::string, unsigned>> vtable_indices_;
 
         // Maps mangled function name -> llvm::Function*
@@ -60,7 +59,7 @@ namespace Khthon {
         /// @brief Creates opaque struct types for every class.
         void create_class_type(const ClassNode& node);
 
-        /// @brief Fill in the vtable body.
+        /// @brief Fill in the vtable body with methods signatures.
         void finalize_vtable(const ClassNode& node);
 
         /// Pass 5: emit a stub body for one method.
