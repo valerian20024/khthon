@@ -46,11 +46,15 @@ namespace Khthon
             vector<llvm::Type*> params
         ) {
             // Creating the function signature.
-            auto* method_type = llvm::FunctionType::get(ret, params, false);
+            auto* method_signature = llvm::FunctionType::get(
+                ret, 
+                params, 
+                false
+            );
             
             // Inserting the declaration into the module.
             Function::Create(
-                method_type,
+                method_signature,
                 GlobalValue::ExternalLinkage, 
                 name,
                 *module_
@@ -74,6 +78,12 @@ namespace Khthon
             GlobalValue::ExternalLinkage,
             nullptr,  // Linker provides the initializer.
             "Object___vtable"
+        );
+
+        declare(
+            "malloc",
+            llvm::Type::getInt8PtrTy(context_),
+            {llvm::Type::getInt64Ty(context_)}
         );
     }
 
@@ -113,6 +123,100 @@ namespace Khthon
         );
 
         builder.CreateRet(return_value);
+    }
+
+    void CodeGenOrchestrator::emit_class_init(const ClassNode& node) {
+        const string class_name = node.name();
+        StructType* class_type = class_types_.at(class_name);
+        llvm::Type* class_ptr = class_type->getPointerTo();
+
+        // Creating this class' init method.
+        auto* init_signature = FunctionType::get(class_ptr, {class_ptr}, false);
+        auto* init_method = Function::Create(
+            init_signature,
+            GlobalValue::ExternalLinkage,
+            class_name + "___init",
+            *module_
+        );
+
+        // Only parameter of init is self.
+        init_method->arg_begin()->setName("self");
+
+        functions_[class_name + "___init"] = init_method;
+
+        // Creating the entry point.
+        BasicBlock* bb = BasicBlock::Create(context_, "entry", init_method);
+        IRBuilder<> builder(bb);
+
+        llvm::Value* self = init_method->arg_begin();
+
+        // Store the class vtable pointer as the first index in the 
+        // class structure.
+        auto* vtable_global = vtable_globals_.at(class_name);
+        auto* vtable_ptr = builder.CreateStructGEP(
+            class_type,     // The class structure
+            self,           // Pointer
+            0,              // First index of the class structure
+            "vtable_ptr"    // Name
+        );
+
+        // Storing in the code.
+        builder.CreateStore(vtable_global, vtable_ptr);
+
+        // Return self.
+        builder.CreateRet(self);
+    }
+
+    void CodeGenOrchestrator::emit_class_new(const ClassNode& node) {
+        const string class_name = node.name();
+        StructType* class_type = class_types_.at(class_name);
+        llvm::Type* class_ptr = class_type->getPointerTo();
+
+        // Signature: %ClassName* @ClassName___new()
+        auto* fn_type = FunctionType::get(class_ptr, {}, false);
+        auto* fn = Function::Create(
+            fn_type,
+            GlobalValue::ExternalLinkage,
+            class_name + "___new",
+            *module_
+        );
+
+        functions_[class_name + "___new"] = fn;
+
+        // Create entry point.
+        BasicBlock* bb = BasicBlock::Create(context_, "entry", fn);
+        IRBuilder<> builder(bb);
+
+        // Compute sizeof(ClassName) using the standard GEP trick.
+        // GEP a null pointer by 1 element, then ptrtoint — gives the byte size.
+        auto* null_ptr = ConstantPointerNull::get(cast<PointerType>(class_ptr));
+        
+        auto* size_ptr = builder.CreateConstGEP1_32(
+            class_type, 
+            null_ptr, 
+            1, 
+            "size_ptr"
+        );
+
+        auto* size = builder.CreatePtrToInt(
+            size_ptr, 
+            llvm::Type::getInt64Ty(context_), 
+            "size"
+        );
+
+        // Call malloc.
+        auto* malloc_fn = module_->getFunction("malloc");
+        auto* raw_mem = builder.CreateCall(malloc_fn, {size}, "raw_mem");
+
+        // Cast the raw memory returned by malloc to this class.
+        auto* obj = builder.CreateBitCast(raw_mem, class_ptr, "obj");
+
+        // Call the init method.
+        auto* init_fn = module_->getFunction(class_name + "___init");
+        builder.CreateCall(init_fn, {obj});
+
+        // Return the initialized object.
+        builder.CreateRet(obj);
     }
 
     void CodeGenOrchestrator::create_class_type(const ClassNode& node) {
@@ -330,6 +434,14 @@ namespace Khthon
         // Emit the vtable globals.
         for (const auto& c : root->classes())
             emit_vtable_global(*c);
+        
+        for (const auto& c : root->classes())
+            emit_class_init(*c);
+        
+        for (const auto& c : root->classes()) 
+            emit_class_new(*c);
+        
+
 
         // todo call in the CodeGen visitor
 

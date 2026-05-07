@@ -59,6 +59,12 @@ namespace Khthon {
         /// @brief Emits the C main entry point the OS expects.
         void emit_entry_point();
 
+        /// @brief Emits ClassName___init for a single class.
+        void emit_class_init(const ClassNode& node);
+
+        /// @brief Emits ClassName___new for a single class.
+        void emit_class_new(const ClassNode& node);
+
         /// @brief Creates opaque struct types for every class.
         void create_class_type(const ClassNode& node);
 

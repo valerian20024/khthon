@@ -157,7 +157,7 @@ int main(int argc, char const *argv[])
     // and the structure representing the vtable.
     // The vtable is common to all the objects of a given class, it must
     // thus be created as a unique global variable, towards which
-    // each object will pointer.
+    // each object will point to.
 
     /************** Defining the vtable **************/
     // Create a constant
