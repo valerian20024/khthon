@@ -1,6 +1,8 @@
 #ifndef LLVM_COMPATIBILITY_HPP
 #define LLVM_COMPATIBILITY_HPP
 
+// We could also add rules about get
+
 // LLVM headers contain a lot of warnings when compiling.
 // Omitting them to focus on Khthon's warnings.
 
@@ -29,6 +31,19 @@
 #else
     #include "llvm/Support/Host.h"
 #endif
+
+/*
+namespace Khthon {
+    // Utility to get a pointer type that works across versions
+    inline llvm::PointerType* getPtrTy(llvm::LLVMContext& C) {
+#if LLVM_VERSION_MAJOR >= 15
+        return llvm::PointerType::getUnqual(C);
+#else
+        return llvm::Type::getInt8PtrTy(C);
+#endif
+    }
+}
+*/
 
 #pragma GCC diagnostic pop
 
