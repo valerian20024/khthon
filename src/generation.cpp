@@ -108,7 +108,7 @@ namespace Khthon
         );
         IRBuilder<> builder(bb);
 
-        auto* new_function = module_->getFunction("Main__new");
+        auto* new_function = module_->getFunction("Main___new");
         auto* main_object  = builder.CreateCall(
             new_function,
             {},
@@ -323,7 +323,7 @@ namespace Khthon
             builder.CreateRetVoid();
         } else if (return_type->isIntegerTy()) {
             // Covers both int32 (i32) and bool (i1).
-            builder.CreateRet(ConstantInt::get(return_type, 0));  // value of 0
+            builder.CreateRet(ConstantInt::get(return_type, 1));  // value of 0
         } else {
             // Pointer types (string, custom classes): return null for now.
             builder.CreateRet(ConstantPointerNull::get(
@@ -431,7 +431,6 @@ namespace Khthon
         for (const auto& c : root->classes())
             emit_methods(*c);
         
-        // Emit the vtable globals.
         for (const auto& c : root->classes())
             emit_vtable_global(*c);
         
@@ -446,7 +445,7 @@ namespace Khthon
         // todo call in the CodeGen visitor
 
         // Lastly we emit the entrypoint.
-        //emit_entry_point();
+        emit_entry_point();
     }
 
     void CodeGenOrchestrator::print_ir(raw_ostream& out) const {

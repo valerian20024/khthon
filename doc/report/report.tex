@@ -21,13 +21,14 @@ If I had more time I would have enhanced the code in the following ways :
 \begin{enumerate}
     \item Change the lexer to only take one keyword token and use a has table to decide its content.
     \item Create a dedicated ErrorLogger instead of putting the responsibility of error related mechanics to Driver.
-    \item Create some namespaces because the code gets quite big now, and Khthon::Type is conflicting with llvm::Type
+    \item Create some namespaces because the code gets quite big now, and Khthon::Type is conflicting with llvm::Type.
+    \item Push further the Debug mechanics when compiling to have accurate and clean logging of what's happening. For now it's a bit mingled and not standardized.
 \end{enumerate}
 
 \section{Course improvements}
 Adding more VSOP example, at least code that covers the whole language. For example, there is no while example.
 
-In the generation part, adding a small example of 
+Updating the container, adding gdb to debug inside the container.
 
 \section{Use of AI Tools}
 Mainly to help understand LLVM IR, discuss and refine code organization, help with some C++ concepts. 

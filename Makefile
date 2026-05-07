@@ -164,6 +164,8 @@ clean:
 # Using gdward-4 for backward compatibility with the Container test environment.
 debug: CXXFLAGS += -DDEBUG -g -gdwarf-4
 
+debug: LDFLAGS += -v
+
 debug: print_debug $(EXEC)
 
 print_debug:
