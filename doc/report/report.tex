@@ -20,7 +20,8 @@ If I had more time I would have enhanced the code in the following ways :
 
 \begin{enumerate}
     \item Change the lexer to only take one keyword token and use a has table to decide its content.
-    \item Create a dedicated ErrorLogger class (and file) instead of putting the responsibility of error related mechanics to Driver.
+    \item Create a dedicated ErrorLogger instead of putting the responsibility of error related mechanics to Driver.
+    \item Create some namespaces because the code gets quite big now, and Khthon::Type is conflicting with llvm::Type
 \end{enumerate}
 
 \section{Course improvements}

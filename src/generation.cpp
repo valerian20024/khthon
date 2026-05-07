@@ -77,6 +77,44 @@ namespace Khthon
         );
     }
 
+    void CodeGenOrchestrator::emit_entry_point() {
+        auto* main_type = FunctionType::get(
+            llvm::Type::getInt32Ty(context_),
+            {},  // no argc/argv arguments for now
+            false
+        );
+
+        auto* entry = Function::Create(
+            main_type,
+            GlobalValue::ExternalLinkage,
+            "main",
+            *module_
+        );
+
+        BasicBlock* bb = BasicBlock::Create(
+            context_,
+            "entry",
+            entry
+        );
+        IRBuilder<> builder(bb);
+
+        auto* new_function = module_->getFunction("Main__new");
+        auto* main_object  = builder.CreateCall(
+            new_function,
+            {},
+            "main_object"
+        );
+
+        auto* main_function = module_->getFunction("Main__main");
+        auto* return_value = builder.CreateCall(
+            main_function,
+            {main_object},
+            "ret"
+        );
+
+        builder.CreateRet(return_value);
+    }
+
     void CodeGenOrchestrator::create_class_type(const ClassNode& node) {
         const string name = node.name();
 
@@ -213,27 +251,31 @@ namespace Khthon
     }
 
     void CodeGenOrchestrator::emit_vtable_global(const ClassNode& node) {
-        const string name = node.name();
-        StructType* vtable_type = vtable_types_[name];
+        const string class_name = node.name();
+        StructType* vtable_type = vtable_types_[class_name];
 
-        //! We have to get the methods associated to this class and
-        //! create a vtable constant of of it.
-        // Constant *vtable_const = ConstantStruct::get(
-        // vtable_type, // Type of the constant structure
-        // methods);    // Values to give to the different fields
-        
-        Constant* init = ConstantAggregateZero::get(vtable_type);
+        // We have to get the methods associated to this class and
+        // create a vtable constant.
+        vector<Constant*> methods;
+        for (const auto& method : node.methods()) {
+            const string mangled = class_name + "__" + method->name();
+            methods.push_back(functions_.at(mangled));
+        }
 
-        GlobalVariable* vtable_global = new GlobalVariable(
+        Constant* vtable_const = methods.empty()
+            ? ConstantAggregateZero::get(vtable_type)     // no methods
+            : ConstantStruct::get(vtable_type, methods);  // real pointers
+
+        auto* vtable_global = new GlobalVariable(
             *module_,
             vtable_type,
             true,                           // isConstant
             GlobalValue::InternalLinkage,
-            init,                           // initializer
-            name + "_vtable"
+            vtable_const,                   // initializer
+            class_name + "_vtable"
         );
 
-        vtable_globals_[name] = vtable_global;
+        vtable_globals_[class_name] = vtable_global;
     }
 
     llvm::Type* CodeGenOrchestrator::llvm_type(const Khthon::Type& t) {
@@ -290,6 +332,9 @@ namespace Khthon
             emit_vtable_global(*c);
 
         // todo call in the CodeGen visitor
+
+        // Lastly we emit the entrypoint.
+        //emit_entry_point();
     }
 
     void CodeGenOrchestrator::print_ir(raw_ostream& out) const {
