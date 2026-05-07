@@ -280,6 +280,11 @@ namespace Khthon
         for (const auto& c : root->classes())
             finalize_class(*c);
         
+        // Methods must be emitted before vtable globals, so that
+        // globals can reference real function pointers.
+        for (const auto& c : root->classes())
+            emit_methods(*c);
+        
         // Emit the vtable globals.
         for (const auto& c : root->classes())
             emit_vtable_global(*c);
