@@ -57,6 +57,8 @@ HEADERS =	ast.hpp \
 			diagnostics.hpp \
 			driver.hpp \
 			generation.hpp \
+			llvm_compatibility.hpp \
+			mangling.hpp \
 			semantics.hpp \
 			visitors.hpp
 

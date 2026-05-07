@@ -323,7 +323,7 @@ namespace Khthon
             builder.CreateRetVoid();
         } else if (return_type->isIntegerTy()) {
             // Covers both int32 (i32) and bool (i1).
-            builder.CreateRet(ConstantInt::get(return_type, 1));  // value of 0
+            builder.CreateRet(ConstantInt::get(return_type, 2));  // value of 0
         } else {
             // Pointer types (string, custom classes): return null for now.
             builder.CreateRet(ConstantPointerNull::get(

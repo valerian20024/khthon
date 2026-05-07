@@ -1,29 +1,7 @@
 #ifndef GENERATION_HPP
 #define GENERATION_HPP
 
-// LLVM headers contain a lot of warnings when compiling.
-// Omitting them to focus on Khthon's warnings.
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter" 
-#pragma GCC diagnostic ignored "-Wunused-variable" 
-
-#include "llvm/IR/LLVMContext.h"
-#include "llvm/IR/Module.h"
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/Constants.h"
-#include "llvm/IR/Function.h"
-#include "llvm/IR/Instructions.h"
-#include "llvm/IR/Type.h"
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/DerivedTypes.h"
-#include "llvm/IR/GlobalVariable.h"
-#include "llvm/Support/raw_ostream.h"
-// In old versions of LLVM. Used to find LLVM target triple.
-#include "llvm/Support/Host.h"  
-
-#pragma GCC diagnostic pop
-
+#include "llvm_compatibility.hpp"
 #include "driver.hpp"
 #include "semantics.hpp"
 
