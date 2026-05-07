@@ -67,13 +67,12 @@ namespace Khthon
         declare("Object___init",      object_ptr, {object_ptr});
 
         // Declaring the vtable global as external.
-        //? why new here?
         new GlobalVariable(
-            *module_,
+            *module_,  // LLVM automatically registers the GlobalVariable into the module
             object_vtable,
-            true,                           // It is constant.
+            true,      // It is constant.
             GlobalValue::ExternalLinkage,
-            nullptr,                        // Linker provides the initializer.
+            nullptr,  // Linker provides the initializer.
             "Object___vtable"
         );
     }
@@ -134,6 +133,71 @@ namespace Khthon
         vtable_type->setBody(slot_types);
     }
 
+    void CodeGenOrchestrator::emit_method(
+        const ClassNode& class_node,
+        const MethodNode& method_node
+    ) {
+        const string class_name  = class_node.name();
+        const string method_name = method_node.name();
+        const string mangled = class_name + "__" + method_name;
+
+        StructType* class_type = class_types_[class_name];
+
+        // Build parameter types.
+        vector<llvm::Type*> param_types;
+
+        param_types.push_back(class_type->getPointerTo());  // self
+        
+        for (const auto& formal : method_node.formals())
+            param_types.push_back(llvm_type(formal->type()));  // formals
+        
+        llvm::Type* return_type = llvm_type(method_node.type());  // return type
+
+        // Create the method in the module.
+        auto* method_signature = FunctionType::get(return_type, param_types, false);
+        auto* method = Function::Create(
+            method_signature,
+            GlobalValue::ExternalLinkage,
+            mangled,
+            *module_
+        );
+
+        // Name the parameters for readability in the IR.
+        auto arg_it = method->arg_begin();
+        arg_it->setName("self");
+        ++arg_it;
+        for (const auto& formal : method_node.formals()) {
+            arg_it->setName(formal->name());
+            ++arg_it;
+        }
+
+        // Create the entry basic block and a stub body.
+        BasicBlock* bb = BasicBlock::Create(context_, "entry", method);
+        IRBuilder<> builder(bb);
+
+        //! Stub: return the default value for the return type.
+        //! Later this will be replaced by visiting the method body AST.
+        if (return_type->isVoidTy()) {
+            builder.CreateRetVoid();
+        } else if (return_type->isIntegerTy()) {
+            // Covers both int32 (i32) and bool (i1).
+            builder.CreateRet(ConstantInt::get(return_type, 0));  // value of 0
+        } else {
+            // Pointer types (string, custom classes): return null for now.
+            builder.CreateRet(ConstantPointerNull::get(
+                cast<PointerType>(return_type)
+            ));
+        }
+
+        // Register the function for later use.
+        functions_[mangled] = method;
+    }
+
+    void CodeGenOrchestrator::emit_methods(const ClassNode& node) {
+        for (const auto& method : node.methods())
+            emit_method(node, *method);
+    }
+
     void CodeGenOrchestrator::finalize_class(const ClassNode& node) {
         const string name = node.name();
 
@@ -152,7 +216,12 @@ namespace Khthon
         const string name = node.name();
         StructType* vtable_type = vtable_types_[name];
 
-        // zeroinitializer is the correct constant for an empty struct.
+        //! We have to get the methods associated to this class and
+        //! create a vtable constant of of it.
+        // Constant *vtable_const = ConstantStruct::get(
+        // vtable_type, // Type of the constant structure
+        // methods);    // Values to give to the different fields
+        
         Constant* init = ConstantAggregateZero::get(vtable_type);
 
         GlobalVariable* vtable_global = new GlobalVariable(
@@ -214,10 +283,6 @@ namespace Khthon
         // Emit the vtable globals.
         for (const auto& c : root->classes())
             emit_vtable_global(*c);
-        
-        //! Debug: force-print the struct layout.
-        class_types_["Main"]->print(llvm::errs());
-        llvm::errs() << "\n";
 
         // todo call in the CodeGen visitor
     }
