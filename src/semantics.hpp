@@ -187,13 +187,19 @@ namespace Khthon {
 
         /// @brief Checks whether `given` is a subtype of `compared_to` using class inheritance.
         /// @return `nullopt` if an error occured.
-        const std::optional<bool> is_subtype(const Type& given, const Type& compared_to) const;
+        const std::optional<bool> is_subtype(
+            const Type& given, 
+            const Type& compared_to
+        ) const;
         
         /// @brief Returns the least common ancestor between `t1` and `t2`.
         /// @note Will return `Object` if no other ancestor is found.
         /// @warning Assumes types are custom and they exist in the table.
         /// Prefer using the wrapper SemanticChecker::ancestor if unsure about it.
-        Type ancestor(const Type& custom_type1, const Type& custom_type2) const;
+        Type ancestor(
+            const Type& custom_type1, 
+            const Type& custom_type2
+        ) const;
 
         /// @brief Finds the type of a field of a class.
         /// 
@@ -201,17 +207,22 @@ namespace Khthon {
         /// hierarchy of classes starting at `class_name` (looking into 
         /// ancestors up to Object included).
         ///
-        /// @return `nullopt` if not found.
-        std::optional<FieldInfo>lookup_field(
+        /// @return `nullopt` if not found. The field infos otherwise.
+        std::optional<FieldInfo> lookup_field(
             const std::string& name, 
             const std::string& class_name
         ) const;
 
         /// @brief Tries to find a method of a given class.
-        /// @return `nullopt` if not found.
+        /// @return `nullopt` if not found. The method infos otherwise.
         std::optional<MethodInfo> lookup_method(
             const std::string& name,
             const std::string& class_name
+        ) const;
+
+        /// @brief Returns all the fields belonging to a given class or to its ancestors. 
+        std::vector<std::pair<std::string, Khthon::Type>> collect_fields(
+            const std::string class_name
         ) const;
     };
 
@@ -301,6 +312,12 @@ namespace Khthon {
             const std::string& name,
             const std::string& class_name
         ) const;
+
+        /// @brief Handle to the class manager. 
+        const Khthon::ClassManager& class_manager() const { return class_manager_; }
+
+        /// @brief Handle to the scope manager.
+        const Khthon::ScopeManager& scope_manager() const { return scope_manager_; }
     };
 
 

@@ -54,7 +54,10 @@ namespace Khthon {
         return it->second;
     }
 
-    const optional<bool> ClassManager::is_subtype(const Type& given, const Type& compared_to) const {
+    const optional<bool> ClassManager::is_subtype(
+        const Type& given, 
+        const Type& compared_to
+    ) const {
         
         // Subtyping is only available for classes.
         if (!given.is_custom() || !compared_to.is_custom())
@@ -81,7 +84,10 @@ namespace Khthon {
     }
 
 
-    Type ClassManager::ancestor(const Type& t1, const Type& t2) const {
+    Type ClassManager::ancestor(
+        const Type& t1, 
+        const Type& t2
+    ) const {
         
         // Collect the full ancestry chain of t1 into an ordered list.
         vector<string> ancestors;
@@ -163,12 +169,18 @@ namespace Khthon {
         return nullopt;
     }
 
+    vector<pair<string, Khthon::Type>> ClassManager::collect_fields(
+        const string class_name
+    ) const {
+        return vector<pair<string, Khthon::Type>>();
+    }
 
 
     /*================================================++
     ||                 SCOPE MANAGER                  ||
     ++================================================*/
 
+    
     void ScopeManager::push_scope() { 
         scope_table_.push_back({}); 
     }

@@ -306,7 +306,12 @@ namespace Khthon {
         llvm::Type* return_type = to_llvm(method_node.type());  // return type
 
         // Create the method in the module.
-        auto* method_signature = FunctionType::get(return_type, param_types, false);
+        auto* method_signature = FunctionType::get(
+            return_type, 
+            param_types, 
+            false
+        );
+
         auto* method = Function::Create(
             method_signature,
             GlobalValue::ExternalLinkage,
@@ -340,6 +345,7 @@ namespace Khthon {
                 cast<PointerType>(return_type)
             ));
         }
+        //! end of stub
 
         // Register the function for later use.
         functions_[mangled] = method;
@@ -352,14 +358,24 @@ namespace Khthon {
 
     void CodeGenOrchestrator::finalize_class_struct(const ClassNode& node) {
         const string class_name = node.name();
-
         StructType* class_type  = class_types_[class_name];
         StructType* vtable_type = vtable_types_[class_name];
 
-        //! For now: only the vtable pointer.
-        //! Later: inherited fields and own fields follow here.
+        // The fields we will fill into the class struct.
         vector<llvm::Type*> fields;
+
+        // Slot 0 is the vtable pointer.
         fields.push_back(vtable_type->getPointerTo());
+        unsigned slot = 1;
+
+        // Walk up the class hierarchy to collect fields.
+        vector<pair<string, Khthon::Type>> all_fields = collect_fields(class_name);
+
+        // Assign their slot and the
+        for (const auto& [field_name, type] : all_fields) {
+            field_indices_[class_name][field_name] = slot++;
+            fields.push_back(to_llvm(type));
+        }
 
         class_type->setBody(fields);
     }
@@ -405,6 +421,13 @@ namespace Khthon {
         return llvm::Type::getVoidTy(context_);
     }
 
+    vector<pair<string, Khthon::Type>> CodeGenOrchestrator::collect_fields(
+        const string class_name
+    ) const {
+        return checker_.class_manager().collect_fields(class_name);
+    }
+
+
     CodeGenOrchestrator::CodeGenOrchestrator(
         Driver& driver, 
         SemanticChecker& checker
@@ -420,9 +443,7 @@ namespace Khthon {
         module_->setTargetTriple(llvm::sys::getDefaultTargetTriple());
     }
 
-    void CodeGenOrchestrator::generate(
-        const shared_ptr<ProgramNode>& root
-    ) {
+    void CodeGenOrchestrator::generate(const shared_ptr<ProgramNode>& root) {
         emit_runtime_declarations();
         
         for (const auto& c : root->classes())

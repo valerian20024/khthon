@@ -28,6 +28,9 @@ namespace Khthon {
         /// @brief Mapping class name -> (method name -> vtable slot index)
         std::map<std::string, std::map<std::string, unsigned>> vtable_indices_;
 
+        /// @brief Mapping class name -> (field name -> class struct slot index)
+        std::map<std::string, std::map<std::string, unsigned>> field_indices_;
+
         // Maps mangled function name -> llvm::Function*
         // Needed so emit_vtable_global can reference already-emitted methods.
         std::map<std::string, llvm::Function*> functions_;
@@ -68,13 +71,17 @@ namespace Khthon {
         /// @brief Helper to convert from VSOP types to LLVM types.
         llvm::Type* to_llvm(const Khthon::Type& t);
 
+        /// @brief Wrapper to SemanticChecker::collect_fields(). 
+        std::vector<std::pair<std::string, Khthon::Type>> collect_fields(
+            const std::string class_name
+        ) const;
 
     public:
         CodeGenOrchestrator(Driver& driver, SemanticChecker& checker);
 
         /// @brief Passes over the AST to fetch data for the generation pass.
         /// @param root The AST root.
-        void generate(const std::shared_ptr<ProgramNode>& root);
+        void generate(const shared_ptr<ProgramNode>& root);
 
         /// Print the LLVM IR to the given stream.
         void print_ir(llvm::raw_ostream& out) const;

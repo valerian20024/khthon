@@ -239,7 +239,6 @@ namespace Khthon {
         codegen.print_ir(ir_stream);
         ir_stream.flush();
 
-
         // RUNTIME_PATH is a macro added at compile time by the Makefile.
         string cmd = "clang -o " 
             + exe_file + " "
