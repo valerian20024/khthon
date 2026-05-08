@@ -1,10 +1,16 @@
 #ifndef LLVM_COMPATIBILITY_HPP
 #define LLVM_COMPATIBILITY_HPP
 
-// We could also add rules about get
-
-// LLVM headers contain a lot of warnings when compiling.
-// Omitting them to focus on Khthon's warnings.
+/**
+ * This header acts as a central coordinator for including anything LLVM.
+ * In its current state, it manages to ignore the messy output of compiling
+ * LLVM code and makes sure to include the correct headers based on the LLVM
+ * version. This is mostly a proof of concept, we do not guarantee to support
+ * any other version than LLVM 11.
+ * 
+ * The code needing to include LLVM headers should only include this very 
+ * header to ensure a smooth and consistent behavior, namely generation.hpp.
+ */
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter" 
@@ -24,28 +30,16 @@
 #include "llvm/IR/GlobalVariable.h"
 #include "llvm/Support/raw_ostream.h"
 
-// Headers have changed with time.
-// Used to find LLVM target triple.
+// Header used to find LLVM target triple.
 #if LLVM_VERSION_MAJOR >= 17
     #include "llvm/TargetParser/Host.h"
 #else
     #include "llvm/Support/Host.h"
 #endif
 
-/*
-namespace Khthon {
-    // Utility to get a pointer type that works across versions
-    inline llvm::PointerType* getPtrTy(llvm::LLVMContext& C) {
-#if LLVM_VERSION_MAJOR >= 15
-        return llvm::PointerType::getUnqual(C);
-#else
-        return llvm::Type::getInt8PtrTy(C);
-#endif
-    }
-}
-*/
+// We could also add a wrapper for llvm::getPtrTy since getInt8PtrTy is 
+// deprecated in recent LLVM versions.
 
 #pragma GCC diagnostic pop
-
 
 #endif
