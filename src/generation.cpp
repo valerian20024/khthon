@@ -225,21 +225,25 @@ namespace Khthon {
         builder_.CreateRet(obj);
     }
 
-    void CodeGenOrchestrator::create_class_type(const ClassNode& node) {
+    void CodeGenOrchestrator::create_class_struct(const ClassNode& node) {
         const string class_name = node.name();
 
-        // Creating class type and its vtable as opaque struct types.
         StructType* class_type = StructType::create(context_, class_name);
+
+        class_types_[class_name]  = class_type;
+    }
+
+    void CodeGenOrchestrator::create_class_vtable(const ClassNode& node) {
+        const string class_name = node.name();
+
         StructType* vtable_type = StructType::create(
             context_, Mangle::vt_type(class_name)
         );
 
-        // Inserting them into our data structs.
-        class_types_[class_name]  = class_type;
         vtable_types_[class_name] = vtable_type;
     }
 
-    void CodeGenOrchestrator::finalize_vtable(const ClassNode& node) {
+    void CodeGenOrchestrator::finalize_class_vtable(const ClassNode& node) {
         const string class_name = node.name();
         StructType* vtable_type = vtable_types_[node.name()];
         StructType* class_type = class_types_[class_name];
@@ -260,10 +264,10 @@ namespace Khthon {
             method_parameters.push_back(class_type->getPointerTo());
 
             for (const auto& formal : method->formals())
-                method_parameters.push_back(llvm_type(formal->type()));
+                method_parameters.push_back(to_llvm(formal->type()));
 
             // The return type.
-            llvm::Type* return_type = llvm_type(method->type());
+            llvm::Type* return_type = to_llvm(method->type());
 
             // Create the LLVM construct for this method.
             llvm::Type* method_ptr_type = FunctionType::get(
@@ -297,9 +301,9 @@ namespace Khthon {
         param_types.push_back(class_type->getPointerTo());  // self
         
         for (const auto& formal : method_node.formals())
-            param_types.push_back(llvm_type(formal->type()));  // formals
+            param_types.push_back(to_llvm(formal->type()));  // formals
         
-        llvm::Type* return_type = llvm_type(method_node.type());  // return type
+        llvm::Type* return_type = to_llvm(method_node.type());  // return type
 
         // Create the method in the module.
         auto* method_signature = FunctionType::get(return_type, param_types, false);
@@ -346,7 +350,7 @@ namespace Khthon {
             emit_method(node, *method);
     }
 
-    void CodeGenOrchestrator::finalize_class(const ClassNode& node) {
+    void CodeGenOrchestrator::finalize_class_struct(const ClassNode& node) {
         const string class_name = node.name();
 
         StructType* class_type  = class_types_[class_name];
@@ -360,7 +364,7 @@ namespace Khthon {
         class_type->setBody(fields);
     }
 
-    void CodeGenOrchestrator::emit_vtable_global(const ClassNode& node) {
+    void CodeGenOrchestrator::emit_vtable(const ClassNode& node) {
         const string class_name = node.name();
         StructType* vtable_type = vtable_types_[class_name];
 
@@ -389,14 +393,14 @@ namespace Khthon {
         vtable_globals_[class_name] = vtable_global;
     }
 
-    llvm::Type* CodeGenOrchestrator::llvm_type(const Khthon::Type& t) {
+    llvm::Type* CodeGenOrchestrator::to_llvm(const Khthon::Type& t) {
         if (t.is_int32())   return llvm::Type::getInt32Ty(context_);
         if (t.is_bool())    return llvm::Type::getInt1Ty(context_);
         if (t.is_unit())    return llvm::Type::getVoidTy(context_);
         if (t.is_string())  return llvm::Type::getInt8PtrTy(context_);
         if (t.is_custom())  return class_types_.at(t.custom_name())->getPointerTo();
 
-        driver_.internal_error("llvm_type(): unknown type " + t.to_string());
+        driver_.internal_error("to_llvm(): unknown type " + t.to_string());
 
         return llvm::Type::getVoidTy(context_);
     }
@@ -419,20 +423,19 @@ namespace Khthon {
     void CodeGenOrchestrator::generate(
         const shared_ptr<ProgramNode>& root
     ) {
-        // First we emit the Object class content.
         emit_runtime_declarations();
         
-        // Creating opaque structure for each class.
         for (const auto& c : root->classes())
-            create_class_type(*c);
+            create_class_vtable(*c);
+
+        for (const auto& c : root->classes())
+            create_class_struct(*c);
         
-        // Fill in each class vtable bodies.
         for (const auto& c : root->classes())
-            finalize_vtable(*c);
+            finalize_class_vtable(*c);
         
-        // Fill in the rest of the class structure (i.e., fields).
         for (const auto& c : root->classes())
-            finalize_class(*c);
+            finalize_class_struct(*c);
         
         // Methods must be emitted before vtable globals, so that
         // globals can reference real function pointers.
@@ -440,7 +443,7 @@ namespace Khthon {
             emit_methods(*c);
         
         for (const auto& c : root->classes())
-            emit_vtable_global(*c);
+            emit_vtable(*c);
         
         for (const auto& c : root->classes())
             emit_class_init(*c);
@@ -448,8 +451,6 @@ namespace Khthon {
         for (const auto& c : root->classes()) 
             emit_class_new(*c);
         
-
-
         // todo call in the CodeGen visitor
 
         // Lastly we emit the entrypoint.

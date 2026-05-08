@@ -44,11 +44,14 @@ namespace Khthon {
         /// @brief Emits ClassName___new for a single class.
         void emit_class_new(const ClassNode& node);
 
-        /// @brief Creates opaque struct types for every class.
-        void create_class_type(const ClassNode& node);
+        /// @brief Create an opaque structure for the class structure.
+        void create_class_struct(const ClassNode& node);
+
+        /// @brief Create an opaque structure for the class vtable.
+        void create_class_vtable(const ClassNode& node);
 
         /// @brief Fill in the vtable body with methods signatures.
-        void finalize_vtable(const ClassNode& node);
+        void finalize_class_vtable(const ClassNode& node);
 
         /// @brief Emit one method of a class.
         void emit_method(const ClassNode& class_node, const MethodNode& method_node);
@@ -57,13 +60,13 @@ namespace Khthon {
         void emit_methods(const ClassNode& node);
 
         /// @brief Fill in the class struct body.
-        void finalize_class(const ClassNode& node);
+        void finalize_class_struct(const ClassNode& node);
 
         /// @brief Emit the vtable global constant.
-        void emit_vtable_global(const ClassNode& node);
+        void emit_vtable(const ClassNode& node);
 
         /// @brief Helper to convert from VSOP types to LLVM types.
-        llvm::Type* llvm_type(const Khthon::Type& t);
+        llvm::Type* to_llvm(const Khthon::Type& t);
 
 
     public:
