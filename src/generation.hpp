@@ -14,6 +14,7 @@ namespace Khthon {
 
         llvm::LLVMContext context_;
         std::unique_ptr<llvm::Module> module_;
+        llvm::IRBuilder<> builder_;
 
         /// @brief Mapping class names to their structures (fields and vtable pointer)
         std::map<std::string, llvm::StructType*> class_types_;
@@ -49,10 +50,10 @@ namespace Khthon {
         /// @brief Fill in the vtable body with methods signatures.
         void finalize_vtable(const ClassNode& node);
 
-        /// Pass 5: emit a stub body for one method.
+        /// @brief Emit one method of a class.
         void emit_method(const ClassNode& class_node, const MethodNode& method_node);
 
-        /// Pass 5 (driver): emit all methods of a class.
+        /// @brief Emit all methods of a class.
         void emit_methods(const ClassNode& node);
 
         /// @brief Fill in the class struct body.

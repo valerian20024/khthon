@@ -1,22 +1,23 @@
 #include "generation.hpp"
+#include "mangling.hpp"
 
 using namespace llvm;
 using namespace std;
 
-namespace Khthon
-{
+namespace Khthon {
+
     void CodeGenOrchestrator::emit_runtime_declarations() {
         
         // Creating Object and its vtable as opaque types.
         // This avoids a chicken and egg problem: we can use pointers to 
         // the vtable and object type before constructing them concretely.
-        StructType* object_vtable = StructType::create(context_, "ObjectVTable");
-        StructType* object_type = StructType::create(context_, "Object");
+        StructType* object_vtable = StructType::create(context_, Mangle::vt_type("Object"));
+        StructType* object = StructType::create(context_, "Object");
 
         // We take the handle to Object to be able to use it in methods 
         // declarations. Pointers have a fixed size so it's fine even though
         // Object is is not yet built.
-        llvm::Type* object_ptr = object_type->getPointerTo();
+        llvm::Type* object_ptr = object->getPointerTo();
         llvm::Type* i8_ptr     = llvm::Type::getInt8PtrTy(context_);
         llvm::Type* i1         = llvm::Type::getInt1Ty(context_);
         llvm::Type* i32        = llvm::Type::getInt32Ty(context_);
@@ -33,10 +34,10 @@ namespace Khthon
         object_vtable->setBody(vtable_methods);
 
         // Object contains only a pointer to its vtable.
-        object_type->setBody(object_vtable->getPointerTo());
+        object->setBody(object_vtable->getPointerTo());
 
         // Register Object type and its vtable.
-        class_types_["Object"]  = object_type;
+        class_types_["Object"]  = object;
         vtable_types_["Object"] = object_vtable;
 
         // Declaring each method as external.
@@ -61,14 +62,22 @@ namespace Khthon
             );
         };
 
-        declare("Object__print",      object_ptr, {object_ptr, i8_ptr});
-        declare("Object__printBool",  object_ptr, {object_ptr, i1});
-        declare("Object__printInt32", object_ptr, {object_ptr, i32});
-        declare("Object__inputLine",  i8_ptr,     {object_ptr});
-        declare("Object__inputBool",  i1,         {object_ptr});
-        declare("Object__inputInt32", i32,        {object_ptr});
-        declare("Object___new",       object_ptr, {});
-        declare("Object___init",      object_ptr, {object_ptr});
+        declare(Mangle::meth("Object", "print"),
+            object_ptr, {object_ptr, i8_ptr});
+        declare(Mangle::meth("Object", "printBool"),  
+            object_ptr, {object_ptr, i1});
+        declare(Mangle::meth("Object", "printInt32"), 
+            object_ptr, {object_ptr, i32});
+        declare(Mangle::meth("Object", "inputLine"),
+            i8_ptr,     {object_ptr});
+        declare(Mangle::meth("Object", "inputBool"),
+            i1,         {object_ptr});
+        declare(Mangle::meth("Object", "inputInt32"), 
+            i32,        {object_ptr});
+        declare(Mangle::ctor("Object"),
+            object_ptr, {});
+        declare(Mangle::init("Object"),
+            object_ptr, {object_ptr});
 
         // Declaring the vtable global as external.
         new GlobalVariable(
@@ -77,12 +86,11 @@ namespace Khthon
             true,      // It is constant.
             GlobalValue::ExternalLinkage,
             nullptr,  // Linker provides the initializer.
-            "Object___vtable"
+            Mangle::vt_global("Object")
         );
 
-        declare(
-            "malloc",
-            llvm::Type::getInt8PtrTy(context_),
+        declare("malloc", 
+            llvm::Type::getInt8PtrTy(context_), 
             {llvm::Type::getInt64Ty(context_)}
         );
     }
@@ -101,28 +109,24 @@ namespace Khthon
             *module_
         );
 
-        BasicBlock* bb = BasicBlock::Create(
-            context_,
-            "entry",
-            entry
-        );
-        IRBuilder<> builder(bb);
+        BasicBlock* bb = BasicBlock::Create(context_, "entry", entry);
+        builder_.SetInsertPoint(bb);
 
-        auto* new_function = module_->getFunction("Main___new");
-        auto* main_object  = builder.CreateCall(
+        auto* new_function = module_->getFunction(Mangle::ctor("Main"));
+        auto* main_object  = builder_.CreateCall(
             new_function,
             {},
             "main_object"
         );
 
-        auto* main_function = module_->getFunction("Main__main");
-        auto* return_value = builder.CreateCall(
-            main_function,
+        auto* main_method = module_->getFunction(Mangle::meth("Main", "main"));
+        auto* return_value = builder_.CreateCall(
+            main_method,
             {main_object},
             "ret"
         );
 
-        builder.CreateRet(return_value);
+        builder_.CreateRet(return_value);
     }
 
     void CodeGenOrchestrator::emit_class_init(const ClassNode& node) {
@@ -135,25 +139,25 @@ namespace Khthon
         auto* init_method = Function::Create(
             init_signature,
             GlobalValue::ExternalLinkage,
-            class_name + "___init",
+            Mangle::init(class_name),
             *module_
         );
 
         // Only parameter of init is self.
         init_method->arg_begin()->setName("self");
 
-        functions_[class_name + "___init"] = init_method;
+        functions_[Mangle::init(class_name)] = init_method;
 
         // Creating the entry point.
         BasicBlock* bb = BasicBlock::Create(context_, "entry", init_method);
-        IRBuilder<> builder(bb);
+        builder_.SetInsertPoint(bb);
 
         llvm::Value* self = init_method->arg_begin();
 
         // Store the class vtable pointer as the first index in the 
         // class structure.
         auto* vtable_global = vtable_globals_.at(class_name);
-        auto* vtable_ptr = builder.CreateStructGEP(
+        auto* vtable_ptr = builder_.CreateStructGEP(
             class_type,     // The class structure
             self,           // Pointer
             0,              // First index of the class structure
@@ -161,14 +165,16 @@ namespace Khthon
         );
 
         // Storing in the code.
-        builder.CreateStore(vtable_global, vtable_ptr);
+        builder_.CreateStore(vtable_global, vtable_ptr);
 
         // Return self.
-        builder.CreateRet(self);
+        builder_.CreateRet(self);
     }
 
     void CodeGenOrchestrator::emit_class_new(const ClassNode& node) {
         const string class_name = node.name();
+        const string mangled = Mangle::ctor(class_name);
+
         StructType* class_type = class_types_.at(class_name);
         llvm::Type* class_ptr = class_type->getPointerTo();
 
@@ -177,28 +183,28 @@ namespace Khthon
         auto* fn = Function::Create(
             fn_type,
             GlobalValue::ExternalLinkage,
-            class_name + "___new",
+            mangled,
             *module_
         );
 
-        functions_[class_name + "___new"] = fn;
+        functions_[mangled] = fn;
 
         // Create entry point.
         BasicBlock* bb = BasicBlock::Create(context_, "entry", fn);
-        IRBuilder<> builder(bb);
+        builder_.SetInsertPoint(bb);
 
         // Compute sizeof(ClassName) using the standard GEP trick.
         // GEP a null pointer by 1 element, then ptrtoint — gives the byte size.
         auto* null_ptr = ConstantPointerNull::get(cast<PointerType>(class_ptr));
         
-        auto* size_ptr = builder.CreateConstGEP1_32(
+        auto* size_ptr = builder_.CreateConstGEP1_32(
             class_type, 
             null_ptr, 
             1, 
             "size_ptr"
         );
 
-        auto* size = builder.CreatePtrToInt(
+        auto* size = builder_.CreatePtrToInt(
             size_ptr, 
             llvm::Type::getInt64Ty(context_), 
             "size"
@@ -206,31 +212,31 @@ namespace Khthon
 
         // Call malloc.
         auto* malloc_fn = module_->getFunction("malloc");
-        auto* raw_mem = builder.CreateCall(malloc_fn, {size}, "raw_mem");
+        auto* raw_mem = builder_.CreateCall(malloc_fn, {size}, "raw_mem");
 
         // Cast the raw memory returned by malloc to this class.
-        auto* obj = builder.CreateBitCast(raw_mem, class_ptr, "obj");
+        auto* obj = builder_.CreateBitCast(raw_mem, class_ptr, "obj");
 
         // Call the init method.
-        auto* init_fn = module_->getFunction(class_name + "___init");
-        builder.CreateCall(init_fn, {obj});
+        auto* init_fn = module_->getFunction(Mangle::init(class_name));
+        builder_.CreateCall(init_fn, {obj});
 
         // Return the initialized object.
-        builder.CreateRet(obj);
+        builder_.CreateRet(obj);
     }
 
     void CodeGenOrchestrator::create_class_type(const ClassNode& node) {
-        const string name = node.name();
+        const string class_name = node.name();
 
         // Creating class type and its vtable as opaque struct types.
-        StructType* class_type = StructType::create(context_, name);
+        StructType* class_type = StructType::create(context_, class_name);
         StructType* vtable_type = StructType::create(
-            context_, name + "_vtable_type"
+            context_, Mangle::vt_type(class_name)
         );
 
         // Inserting them into our data structs.
-        class_types_[name]  = class_type;
-        vtable_types_[name] = vtable_type;
+        class_types_[class_name]  = class_type;
+        vtable_types_[class_name] = vtable_type;
     }
 
     void CodeGenOrchestrator::finalize_vtable(const ClassNode& node) {
@@ -281,7 +287,7 @@ namespace Khthon
     ) {
         const string class_name  = class_node.name();
         const string method_name = method_node.name();
-        const string mangled = class_name + "__" + method_name;
+        const string mangled = Mangle::meth(class_name, method_name);
 
         StructType* class_type = class_types_[class_name];
 
@@ -315,18 +321,18 @@ namespace Khthon
 
         // Create the entry basic block and a stub body.
         BasicBlock* bb = BasicBlock::Create(context_, "entry", method);
-        IRBuilder<> builder(bb);
+        builder_.SetInsertPoint(bb);
 
         //! Stub: return the default value for the return type.
         //! Later this will be replaced by visiting the method body AST.
         if (return_type->isVoidTy()) {
-            builder.CreateRetVoid();
+            builder_.CreateRetVoid();
         } else if (return_type->isIntegerTy()) {
             // Covers both int32 (i32) and bool (i1).
-            builder.CreateRet(ConstantInt::get(return_type, 3));  // value of 0
+            builder_.CreateRet(ConstantInt::get(return_type, 3));  // value of 0
         } else {
             // Pointer types (string, custom classes): return null for now.
-            builder.CreateRet(ConstantPointerNull::get(
+            builder_.CreateRet(ConstantPointerNull::get(
                 cast<PointerType>(return_type)
             ));
         }
@@ -341,10 +347,10 @@ namespace Khthon
     }
 
     void CodeGenOrchestrator::finalize_class(const ClassNode& node) {
-        const string name = node.name();
+        const string class_name = node.name();
 
-        StructType* class_type  = class_types_[name];
-        StructType* vtable_type = vtable_types_[name];
+        StructType* class_type  = class_types_[class_name];
+        StructType* vtable_type = vtable_types_[class_name];
 
         //! For now: only the vtable pointer.
         //! Later: inherited fields and own fields follow here.
@@ -362,8 +368,9 @@ namespace Khthon
         // create a vtable constant.
         vector<Constant*> methods;
         for (const auto& method : node.methods()) {
-            const string mangled = class_name + "__" + method->name();
-            methods.push_back(functions_.at(mangled));
+            methods.push_back(functions_.at(
+                Mangle::meth(class_name, method->name()))
+            );
         }
 
         Constant* vtable_const = methods.empty()
@@ -376,7 +383,7 @@ namespace Khthon
             true,                           // isConstant
             GlobalValue::InternalLinkage,
             vtable_const,                   // initializer
-            class_name + "_vtable"
+            Mangle::vt_global(class_name)
         );
 
         vtable_globals_[class_name] = vtable_global;
@@ -401,7 +408,8 @@ namespace Khthon
         driver_(driver),
         checker_(checker),
         context_(),
-        module_(std::make_unique<Module>("vsop_module", context_))
+        module_(std::make_unique<Module>("vsop_module", context_)),
+        builder_(context_)
     {
         // Setting up manually target triple to not trigger an LLVM warning
         // telling it has overriden it to some value.
