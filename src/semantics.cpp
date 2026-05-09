@@ -125,7 +125,7 @@ namespace Khthon {
     }
 
     optional<FieldInfo> ClassManager::lookup_field(
-        const string& name,
+        const string& field_name,
         const string& class_name
     ) const {
 
@@ -136,9 +136,12 @@ namespace Khthon {
                 return nullopt;
 
             const auto& fields = info->fields();
-            auto it = fields.find(name);
-            if (it != fields.end())
-                return it->second;
+            auto it = fields.begin();
+            while (it != fields.end()) {
+                if (it->name() == field_name)
+                    return *it;
+                ++it;
+            }
 
             // Stop after Object, but still check it first.
             if (candidate == "Object")
@@ -174,10 +177,11 @@ namespace Khthon {
         return nullopt;
     }
 
-    vector<FieldInfo>> ClassManager::collect_fields(
+    vector<FieldInfo> ClassManager::collect_fields(
         const string class_name
     ) const {
-        return vector<FieldInfo>>();
+        (void) class_name;
+        return vector<FieldInfo>();
     }
 
 
@@ -343,11 +347,11 @@ namespace Khthon {
             if (class_info.fields().empty()) {
                 cout << "    (none)\n";
             } else {
-                for (const auto& [field_name, field_info] : class_info.fields()) {
+                for (const auto& field : class_info.fields()) {
                     cout << "    " 
-                        << field_info.name() 
+                        << field.name() 
                         << " : " 
-                        << field_info.type().to_string() << "\n";
+                        << field.type().to_string() << "\n";
                 }
             }
 
