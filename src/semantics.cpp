@@ -14,10 +14,51 @@ namespace Khthon {
 
 
         /*================================================++
-        ||                  CLASS INFO                    ||
+        ||                INFORMATIONS                    ||
         ++================================================*/
-    
-    
+
+    FieldInfo::FieldInfo(
+        string              name, 
+        Type                type, 
+        Khthon::location    loc
+    ) : 
+        name_(std::move(name)), 
+        type_(std::move(type)), 
+        location_(std::move(loc)) 
+    {}
+
+    FormalInfo::FormalInfo(
+        string              name, 
+        Type                type, 
+        Khthon::location    loc
+    ) : 
+        name_(std::move(name)), 
+        type_(std::move(type)), 
+        location_(std::move(loc)) 
+    {}
+
+    MethodInfo::MethodInfo(
+        string                  name,
+        Khthon::Type            return_type,
+        vector<FormalInfo>      formals,
+        Khthon::location        loc
+    ) : 
+        name_(std::move(name)),
+        return_type_(std::move(return_type)),
+        formals_(std::move(formals)),
+        location_(std::move(loc))
+    {}
+
+    ClassInfo::ClassInfo(
+        std::string         name, 
+        std::string         parent, 
+        Khthon::location    loc
+    ) : 
+        name_(std::move(name)), 
+        parent_(std::move(parent)), 
+        location_(std::move(loc)) 
+    {}
+
     ClassInfo ClassInfo::Dummy() {
         return ClassInfo("Dummy", "Object", Khthon::location());
     }
@@ -339,8 +380,8 @@ namespace Khthon {
         for (const auto& [class_name, class_info] : class_manager_.table()) {
             // Class and inheritance.
             cout << "-------------------------\n"
-                << "Class: " << class_name 
-                << " extends " << class_info.parent() << "\n";
+                << "Class: "    << class_name 
+                << " extends "  << class_info.parent() << "\n";
 
             // Fields.
             cout << "  Fields:\n";
@@ -357,10 +398,11 @@ namespace Khthon {
 
             // Methods.
             cout << "  Methods:\n";
-            if (class_info.methods().empty()) {/*  */
+            if (class_info.methods().empty()) {
                 cout << "    (none)\n";
             } else {
                 for (const auto& [method_name, method_info] : class_info.methods()) {
+                    // Method name.
                     cout << "    " 
                         << method_info.name()
                         << "(";

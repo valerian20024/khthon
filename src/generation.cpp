@@ -11,7 +11,9 @@ namespace Khthon {
         // Creating Object and its vtable as opaque types.
         // This avoids a chicken and egg problem: we can use pointers to 
         // the vtable and object type before constructing them concretely.
-        StructType* object_vtable = StructType::create(context_, Mangle::vt_type("Object"));
+        StructType* object_vtable = StructType::create(
+            context_, Mangle::vt_type("Object")
+        );
         StructType* object = StructType::create(context_, "Object");
 
         // We take the handle to Object to be able to use it in methods 
@@ -81,7 +83,7 @@ namespace Khthon {
 
         // Declaring the vtable global as external.
         new GlobalVariable(
-            *module_,  // LLVM automatically registers the GlobalVariable into the module
+            *module_,
             object_vtable,
             true,      // It is constant.
             GlobalValue::ExternalLinkage,
@@ -96,22 +98,29 @@ namespace Khthon {
     }
 
     void CodeGenOrchestrator::emit_entry_point() {
-        auto* main_type = FunctionType::get(
+
+        // We need to create an additional main function
+        // that can be called by the runtime, whose job
+        // is simply to instanciate Main, call Main::main
+        // and return the value it returned.
+
+        auto* entry_signature = FunctionType::get(
             llvm::Type::getInt32Ty(context_),
             {},  // no argc/argv arguments for now
             false
         );
 
-        auto* entry = Function::Create(
-            main_type,
+        auto* entry_function = Function::Create(
+            entry_signature,
             GlobalValue::ExternalLinkage,
-            "main",
+            "main",  // the real main entrypoint of the program
             *module_
         );
 
-        BasicBlock* bb = BasicBlock::Create(context_, "entry", entry);
+        BasicBlock* bb = BasicBlock::Create(context_, "entry", entry_function);
         builder_.SetInsertPoint(bb);
 
+        // Instanciate Main class.
         auto* new_function = module_->getFunction(Mangle::ctor("Main"));
         auto* main_object  = builder_.CreateCall(
             new_function,
@@ -119,6 +128,7 @@ namespace Khthon {
             "main_object"
         );
 
+        // Call main method of Main.
         auto* main_method = module_->getFunction(Mangle::meth("Main", "main"));
         auto* return_value = builder_.CreateCall(
             main_method,
@@ -126,6 +136,7 @@ namespace Khthon {
             "ret"
         );
 
+        // Return the value returned by Main::main.
         builder_.CreateRet(return_value);
     }
 
@@ -424,7 +435,6 @@ namespace Khthon {
     ) const {
         return checker_.class_manager().collect_fields(class_name);
     }
-
 
     CodeGenOrchestrator::CodeGenOrchestrator(
         Driver& driver, 

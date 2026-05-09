@@ -17,6 +17,10 @@ namespace Khthon {
     false;
 #endif
 
+    /**
+     * @brief This class acts as a container for informations related to a 
+     * field.
+     */
     class FieldInfo {
     private:
         std::string name_;
@@ -24,21 +28,17 @@ namespace Khthon {
         Khthon::location location_;
 
     public:
-        FieldInfo(
-            std::string name, 
-            Khthon::Type type, 
-            Khthon::location loc
-        ) : 
-            name_(std::move(name)), 
-            type_(std::move(type)), 
-            location_(std::move(loc)) 
-        {}
+        FieldInfo(std::string name, Khthon::Type type, Khthon::location loc);
 
         const std::string& name() const             { return name_; }
         const Khthon::Type& type() const            { return type_; }
         const Khthon::location& location() const    { return location_; }
     };
 
+    /**
+     * @brief This class acts as a container for informations related to a 
+     * method formal.
+     */
     class FormalInfo {
     private:
         std::string name_;
@@ -46,22 +46,23 @@ namespace Khthon {
         Khthon::location location_;
 
     public:
-        FormalInfo(
-            std::string n, 
-            Khthon::Type t,
-            Khthon::location l
-        ) : 
-            name_(std::move(n)), 
-            type_(std::move(t)),
-            location_(std::move(l))
-        {}
+        FormalInfo(std::string name, Khthon::Type type, Khthon::location loc);
         
+        /// @return The formal's name.
         const std::string& name() const             { return name_; }
+
+        /// @return The formal's type.
         const Khthon::Type& type() const            { return type_; }
+        
+        /// @return The formal's location.
         const Khthon::location& location() const    { return location_; }
     };
 
-   class MethodInfo {
+    /**
+     * @brief This class acts as a container for informations related to a 
+     * method.
+     */
+    class MethodInfo {
     private:
         std::string name_;
         Khthon::Type return_type_;
@@ -69,17 +70,8 @@ namespace Khthon {
         Khthon::location location_;
 
     public:
-        MethodInfo(
-            std::string name,
-            Khthon::Type return_type,
-            std::vector<FormalInfo> formals,
-            Khthon::location loc
-        ) : 
-            name_(std::move(name)),
-            return_type_(std::move(return_type)),
-            formals_(std::move(formals)),
-            location_(std::move(loc))
-        {}
+        MethodInfo(std::string name, Khthon::Type return_type, 
+            std::vector<FormalInfo> formals, Khthon::location loc);
 
         const std::string& name() const                 { return name_; }
         const Khthon::Type& return_type() const         { return return_type_; }
@@ -87,30 +79,22 @@ namespace Khthon {
         const Khthon::location& location() const        { return location_; }
     };
 
+    /**
+     * @brief This class acts as a container for informations related to a 
+     * class.
+     */
     class ClassInfo {
-    public:
-        using FieldsList = std::vector<FieldInfo>;
-        using MethodsList = std::map<std::string, MethodInfo>;
-
     private:
         std::string name_;
         std::string parent_;
         Khthon::location location_;
-        FieldsList fields_;
-        MethodsList methods_;
+        std::vector<FieldInfo> fields_;
+        std::map<std::string, MethodInfo> methods_;
 
     public:
-        ClassInfo(
-            std::string name, 
-            std::string parent, 
-            Khthon::location loc
-        ) : 
-            name_(std::move(name)), 
-            parent_(std::move(parent)), 
-            location_(std::move(loc)) 
-        {}
+        ClassInfo(std::string name, std::string parent, Khthon::location loc);
 
-        /// @brief Factory method for dummies used for error recovery.
+        /// @brief Factory method to create a dummy ClassInfo.
         /// @return A ClassInfo with no valuable information.
         static ClassInfo Dummy();
 
@@ -122,11 +106,11 @@ namespace Khthon {
         /// `true` otherwise.
         bool add_method(MethodInfo m);
 
-        const std::string name() const              { return name_; }
-        const std::string& parent() const           { return parent_; }
-        const Khthon::location& location() const    { return location_; }
-        const FieldsList& fields() const            { return fields_; }
-        const MethodsList& methods() const          { return methods_; }
+        const std::string& name() const                 { return name_; }
+        const std::string& parent() const               { return parent_; }
+        const Khthon::location& location() const        { return location_; }
+        const std::vector<FieldInfo>& fields() const    { return fields_; }
+        const std::map<std::string, MethodInfo>& methods() const { return methods_; }
     };
  
 
@@ -134,11 +118,8 @@ namespace Khthon {
      * @brief Manages the scope symbol table.
      */
     class ScopeManager {
-    public:
-        using ScopeSymbolTable = std::vector<std::map<std::string, Type>>;
-
     private:
-        ScopeSymbolTable scope_table_;
+        std::vector<std::map<std::string, Type>> scope_table_;
 
     public:
         /// @brief Creates a new local scope.
@@ -165,11 +146,8 @@ namespace Khthon {
      * @brief Manages the classes symbol table.
      */
     class ClassManager {
-    public:
-        using ClassSymbolTable = std::map<std::string, ClassInfo>;
-
     private:
-        ClassSymbolTable class_table_;
+        std::map<std::string, ClassInfo> class_table_;
 
     public:
         /// @brief Tries to insert new class information into the table.
@@ -225,8 +203,13 @@ namespace Khthon {
             const std::string class_name
         ) const;
 
+        /// @brief Returns all the methods belonging to a given class or to its ancestors. 
+        std::vector<Khthon::MethodInfo> collect_methods(
+            const std::string class_name
+        ) const;
+
         /// @return Handle to the classes symbol table.
-        const ClassSymbolTable& table() const { 
+        const std::map<std::string, ClassInfo>& table() const { 
             return class_table_; 
         }
     };
