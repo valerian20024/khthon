@@ -64,4 +64,5 @@ build/*
 *.synctex.gz
 doc/report/*.pdf
 
-doc/doxygen
+doc/doxygen/html
+doc/doxygen/latex

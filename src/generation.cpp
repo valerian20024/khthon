@@ -369,13 +369,11 @@ namespace Khthon {
         unsigned slot = 1;
 
         // Walk up the class hierarchy to collect fields.
-        vector<pair<string, Khthon::Type>> all_fields = collect_fields(class_name);
-
-        // Assign their slot and the
-        for (const auto& [field_name, type] : all_fields) {
-            field_indices_[class_name][field_name] = slot++;
-            fields.push_back(to_llvm(type));
+        for (const auto& field : collect_fields(class_name)) {
+            field_indices_[class_name][field.name()] = slot++;
+            fields.push_back(to_llvm(field.type()));
         }
+
 
         class_type->setBody(fields);
     }
@@ -421,7 +419,7 @@ namespace Khthon {
         return llvm::Type::getVoidTy(context_);
     }
 
-    vector<pair<string, Khthon::Type>> CodeGenOrchestrator::collect_fields(
+    vector<FieldInfo> CodeGenOrchestrator::collect_fields(
         const string class_name
     ) const {
         return checker_.class_manager().collect_fields(class_name);

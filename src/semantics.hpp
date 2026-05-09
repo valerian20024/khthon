@@ -221,7 +221,7 @@ namespace Khthon {
         ) const;
 
         /// @brief Returns all the fields belonging to a given class or to its ancestors. 
-        std::vector<std::pair<std::string, Khthon::Type>> collect_fields(
+        std::vector<Khthon::FieldInfo> collect_fields(
             const std::string class_name
         ) const;
 

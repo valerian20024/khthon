@@ -27,7 +27,7 @@ namespace Khthon {
         for (const auto& existing : fields_)
             if (existing.name() == f.name())
                 return false;
-                
+
         fields_.push_back(std::move(f));
         return true;
     }
@@ -174,10 +174,10 @@ namespace Khthon {
         return nullopt;
     }
 
-    vector<pair<string, Khthon::Type>> ClassManager::collect_fields(
+    vector<FieldInfo>> ClassManager::collect_fields(
         const string class_name
     ) const {
-        return vector<pair<string, Khthon::Type>>();
+        return vector<FieldInfo>>();
     }
 
 

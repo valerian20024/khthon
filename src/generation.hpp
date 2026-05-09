@@ -71,8 +71,9 @@ namespace Khthon {
         /// @brief Helper to convert from VSOP types to LLVM types.
         llvm::Type* to_llvm(const Khthon::Type& t);
 
-        /// @brief Wrapper to SemanticChecker::collect_fields(). 
-        std::vector<std::pair<std::string, Khthon::Type>> collect_fields(
+        /// @brief Wrapper. 
+        /// @see SemanticChecker::collect_fields()
+        std::vector<Khthon::FieldInfo> collect_fields(
             const std::string class_name
         ) const;
 
