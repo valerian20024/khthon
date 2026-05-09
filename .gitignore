@@ -63,3 +63,5 @@ build/*
 *.log
 *.synctex.gz
 doc/report/*.pdf
+
+doc/doxygen

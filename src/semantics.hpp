@@ -89,15 +89,15 @@ namespace Khthon {
 
     class ClassInfo {
     public:
-        using FieldsMap = std::map<std::string, FieldInfo>;
-        using MethodsMap = std::map<std::string, MethodInfo>;
+        using FieldsList = std::vector<FieldInfo>;
+        using MethodsList = std::map<std::string, MethodInfo>;
 
     private:
         std::string name_;
         std::string parent_;
         Khthon::location location_;
-        FieldsMap fields_;
-        MethodsMap methods_;
+        FieldsList fields_;
+        MethodsList methods_;
 
     public:
         ClassInfo(
@@ -114,8 +114,8 @@ namespace Khthon {
         /// @return A ClassInfo with no valuable information.
         static ClassInfo Dummy();
 
-        /// @return `false` if a field with that name already exists. 
-        /// `true` otherwise.
+        /// @brief Adds a field to the ClassInfo if it does not already exists.
+        /// @return `true` if the field has been added. `false` otherwise.
         bool add_field(FieldInfo f);
 
         /// @return `false` if a method with that name already exists. 
@@ -125,8 +125,8 @@ namespace Khthon {
         const std::string name() const              { return name_; }
         const std::string& parent() const           { return parent_; }
         const Khthon::location& location() const    { return location_; }
-        const FieldsMap& fields() const             { return fields_; }
-        const MethodsMap& methods() const           { return methods_; }
+        const FieldsList& fields() const            { return fields_; }
+        const MethodsList& methods() const          { return methods_; }
     };
  
 
@@ -150,10 +150,11 @@ namespace Khthon {
         /// @brief Adds an identifier binding to the current scope.
         void add_binding(const std::string& name, const Type& type);
 
-        /** @brief Looks for a identifier's type.
+        /** 
+         * @brief Looks for a identifier's type.
          *
          * It will first look for variables in local scope, then upward, up
-         * to global scope. This allows to implement shadowing.
+         * to global scope, implementing shadowing.
          * 
          * @return The identifier's type, or `nullopt` if not found.
          */
@@ -180,10 +181,9 @@ namespace Khthon {
         
         /// @brief Tries to get the information of class with name `name`.
         /// @return `nullopt` if not found. 
-        const std::optional<ClassInfo> get_class(const std::string& name) const;
-
-        /// @return The whole classes symbol table.
-        const ClassSymbolTable& table() const { return class_table_; }
+        const std::optional<ClassInfo> get_class(
+            const std::string& name
+        ) const;
 
         /// @brief Checks whether `given` is a subtype of `compared_to` using class inheritance.
         /// @return `nullopt` if an error occured.
@@ -224,6 +224,11 @@ namespace Khthon {
         std::vector<std::pair<std::string, Khthon::Type>> collect_fields(
             const std::string class_name
         ) const;
+
+        /// @return Handle to the classes symbol table.
+        const ClassSymbolTable& table() const { 
+            return class_table_; 
+        }
     };
 
     /** 
@@ -291,7 +296,10 @@ namespace Khthon {
         ClassInfo get_class(const std::string& name) const;
 
         /// @return `true` if `given` is a subtype of `compared_to`, false otherwise.
-        bool is_subtype(const Type& given, const Type& compared_to) const;
+        bool is_subtype(
+            const Type& given, 
+            const Type& compared_to
+        ) const;
 
         /// @brief Find the common ancestor class type to `t1` and `t2`.
         /// @note Delegates to ClassManager.
@@ -314,10 +322,14 @@ namespace Khthon {
         ) const;
 
         /// @brief Handle to the class manager. 
-        const Khthon::ClassManager& class_manager() const { return class_manager_; }
+        const Khthon::ClassManager& class_manager() const { 
+            return class_manager_; 
+        }
 
         /// @brief Handle to the scope manager.
-        const Khthon::ScopeManager& scope_manager() const { return scope_manager_; }
+        const Khthon::ScopeManager& scope_manager() const { 
+            return scope_manager_; 
+        }
     };
 
 

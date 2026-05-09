@@ -23,8 +23,13 @@ namespace Khthon {
     }
 
     bool ClassInfo::add_field(FieldInfo f) {
-        auto [it, inserted] = fields_.emplace(f.name(), std::move(f));
-        return inserted;
+        // Check for duplicates
+        for (const auto& existing : fields_)
+            if (existing.name() == f.name())
+                return false;
+                
+        fields_.push_back(std::move(f));
+        return true;
     }
 
     bool ClassInfo::add_method(MethodInfo m) {
