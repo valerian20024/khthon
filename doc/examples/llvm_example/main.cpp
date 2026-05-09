@@ -82,13 +82,13 @@ int main(int argc, char const *argv[])
 
     // Declare vtable
     string vtable_name = "struct." + class_name + "VTable";
-    StructType *vtable_type = StructType::create(*context, vtable_name);
+    StructType *vtable_struct = StructType::create(*context, vtable_name);
 
     /************** Fields **************/
     vector<Type *> class_fields;
 
     // First field is the pointer towards the vtable
-    class_fields.push_back(vtable_type->getPointerTo());
+    class_fields.push_back(vtable_struct->getPointerTo());
 
     // Insert the other fields ('integer' and 'boolean')
     class_fields.push_back(get_type("int"));
@@ -108,8 +108,8 @@ int main(int argc, char const *argv[])
     vector<Type *> method_arguments;
 
     // First argument is always 'self'
-    Type *class_type_ptr = class_type->getPointerTo();
-    method_arguments.push_back(class_type_ptr);
+    Type *class_struct_ptr = class_type->getPointerTo();
+    method_arguments.push_back(class_struct_ptr);
 
     // Other arguments: 'a' and 'b'
     method_arguments.push_back(get_type("int"));
@@ -151,7 +151,7 @@ int main(int argc, char const *argv[])
     methods.push_back(method_function);
 
     // Set the body of the vtable, i.e. pointers with the methods types
-    vtable_type->setBody(methods_types);
+    vtable_struct->setBody(methods_types);
 
     // Up to now, we have declare the structure representing the class,
     // and the structure representing the vtable.
@@ -162,13 +162,13 @@ int main(int argc, char const *argv[])
     /************** Defining the vtable **************/
     // Create a constant
     Constant *vtable_const = ConstantStruct::get(
-        vtable_type, // Type of the constant structure
+        vtable_struct, // Type of the constant structure
         methods);    // Values to give to the different fields
 
     // Assign the constant to a global variable
     GlobalVariable *vtable = new GlobalVariable(
         *module,                      // The LLVM module
-        vtable_type,                  // The type of the constant
+        vtable_struct,                  // The type of the constant
         true,                         // It is constant
         GlobalValue::InternalLinkage, // The linkage
         vtable_const,                 // The constant value
@@ -435,14 +435,14 @@ int main(int argc, char const *argv[])
         main_entry);  // The block in which the instruction will be inserted
 
     Value *vtable_val = new LoadInst(
-        vtable_type->getPointerTo(), // The type of the value to load
+        vtable_struct->getPointerTo(), // The type of the value to load
         vtable_ptr,                  // The address of the value to load
         "",                          // Name of the LLVM variable (not fixed here)
         main_entry);                 // The block in which the instruction will be inserted
 
     // Load the address of the 'add' method:
     Value *add_ptr = GetElementPtrInst::Create(
-        vtable_type,  // The pointed type
+        vtable_struct,  // The pointed type
         vtable_val,   // The address
         {get_int(0),  // First element "of the array" (no array here, only one element, but it is required)
          get_int(0)}, // First field

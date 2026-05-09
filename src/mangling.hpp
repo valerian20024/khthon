@@ -30,7 +30,7 @@ namespace Khthon::Mangle {
     }
 
     /// @brief Formats to `class_name___VTable`.
-    std::string vt_type(const std::string& class_name) {
+    std::string vt_struct(const std::string& class_name) {
         return class_name + "___VTable";
     }
 

@@ -1,13 +1,74 @@
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
+\usepackage{url}
+\usepackage{hyperref}
 
 \begin{document}
 
+\begin{titlepage}
+	\centering
+    % --- Logo --- 
+    \includegraphics[width=\textwidth]{images/uliege-FSA.png} \\ [1 cm]
+
+    % --- Header ---
+	\textsc{\Large [INFO0085-1] - Compilers} \\ [0.4 cm]
+
+    % --- Title ---
+	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
+	{\Large \bfseries Compiler Project Report} \\
+	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
+
+    % --- Minipage ---
+	\begin{minipage}[t]{0.49\textwidth}
+		\begin{flushleft} \large
+		    \textbf{Teacher:} \\
+                Pascal FONTAINE \\[0.5 cm]
+            \textbf{Teaching Assistant:} \\
+                Roland GREFFE
+		\end{flushleft}
+	\end{minipage}
+    \hfill 
+	\begin{minipage}[t]{0.49\textwidth}
+		\begin{flushright} \large
+        \textbf{Authors:} \\
+            Valérian WISLEZ s200825
+		\end{flushright}
+	\end{minipage}
+    
+    \vfill
+    \textsc{\Large Academic Year 2025-2026} \\[1.0 cm]	
+\end{titlepage}
+
+
 \section{Introduction}
 
-hello world
+The compiler is named Khthon: derived from the greek $\chi\theta o \nu \iota o \zeta$ ("khthonios"), meaning "from the ground", metaphorically to transform high level language to a more ground-based IR. 
 
-\section{Architecture choices}
+The git repository \footnote{\url{https://github.com/valerian20024/khthon}} is also available for more extensive investigation. 
+
+A Doxygen documentation is given with the source code, though it might not be complete.
+
+I have done the project alone this year because I have had some troubles in my team work.I have attended the course in 2024-2025, which allowed me to get some experience with the 3 first parts.
+
+\section{Architecture}
+
+
+Based the code on the Flex/Bison example. Reused part of the lexer and parser from last year's project.
+Visitor pattern. Using Flex, Bison, LLVM C++ API (IRBuilder).
+
+Classes : 
+
+
+\section{Capabilities}
+
+Here is a review of what the code is capable of doing and the limitations it has.
+\begin{enumerate}
+    \item Lexical Analysis: 39/39 tests passed. No special comment.
+    \item Syntax Analysis: 50/55 tests passed. A few errors are not handled as I have had some troubles to understand and use Bison's error recovery system.
+    \item Semantic Analysis: ?/? tests passed.
+    \item Code Generation: ?/? tests passed. Khthon can produce an executable, link with the runtime and output some IR. It outputs mostly the foundation (VTables, class globals, etc.). Further constructs are unfortunately not compiled. 
+\end{enumerate}
+
 
 \subsection{Semantic Analysis}
 
@@ -16,10 +77,10 @@ If the class has been defines several times, there's likely a big problem, so th
 We simply tell it is duplicated and return early, not adding this class to the symbol table for further inspections.
 
 \section{Potential improvements}
-If I had more time I would have enhanced the code in the following ways : 
+Now that I have more experience both in compiler design and in C++, there are many things I would like to improve, most notably:
 
 \begin{enumerate}
-    \item Change the lexer to only take one keyword token and use a has table to decide its content.
+    \item Change the lexer to only take one keyword token and use a hash table to decide its content.
     \item Create a dedicated ErrorLogger instead of putting the responsibility of error related mechanics to Driver.
     \item Create some namespaces because the code gets quite big now, and Khthon::Type is conflicting with llvm::Type.
     \item Push further the Debug mechanics when compiling to have accurate and clean logging of what's happening. For now it's a bit mingled and not standardized.
@@ -32,8 +93,9 @@ Adding more VSOP example, at least code that covers the whole language. For exam
 Updating the container, adding gdb to debug inside the container.
 
 \section{Use of AI Tools}
-Mainly to help understand LLVM IR, discuss and refine code organization, help with some C++ concepts. 
+Mainly to help understand LLVM IR, discuss and refine code organization, help with some C++ concepts.
 
+However, the code is mine.
 
 
 \end{document}

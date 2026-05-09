@@ -12,7 +12,7 @@ namespace Khthon {
         // This avoids a chicken and egg problem: we can use pointers to 
         // the vtable and object type before constructing them concretely.
         StructType* object_vtable = StructType::create(
-            context_, Mangle::vt_type("Object")
+            context_, Mangle::vt_struct("Object")
         );
         StructType* object = StructType::create(context_, "Object");
 
@@ -39,8 +39,8 @@ namespace Khthon {
         object->setBody(object_vtable->getPointerTo());
 
         // Register Object type and its vtable.
-        class_types_["Object"]  = object;
-        vtable_types_["Object"] = object_vtable;
+        class_structs_["Object"]  = object;
+        vtable_structs_["Object"] = object_vtable;
 
         // Declaring each method as external.
         auto declare = [&](
@@ -142,8 +142,8 @@ namespace Khthon {
 
     void CodeGenOrchestrator::emit_class_init(const ClassNode& node) {
         const string class_name = node.name();
-        StructType* class_type = class_types_.at(class_name);
-        llvm::Type* class_ptr = class_type->getPointerTo();
+        StructType* class_struct = class_structs_.at(class_name);
+        llvm::Type* class_ptr = class_struct->getPointerTo();
 
         // Creating this class' init method.
         auto* init_signature = FunctionType::get(class_ptr, {class_ptr}, false);
@@ -169,7 +169,7 @@ namespace Khthon {
         // class structure.
         auto* vtable_global = vtable_globals_.at(class_name);
         auto* vtable_ptr = builder_.CreateStructGEP(
-            class_type,     // The class structure
+            class_struct,     // The class structure
             self,           // Pointer
             0,              // First index of the class structure
             "vtable_ptr"    // Name
@@ -184,24 +184,24 @@ namespace Khthon {
 
     void CodeGenOrchestrator::emit_class_new(const ClassNode& node) {
         const string class_name = node.name();
-        const string mangled = Mangle::ctor(class_name);
+        const string class_constructor = Mangle::ctor(class_name);
 
-        StructType* class_type = class_types_.at(class_name);
-        llvm::Type* class_ptr = class_type->getPointerTo();
+        StructType* class_struct = class_structs_.at(class_name);
+        llvm::Type* class_ptr = class_struct->getPointerTo();
 
-        // Signature: %ClassName* @ClassName___new()
-        auto* fn_type = FunctionType::get(class_ptr, {}, false);
-        auto* fn = Function::Create(
-            fn_type,
+        // Creating the class constructor.
+        auto* signature = FunctionType::get(class_ptr, {}, false);
+        auto* constructor = Function::Create(
+            signature,
             GlobalValue::ExternalLinkage,
-            mangled,
+            class_constructor,
             *module_
         );
 
-        functions_[mangled] = fn;
+        functions_[class_constructor] = constructor;
 
         // Create entry point.
-        BasicBlock* bb = BasicBlock::Create(context_, "entry", fn);
+        BasicBlock* bb = BasicBlock::Create(context_, "entry", constructor);
         builder_.SetInsertPoint(bb);
 
         // Compute sizeof(ClassName) using the standard GEP trick.
@@ -209,7 +209,7 @@ namespace Khthon {
         auto* null_ptr = ConstantPointerNull::get(cast<PointerType>(class_ptr));
         
         auto* size_ptr = builder_.CreateConstGEP1_32(
-            class_type, 
+            class_struct, 
             null_ptr, 
             1, 
             "size_ptr"
@@ -239,25 +239,25 @@ namespace Khthon {
     void CodeGenOrchestrator::create_class_struct(const ClassNode& node) {
         const string class_name = node.name();
 
-        StructType* class_type = StructType::create(context_, class_name);
+        StructType* class_struct = StructType::create(context_, class_name);
 
-        class_types_[class_name]  = class_type;
+        class_structs_[class_name] = class_struct;
     }
 
     void CodeGenOrchestrator::create_class_vtable(const ClassNode& node) {
         const string class_name = node.name();
 
-        StructType* vtable_type = StructType::create(
-            context_, Mangle::vt_type(class_name)
+        StructType* vtable_struct = StructType::create(
+            context_, Mangle::vt_struct(class_name)
         );
 
-        vtable_types_[class_name] = vtable_type;
+        vtable_structs_[class_name] = vtable_struct;
     }
 
     void CodeGenOrchestrator::finalize_class_vtable(const ClassNode& node) {
         const string class_name = node.name();
-        StructType* vtable_type = vtable_types_[node.name()];
-        StructType* class_type = class_types_[class_name];
+        StructType* vtable_struct = vtable_structs_[class_name];
+        StructType* class_struct = class_structs_[class_name];
 
         // Stores the methods signatures.
         vector<llvm::Type*> slot_types;
@@ -272,7 +272,7 @@ namespace Khthon {
             vector<llvm::Type*> method_parameters;
 
             // The first parameter is always 'self', a pointer to the class.
-            method_parameters.push_back(class_type->getPointerTo());
+            method_parameters.push_back(class_struct->getPointerTo());
 
             for (const auto& formal : method->formals())
                 method_parameters.push_back(to_llvm(formal->type()));
@@ -293,7 +293,7 @@ namespace Khthon {
             vtable_indices_[class_name][method_name] = slot_index++;
         }
 
-        vtable_type->setBody(slot_types);
+        vtable_struct->setBody(slot_types);
     }
 
     void CodeGenOrchestrator::emit_method(
@@ -304,12 +304,12 @@ namespace Khthon {
         const string method_name = method_node.name();
         const string mangled = Mangle::meth(class_name, method_name);
 
-        StructType* class_type = class_types_[class_name];
+        StructType* class_struct = class_structs_[class_name];
 
         // Build parameter types.
         vector<llvm::Type*> param_types;
 
-        param_types.push_back(class_type->getPointerTo());  // self
+        param_types.push_back(class_struct->getPointerTo());  // self
         
         for (const auto& formal : method_node.formals())
             param_types.push_back(to_llvm(formal->type()));  // formals
@@ -369,14 +369,14 @@ namespace Khthon {
 
     void CodeGenOrchestrator::finalize_class_struct(const ClassNode& node) {
         const string class_name = node.name();
-        StructType* class_type  = class_types_[class_name];
-        StructType* vtable_type = vtable_types_[class_name];
+        StructType* class_struct  = class_structs_[class_name];
+        StructType* vtable_struct = vtable_structs_[class_name];
 
         // The fields we will fill into the class struct.
         vector<llvm::Type*> fields;
 
         // Slot 0 is the vtable pointer.
-        fields.push_back(vtable_type->getPointerTo());
+        fields.push_back(vtable_struct->getPointerTo());
         unsigned slot = 1;
 
         // Walk up the class hierarchy to collect fields.
@@ -386,12 +386,12 @@ namespace Khthon {
         }
 
 
-        class_type->setBody(fields);
+        class_struct->setBody(fields);
     }
 
     void CodeGenOrchestrator::emit_vtable(const ClassNode& node) {
         const string class_name = node.name();
-        StructType* vtable_type = vtable_types_[class_name];
+        StructType* vtable_struct = vtable_structs_[class_name];
 
         // We have to get the methods associated to this class and
         // create a vtable constant.
@@ -403,12 +403,12 @@ namespace Khthon {
         }
 
         Constant* vtable_const = methods.empty()
-            ? ConstantAggregateZero::get(vtable_type)     // no methods
-            : ConstantStruct::get(vtable_type, methods);  // real pointers
+            ? ConstantAggregateZero::get(vtable_struct)     // no methods
+            : ConstantStruct::get(vtable_struct, methods);  // real pointers
 
         auto* vtable_global = new GlobalVariable(
             *module_,
-            vtable_type,
+            vtable_struct,
             true,                           // isConstant
             GlobalValue::InternalLinkage,
             vtable_const,                   // initializer
@@ -423,7 +423,7 @@ namespace Khthon {
         if (t.is_bool())    return llvm::Type::getInt1Ty(context_);
         if (t.is_unit())    return llvm::Type::getVoidTy(context_);
         if (t.is_string())  return llvm::Type::getInt8PtrTy(context_);
-        if (t.is_custom())  return class_types_.at(t.custom_name())->getPointerTo();
+        if (t.is_custom())  return class_structs_.at(t.custom_name())->getPointerTo();
 
         driver_.internal_error("to_llvm(): unknown type " + t.to_string());
 

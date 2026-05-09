@@ -17,10 +17,10 @@ namespace Khthon {
         llvm::IRBuilder<> builder_;
 
         /// @brief Mapping class names to their structures (fields and vtable pointer)
-        std::map<std::string, llvm::StructType*> class_types_;
+        std::map<std::string, llvm::StructType*> class_structs_;
 
         /// @brief Mapping class names to their vtable.
-        std::map<std::string, llvm::StructType*> vtable_types_;
+        std::map<std::string, llvm::StructType*> vtable_structs_;
 
         /// @brief Mapping class names to their vtable globals.
         std::map<std::string, llvm::GlobalVariable*> vtable_globals_;
