@@ -443,11 +443,11 @@ namespace khthon {
         driver_(driver),
         checker_(checker),
         context_(),
-        module_(std::make_unique<Module>("vsop_module", context_)),
+        module_(std::make_unique<Module>("", context_)),
         builder_(context_)
     {
-        // Setting up manually target triple to not trigger an LLVM warning
-        // telling it has overriden it to some value.
+        module_->setModuleIdentifier("VSOP Module");
+        module_->setSourceFileName(driver_.source_file());
         module_->setTargetTriple(llvm::sys::getDefaultTargetTriple());
     }
 
@@ -479,8 +479,6 @@ namespace khthon {
         
         for (const auto& c : root->classes()) 
             emit_class_new(*c);
-        
-        // todo call in the CodeGen visitor
 
         // Lastly we emit the entrypoint.
         emit_entry_point();

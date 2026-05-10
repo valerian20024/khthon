@@ -1,13 +1,19 @@
 ; ModuleID = 'test'
 source_filename = "test"
 
+; VTable struct, contains a pointer to a signature of void (int32, int32) -> add function
 %struct.MyClassVTable = type { void (%MyClass*, i32, i32)* }
+
+; Class Type: contains a pointer to a MyClassVTable, then a int32 field, then a bool field
 %MyClass = type { %struct.MyClassVTable*, i32, i1 }
 
+; VTable Global variable
 @MyClass_vtable = internal constant %struct.MyClassVTable { void (%MyClass*, i32, i32)* @add }
 
+; Declare malloc
 declare i8* @malloc(i64)
 
+; Define the add function
 define void @add(%MyClass* %self, i32 %a, i32 %b) {
 entry:
   %0 = getelementptr %MyClass, %MyClass* %self, i32 0, i32 1
@@ -18,6 +24,7 @@ entry:
   ret void
 }
 
+; Constructor
 define %MyClass* @new_MyClass() {
 entry:
   %0 = getelementptr %MyClass, %MyClass* null, i32 1
@@ -28,6 +35,7 @@ entry:
   ret %MyClass* %4
 }
 
+; Initializer
 define %MyClass* @init_MyClass(%MyClass* %self) {
 entry:
   %0 = getelementptr %MyClass, %MyClass* %self, i32 0, i32 0
@@ -39,9 +47,10 @@ entry:
   ret %MyClass* %self
 }
 
+; Entrypoint
 define i32 @main() {
 entry:
-  %0 = call %MyClass* @new_MyClass()
+  %0 = call %MyClass* @new_MyClass()  ; instanciate a new MyClass
   %1 = getelementptr %MyClass, %MyClass* %0, i32 0, i32 0
   %2 = load %struct.MyClassVTable*, %struct.MyClassVTable** %1, align 8
   %3 = getelementptr %struct.MyClassVTable, %struct.MyClassVTable* %2, i32 0, i32 0
