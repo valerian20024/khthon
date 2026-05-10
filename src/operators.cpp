@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace Khthon
+namespace khthon
 {
     vector<Type> UnaryOperation::valid_operand_types() const {
         switch (kind_) {
@@ -151,4 +151,4 @@ namespace Khthon
             }
         }
     }
-} // namespace Khthon
+} // namespace khthon

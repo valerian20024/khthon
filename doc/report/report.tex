@@ -101,7 +101,7 @@ Now that I have more experience both in compiler design and in C++, there are ma
 \begin{enumerate}
     \item Change the lexer to only take one keyword token and use a hash table to decide its content.
     \item Create a dedicated \texttt{ErrorLogger} instead of putting the responsibility of error management to \texttt{Driver}. The errors could be more descriptive as well, copying the line from the source file to indicate the user where it happened. Using Bison's \texttt{location} to clearly highlight the error.
-    \item Create some namespaces. As the code grew, \texttt{Khthon::Type} is conflicting with \texttt{llvm::Type}. It would be a good time to start splitting into namespaces.
+    \item Create some namespaces. As the code grew, \texttt{khthon::Type} is conflicting with \texttt{llvm::Type}. It would be a good time to start splitting into namespaces.
     \item Push further the Debug mechanics when compiling to have accurate and clean logging of what's happening. For now it's a bit mingled and not standardized.
     \item More consistent use of C++ features, such as move semantics.
     \item Clearly separating interface and implementation, even when having trivial methods, for example in \texttt{ast.hpp}.

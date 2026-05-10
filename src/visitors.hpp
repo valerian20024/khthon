@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace Khthon {
+namespace khthon {
 
     class Node;
     class Expr;

@@ -8,7 +8,7 @@
 #include <string>
 #include <unordered_set>
 
-namespace Khthon {
+namespace khthon {
 
     inline constexpr bool enable_advanced_logging =
 #ifdef DEBUG
@@ -24,15 +24,15 @@ namespace Khthon {
     class FieldInfo {
     private:
         std::string name_;
-        Khthon::Type type_;
-        Khthon::location location_;
+        khthon::Type type_;
+        khthon::location location_;
 
     public:
-        FieldInfo(std::string name, Khthon::Type type, Khthon::location loc);
+        FieldInfo(std::string name, khthon::Type type, khthon::location loc);
 
         const std::string& name() const             { return name_; }
-        const Khthon::Type& type() const            { return type_; }
-        const Khthon::location& location() const    { return location_; }
+        const khthon::Type& type() const            { return type_; }
+        const khthon::location& location() const    { return location_; }
     };
 
     /**
@@ -42,20 +42,20 @@ namespace Khthon {
     class FormalInfo {
     private:
         std::string name_;
-        Khthon::Type type_;
-        Khthon::location location_;
+        khthon::Type type_;
+        khthon::location location_;
 
     public:
-        FormalInfo(std::string name, Khthon::Type type, Khthon::location loc);
+        FormalInfo(std::string name, khthon::Type type, khthon::location loc);
         
         /// @return The formal's name.
         const std::string& name() const             { return name_; }
 
         /// @return The formal's type.
-        const Khthon::Type& type() const            { return type_; }
+        const khthon::Type& type() const            { return type_; }
         
         /// @return The formal's location.
-        const Khthon::location& location() const    { return location_; }
+        const khthon::location& location() const    { return location_; }
     };
 
     /**
@@ -65,18 +65,18 @@ namespace Khthon {
     class MethodInfo {
     private:
         std::string name_;
-        Khthon::Type return_type_;
+        khthon::Type return_type_;
         std::vector<FormalInfo> formals_;
-        Khthon::location location_;
+        khthon::location location_;
 
     public:
-        MethodInfo(std::string name, Khthon::Type return_type, 
-            std::vector<FormalInfo> formals, Khthon::location loc);
+        MethodInfo(std::string name, khthon::Type return_type, 
+            std::vector<FormalInfo> formals, khthon::location loc);
 
         const std::string& name() const                 { return name_; }
-        const Khthon::Type& return_type() const         { return return_type_; }
+        const khthon::Type& return_type() const         { return return_type_; }
         const std::vector<FormalInfo>& formals() const  { return formals_; }
-        const Khthon::location& location() const        { return location_; }
+        const khthon::location& location() const        { return location_; }
     };
 
     /**
@@ -87,12 +87,12 @@ namespace Khthon {
     private:
         std::string name_;
         std::string parent_;
-        Khthon::location location_;
+        khthon::location location_;
         std::vector<FieldInfo> fields_;
         std::map<std::string, MethodInfo> methods_;
 
     public:
-        ClassInfo(std::string name, std::string parent, Khthon::location loc);
+        ClassInfo(std::string name, std::string parent, khthon::location loc);
 
         /// @brief Factory method to create a dummy ClassInfo.
         /// @return A ClassInfo with no valuable information.
@@ -108,7 +108,7 @@ namespace Khthon {
 
         const std::string& name() const                 { return name_; }
         const std::string& parent() const               { return parent_; }
-        const Khthon::location& location() const        { return location_; }
+        const khthon::location& location() const        { return location_; }
         const std::vector<FieldInfo>& fields() const    { return fields_; }
         const std::map<std::string, MethodInfo>& methods() const { return methods_; }
     };
@@ -199,12 +199,12 @@ namespace Khthon {
         ) const;
 
         /// @brief Returns all the fields belonging to a given class or to its ancestors. 
-        std::vector<Khthon::FieldInfo> collect_fields(
+        std::vector<khthon::FieldInfo> collect_fields(
             const std::string class_name
         ) const;
 
         /// @brief Returns all the methods belonging to a given class or to its ancestors. 
-        std::vector<Khthon::MethodInfo> collect_methods(
+        std::vector<khthon::MethodInfo> collect_methods(
             const std::string class_name
         ) const;
 
@@ -305,12 +305,12 @@ namespace Khthon {
         ) const;
 
         /// @brief Handle to the class manager. 
-        const Khthon::ClassManager& class_manager() const { 
+        const khthon::ClassManager& class_manager() const { 
             return class_manager_; 
         }
 
         /// @brief Handle to the scope manager.
-        const Khthon::ScopeManager& scope_manager() const { 
+        const khthon::ScopeManager& scope_manager() const { 
             return scope_manager_; 
         }
     };
@@ -381,10 +381,10 @@ namespace Khthon {
         bool check_formals(
             const MethodInfo& method,
             const std::vector<std::shared_ptr<Expr>>& args,
-            const Khthon::location& loc
+            const khthon::location& loc
         ) const;
 
-        bool check_type_exists(const Type& type, const Khthon::location& loc) const;
+        bool check_type_exists(const Type& type, const khthon::location& loc) const;
 
 
         /// @brief Prints a tracing message when debugging is enabled.

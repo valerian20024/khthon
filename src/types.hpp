@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace Khthon {
+namespace khthon {
     
     /// @brief Represents a type in VSOP.
     class Type {
@@ -72,7 +72,7 @@ namespace Khthon {
         /// @brief The `Type` string representation, as seen in any valid VSOP code.
         std::string to_string() const;
     };
-} // namespace Khthon
+} // namespace khthon
 
 
 #endif

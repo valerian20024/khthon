@@ -2,16 +2,16 @@
 
 using namespace std;
 
-namespace Khthon {
+namespace khthon {
 
     shared_ptr<MethodNode> MethodNode::makeDummy(
-        Khthon::location loc, 
+        khthon::location loc, 
         string name
     ) {
         shared_ptr<FormalNode> dummy_formal = make_shared<FormalNode>(
             loc, 
             "DEFAULT_FORMAL", 
-            Khthon::Type()
+            khthon::Type()
         );
 
         vector<shared_ptr<FormalNode>> dummy_formals;
@@ -25,7 +25,7 @@ namespace Khthon {
         return make_shared<MethodNode>(
             loc,
             std::move(name),
-            Khthon::Type(),
+            khthon::Type(),
             dummy_formals,
             dummy_body
         );

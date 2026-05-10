@@ -1,7 +1,7 @@
 #include "generation.hpp"
 
 
-namespace Khthon
+namespace khthon
 {
 
-} // namespace Khthon
+} // namespace khthon

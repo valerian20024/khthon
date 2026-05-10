@@ -5,7 +5,7 @@
 
 %defines
 
-%define api.namespace {Khthon}
+%define api.namespace {khthon}
 
 %define api.parser.class {Parser}
 
@@ -34,16 +34,16 @@
     
     #include "ast.hpp"
 
-    namespace Khthon
+    namespace khthon
     {
         class Driver;
     }
 }
 
 // Add an argument to the parser constructor
-%parse-param {Khthon::Driver &driver}
+%parse-param {khthon::Driver &driver}
 
-%lex-param {Khthon::Driver &driver}
+%lex-param {khthon::Driver &driver}
 
 %code {
     #include "driver.hpp"
@@ -59,7 +59,7 @@
     #define NOTE(loc, msg)        driver.syntax_note(loc, msg)
 
     using namespace std;
-    using namespace Khthon;
+    using namespace khthon;
 }
 
     /*================================================++
@@ -118,10 +118,10 @@
 %type <std::vector<std::shared_ptr<ClassNode>>>   class_list
 %type <std::shared_ptr<ClassNode>>                class
 %type <std::string>                               optional_extends
-%type <Khthon::ClassMembers>                      class_body class_content
+%type <khthon::ClassMembers>                      class_body class_content
 %type <std::shared_ptr<FieldNode>>                field
 %type <std::shared_ptr<MethodNode>>               method
-%type <Khthon::Type>                              type
+%type <khthon::Type>                              type
 %type <std::vector<std::shared_ptr<FormalNode>>>  formals
 %type <std::shared_ptr<FormalNode>>               formal
 %type <std::shared_ptr<BlockExpr>>                block
@@ -290,7 +290,7 @@ class_body
 class_content
   : %empty
     {
-      $$ = Khthon::ClassMembers();
+      $$ = khthon::ClassMembers();
     }
   | class_content field
     {
@@ -305,7 +305,7 @@ class_content
   | class
     {
       ERROR(@1, "Redefinition of a class inside a class.");
-      $$ = Khthon::ClassMembers();
+      $$ = khthon::ClassMembers();
     }
   ;
 
@@ -323,19 +323,19 @@ field
   | OBJECT_IDENTIFIER ASSIGN expression SEMICOLON
     {
       ERROR(@2, "field misses a type definition. Type inference is not yet available.");
-      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $3);
+      $$ = make_shared<FieldNode>(@$, $1, khthon::Type(), $3);
     }
   /* Error test 37 : field cannot start with lowercase */
   | TYPE_IDENTIFIER COLON type SEMICOLON
     {
       ERROR(@1, "field identifier must start with a lowercase letter");
-      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type());
+      $$ = make_shared<FieldNode>(@$, $1, khthon::Type());
     }
   /* Error test 37 : field cannot start with lowercase */
   | TYPE_IDENTIFIER COLON type ASSIGN expression SEMICOLON
     {
       ERROR(@1, "field identifier must start with a lowercase letter.");
-      $$ = make_shared<FieldNode>(@$, $1, Khthon::Type(), $5);
+      $$ = make_shared<FieldNode>(@$, $1, khthon::Type(), $5);
     }
   /* Error test 34 : fields must end with a semicolon */
   | OBJECT_IDENTIFIER COLON type error
@@ -408,11 +408,11 @@ formal
   ;
 
 type
-  : TYPE_IDENTIFIER { $$ = Khthon::Type(std::move($1)); }
-  | INT32           { $$ = Khthon::Type::Int32(); }
-  | BOOL            { $$ = Khthon::Type::Bool(); }
-  | STRING          { $$ = Khthon::Type::String(); }
-  | UNIT            { $$ = Khthon::Type::Unit(); }
+  : TYPE_IDENTIFIER { $$ = khthon::Type(std::move($1)); }
+  | INT32           { $$ = khthon::Type::Int32(); }
+  | BOOL            { $$ = khthon::Type::Bool(); }
+  | STRING          { $$ = khthon::Type::String(); }
+  | UNIT            { $$ = khthon::Type::Unit(); }
   ;
 
 block
@@ -687,7 +687,7 @@ while_loop
     ++================================================*/
 
 // Useless for now but is declared by Bison.
-void Khthon::Parser::error(const Khthon::location& l, const std::string& m) {
+void khthon::Parser::error(const khthon::location& l, const std::string& m) {
     (void) l;
     (void) m;
 }

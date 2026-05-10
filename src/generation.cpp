@@ -4,7 +4,7 @@
 using namespace llvm;
 using namespace std;
 
-namespace Khthon {
+namespace khthon {
 
     void CodeGenOrchestrator::emit_runtime_declarations() {
         
@@ -418,7 +418,7 @@ namespace Khthon {
         vtable_globals_[class_name] = vtable_global;
     }
 
-    llvm::Type* CodeGenOrchestrator::to_llvm(const Khthon::Type& t) {
+    llvm::Type* CodeGenOrchestrator::to_llvm(const khthon::Type& t) {
         if (t.is_int32())   return llvm::Type::getInt32Ty(context_);
         if (t.is_bool())    return llvm::Type::getInt1Ty(context_);
         if (t.is_unit())    return llvm::Type::getVoidTy(context_);
@@ -490,6 +490,6 @@ namespace Khthon {
         module_->print(out, nullptr);
     }
 
-} // namespace Khthon
+} // namespace khthon
 
 

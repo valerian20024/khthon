@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace Khthon::Mangle {
+namespace khthon::Mangle {
 
     /// @brief Formats to `class_name__method_name`.
     std::string meth(const std::string& class_name, const std::string& method_name) {
@@ -34,6 +34,6 @@ namespace Khthon::Mangle {
         return class_name + "___VTable";
     }
 
-} // namespace Khthon::Mangle
+} // namespace khthon::Mangle
 
 #endif

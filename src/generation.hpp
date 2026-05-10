@@ -7,7 +7,7 @@
 #include "types.hpp"
 #include "operators.hpp"
 
-namespace Khthon {
+namespace khthon {
 
     class CodeGenOrchestrator {
     private:
@@ -71,11 +71,11 @@ namespace Khthon {
         void emit_vtable(const ClassNode& node);
 
         /// @brief Helper to convert from VSOP types to LLVM types.
-        llvm::Type* to_llvm(const Khthon::Type& t);
+        llvm::Type* to_llvm(const khthon::Type& t);
 
         /// @brief Wrapper. 
         /// @see SemanticChecker::collect_fields()
-        std::vector<Khthon::FieldInfo> collect_fields(
+        std::vector<khthon::FieldInfo> collect_fields(
             const std::string class_name
         ) const;
 
@@ -90,6 +90,6 @@ namespace Khthon {
         void print_ir(llvm::raw_ostream& out) const;
     };
 
-} // namespace Khthon
+} // namespace khthon
 
 #endif

@@ -16,115 +16,115 @@ In file included from src/parser.y:35:
 src/ast.hpp:132:71: error: illegal initializer type 'void'
         virtual R visit(const ProgramNode&) const           { return R{}; }
                                                                       ^
-src/ast.hpp:213:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:213:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:133:71: error: illegal initializer type 'void'
         virtual R visit(const ClassNode&) const             { return R{}; }
                                                                       ^
-src/ast.hpp:246:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:246:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:134:71: error: illegal initializer type 'void'
         virtual R visit(const FieldNode&) const             { return R{}; }
                                                                       ^
-src/ast.hpp:279:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:279:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:135:71: error: illegal initializer type 'void'
         virtual R visit(const MethodNode&) const            { return R{}; }
                                                                       ^
-src/ast.hpp:315:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:315:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:136:71: error: illegal initializer type 'void'
         virtual R visit(const FormalNode&) const            { return R{}; }
                                                                       ^
-src/ast.hpp:352:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:352:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:137:71: error: illegal initializer type 'void'
         virtual R visit(const BlockExpr&) const             { return R{}; }
                                                                       ^
-src/ast.hpp:377:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:377:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:138:71: error: illegal initializer type 'void'
         virtual R visit(const StringLiteralExpr&) const     { return R{}; }
                                                                       ^
-src/ast.hpp:401:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:401:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:139:71: error: illegal initializer type 'void'
         virtual R visit(const IntegerLiteralExpr&) const    { return R{}; }
                                                                       ^
-src/ast.hpp:425:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:425:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:140:71: error: illegal initializer type 'void'
         virtual R visit(const BoolLiteralExpr&) const       { return R{}; }
                                                                       ^
-src/ast.hpp:449:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:449:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:141:71: error: illegal initializer type 'void'
         virtual R visit(const UnitLiteralExpr&) const       { return R{}; }
                                                                       ^
-src/ast.hpp:465:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:465:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:142:71: error: illegal initializer type 'void'
         virtual R visit(const IfExpr&) const                { return R{}; }
                                                                       ^
-src/ast.hpp:494:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:494:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:143:71: error: illegal initializer type 'void'
         virtual R visit(const AssignExpr&) const            { return R{}; }
                                                                       ^
-src/ast.hpp:523:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:523:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:144:71: error: illegal initializer type 'void'
         virtual R visit(const NewExpr&) const               { return R{}; }
                                                                       ^
-src/ast.hpp:548:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:548:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:145:71: error: illegal initializer type 'void'
         virtual R visit(const UnOpExpr&) const              { return R{}; }
                                                                       ^
-src/ast.hpp:575:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:575:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:146:71: error: illegal initializer type 'void'
         virtual R visit(const BinOpExpr&) const             { return R{}; }
                                                                       ^
-src/ast.hpp:607:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:607:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:147:71: error: illegal initializer type 'void'
         virtual R visit(const VariableExpr&) const          { return R{}; }
                                                                       ^
-src/ast.hpp:633:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:633:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:148:71: error: illegal initializer type 'void'
         virtual R visit(const CallExpr&) const              { return R{}; }
                                                                       ^
-src/ast.hpp:664:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:664:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:149:71: error: illegal initializer type 'void'
         virtual R visit(const SelfExpr&) const              { return R{}; }
                                                                       ^
-src/ast.hpp:682:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:682:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 src/ast.hpp:150:71: error: illegal initializer type 'void'
         virtual R visit(const LetExpr&) const               { return R{}; }
                                                                       ^
-src/ast.hpp:713:21: note: in instantiation of member function 'Khthon::Visitor<void>::visit' requested here
+src/ast.hpp:713:21: note: in instantiation of member function 'khthon::Visitor<void>::visit' requested here
             visitor.visit(*this); 
                     ^
 fatal error: too many errors emitted, stopping now [-ferror-limit=]

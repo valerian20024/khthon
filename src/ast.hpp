@@ -13,7 +13,7 @@
 
 /*
 ? Should I put back every scope ?
-?   that is : Khthon::Type for example
+?   that is : khthon::Type for example
 
 ? Is it better to keep make_shared or use unique ptr?
 
@@ -22,7 +22,7 @@
 ? add driver reference in classes to be able to log internal errors?
 */
 
-namespace Khthon {
+namespace khthon {
 
     using StringVisitor         = Visitor<std::string>;
     using VoidVisitor           = Visitor<void>;
@@ -43,10 +43,10 @@ namespace Khthon {
     /// @brief Abstract class for nodes. 
     class Node {
     private:
-        Khthon::location loc_;
+        khthon::location loc_;
     public:
         Node(
-            Khthon::location l
+            khthon::location l
         ) : 
             loc_(l) 
         { }
@@ -56,17 +56,17 @@ namespace Khthon {
         virtual void accept(MutableVoidVisitor&) = 0;
         virtual void accept(const VoidVisitor&) const = 0;
 
-        Khthon::location location() const { return loc_; }
+        khthon::location location() const { return loc_; }
     };
 
     /// @brief Abstract class for expression nodes.
     class Expr : public Node {
     protected:
-        Khthon::Type type_ = Type();
+        khthon::Type type_ = Type();
 
     public:
         Expr(
-            Khthon::location l
+            khthon::location l
         ) : 
             Node(l) 
         {}
@@ -76,11 +76,11 @@ namespace Khthon {
         virtual void accept(MutableVoidVisitor&) = 0;
         virtual void accept(const VoidVisitor&) const = 0;
 
-        const Khthon::Type& type() const { return type_; }
+        const khthon::Type& type() const { return type_; }
 
         /// @brief Set type of the node.
         /// @warning Mutates the node even if declared as const.
-        void set_type(const Khthon::Type& t) { type_ = t; }
+        void set_type(const khthon::Type& t) { type_ = t; }
     };
 
 
@@ -89,7 +89,7 @@ namespace Khthon {
         NodeList<ClassNode> classes_;
     public:
         ProgramNode(
-            Khthon::location l, 
+            khthon::location l, 
             NodeList<ClassNode> cs
         ) : 
             Node(l), 
@@ -118,7 +118,7 @@ namespace Khthon {
         NodeList<MethodNode> methods_;
     public:
         ClassNode(
-            Khthon::location l, 
+            khthon::location l, 
             std::string n, 
             std::string p,
             NodeList<FieldNode> fs,
@@ -155,9 +155,9 @@ namespace Khthon {
         std::optional<std::shared_ptr<Expr>> initializer_;
     public:
         FieldNode(
-            Khthon::location l, 
+            khthon::location l, 
             std::string n, 
-            Khthon::Type t,
+            khthon::Type t,
             std::optional<std::shared_ptr<Expr>> i = std::nullopt
         ) : 
             Node(l), 
@@ -191,9 +191,9 @@ namespace Khthon {
         std::shared_ptr<Expr> body_;
     public:
         MethodNode(
-            Khthon::location l, 
+            khthon::location l, 
             std::string n, 
-            Khthon::Type t,
+            khthon::Type t,
             NodeList<FormalNode> fs,
             std::shared_ptr<Expr> b
         ) : 
@@ -221,7 +221,7 @@ namespace Khthon {
 
         /// @brief Creating a dummy node to fill the tree and find more errors.
         static std::shared_ptr<MethodNode> makeDummy(
-            Khthon::location location, 
+            khthon::location location, 
             std::string name
         );
     };
@@ -233,7 +233,7 @@ namespace Khthon {
         Type type_;
     public:
         FormalNode(
-            Khthon::location l,
+            khthon::location l,
             std::string n,
             Type t
         ) : 
@@ -262,7 +262,7 @@ namespace Khthon {
         NodeList<Expr> expressions_;
     public:
         BlockExpr(
-            Khthon::location l, 
+            khthon::location l, 
             NodeList<Expr> es
         ) : 
             Expr(l), 
@@ -296,7 +296,7 @@ namespace Khthon {
         std::string value_;
     public:
         StringLiteralExpr(
-            Khthon::location l, 
+            khthon::location l, 
             std::string v
         ) : 
             Expr(l), 
@@ -322,7 +322,7 @@ namespace Khthon {
         int value_;
     public:
         IntegerLiteralExpr(
-            Khthon::location l, 
+            khthon::location l, 
             int val
         ) : 
             Expr(l), 
@@ -348,7 +348,7 @@ namespace Khthon {
         bool value_;
     public:
         BoolLiteralExpr(
-            Khthon::location l, 
+            khthon::location l, 
             bool val
         ) : 
             Expr(l), 
@@ -371,7 +371,7 @@ namespace Khthon {
     
     class UnitLiteralExpr : public Expr {
     public:
-        explicit UnitLiteralExpr(Khthon::location l) : Expr(l) {}
+        explicit UnitLiteralExpr(khthon::location l) : Expr(l) {}
 
         std::string accept(StringVisitor const& v) const override { 
             return v.visit(*this); 
@@ -393,7 +393,7 @@ namespace Khthon {
 
     public:
         IfExpr(
-            Khthon::location l,
+            khthon::location l,
             std::shared_ptr<Expr> g,
             std::shared_ptr<Expr> c,
             std::optional<std::shared_ptr<Expr>> a = std::nullopt
@@ -426,7 +426,7 @@ namespace Khthon {
         std::shared_ptr<Expr> value_;
     public:
         AssignExpr(
-            Khthon::location l,
+            khthon::location l,
             std::string n,
             std::shared_ptr<Expr> v
         ) : 
@@ -455,7 +455,7 @@ namespace Khthon {
         std::string identifier_;
     public:
         NewExpr(
-            Khthon::location l, 
+            khthon::location l, 
             std::string i
         ) :
             Expr(l),
@@ -482,7 +482,7 @@ namespace Khthon {
         std::shared_ptr<Expr> operand_;
     public:
         UnOpExpr(
-            Khthon::location l,
+            khthon::location l,
             UnaryOperation operation,
             std::shared_ptr<Expr> operand
         ) :
@@ -514,7 +514,7 @@ namespace Khthon {
 
     public:
         BinOpExpr(
-            Khthon::location l,
+            khthon::location l,
             BinaryOperation operation,
             std::shared_ptr<Expr> left,
             std::shared_ptr<Expr> right
@@ -546,7 +546,7 @@ namespace Khthon {
         std::string identifier_;
     public:
         VariableExpr(
-            Khthon::location l, 
+            khthon::location l, 
             std::string i
         ) :
             Expr(l),
@@ -575,7 +575,7 @@ namespace Khthon {
 
     public:
         CallExpr(
-            Khthon::location l,
+            khthon::location l,
             std::shared_ptr<Expr> r,
             std::string m,
             std::vector<std::shared_ptr<Expr>> as
@@ -604,7 +604,7 @@ namespace Khthon {
 
     class SelfExpr : public Expr {
     public:
-        explicit SelfExpr(Khthon::location l) : Expr(l) {}
+        explicit SelfExpr(khthon::location l) : Expr(l) {}
 
         std::string accept(StringVisitor const& v) const override { 
             return v.visit(*this); 
@@ -627,7 +627,7 @@ namespace Khthon {
 
     public:
         LetExpr(
-            Khthon::location l,
+            khthon::location l,
             std::string n,
             Type t,
             std::shared_ptr<Expr> s,
@@ -665,7 +665,7 @@ namespace Khthon {
 
     public:
         WhileExpr(
-            Khthon::location l,
+            khthon::location l,
             std::shared_ptr<Expr> c,
             std::shared_ptr<Expr> b
         ) :

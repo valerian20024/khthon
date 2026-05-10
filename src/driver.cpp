@@ -12,14 +12,14 @@
 #include "diagnostics.hpp"
 
 using namespace std;
-using namespace Khthon;
+using namespace khthon;
 using namespace colors;
 
 /*
 
 */
 
-namespace Khthon {
+namespace khthon {
 
     /// @brief Map a token type to its string representation.
     static const map<Parser::token_type, string> type_to_string = {
@@ -68,8 +68,8 @@ namespace Khthon {
         {Parser::token::STRING_LITERAL,     "string-literal"},
     };
 
-    Khthon::location Driver::default_location() const {
-        Khthon::location loc;
+    khthon::location Driver::default_location() const {
+        khthon::location loc;
 
         auto filename_ptr = std::make_shared<string>(source_file_.empty() 
             ? "<unknown>"

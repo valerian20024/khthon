@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace Khthon
+namespace khthon
 {
     bool Type::operator==(const Type& other) const {
         if (kind_ != other.kind_)
@@ -36,4 +36,4 @@ namespace Khthon
             }
         }
     }
-} // namespace Khthon
+} // namespace khthon

@@ -6,7 +6,7 @@
 #include <vector>
 #include <iostream>
 
-namespace Khthon {
+namespace khthon {
 
     /// @brief Represents an unary operation in VSOP.
     class UnaryOperation {
@@ -117,7 +117,7 @@ namespace Khthon {
         /// @brief The `BinaryOperation` string representation, as seen in any valid VSOP code.
         std::string to_string() const;
     };
-} // namespace Khthon
+} // namespace khthon
 
 
 #endif

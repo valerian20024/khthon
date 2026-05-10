@@ -58,7 +58,7 @@ int main(int argc, char const *argv[]) {
         return -1;
     }
 
-    Khthon::Driver driver(source_file);
+    khthon::Driver driver(source_file);
 
     if (extended_VSOP)
         driver.enable_extensions();

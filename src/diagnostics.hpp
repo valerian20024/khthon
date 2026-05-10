@@ -3,7 +3,7 @@
 
 #include "parser.hpp"
 
-namespace Khthon
+namespace khthon
 {
     enum class ErrorLevel {
         Error,
@@ -17,7 +17,7 @@ namespace Khthon
         ErrorLevel level_;
 
         Diagnostic(
-            location location = Khthon::location(),
+            location location = khthon::location(),
             ErrorLevel level = ErrorLevel::Error
         ) : 
             loc_(std::move(location)), 
@@ -90,6 +90,6 @@ namespace Khthon
         std::string to_string() const override;
     };
     
-} // namespace Khthon
+} // namespace khthon
 
 #endif

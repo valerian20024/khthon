@@ -2,10 +2,10 @@
 #include "colors.hpp"
 
 using namespace std;
-using namespace Khthon;
+using namespace khthon;
 using namespace colors;
 
-namespace Khthon {
+namespace khthon {
     
     string LexicalDiagnostic::to_string() const {
         return format_location()
@@ -51,4 +51,4 @@ namespace Khthon {
             return "";
         }
     }
-} // namespace Khthon
+} // namespace khthon

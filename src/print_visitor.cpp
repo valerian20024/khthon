@@ -9,7 +9,7 @@ using namespace colors;
 
 */
 
-namespace Khthon {
+namespace khthon {
 
     template<typename T> string 
     PrintVisitor::stringify(const NodeList<T>& items) const {

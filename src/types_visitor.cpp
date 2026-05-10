@@ -1,9 +1,9 @@
 #include "semantics.hpp"
 
 using namespace std;
-using namespace Khthon;
+using namespace khthon;
 
-namespace Khthon {
+namespace khthon {
 
     bool TypesVisitor::conforms(const Type& given, const Type& expected) const {
         
@@ -97,7 +97,7 @@ namespace Khthon {
 
     bool TypesVisitor::check_type_exists(
         const Type& type, 
-        const Khthon::location& loc
+        const khthon::location& loc
     ) const {
         // Primitive types are always valid.
         if (type.is_primitive() || type.is_unit())
@@ -116,7 +116,7 @@ namespace Khthon {
     }
 
     void TypesVisitor::trace(const string& message) const { 
-        if (Khthon::enable_advanced_logging)
+        if (khthon::enable_advanced_logging)
             cout << message << endl;
     }
 
@@ -508,4 +508,4 @@ namespace Khthon {
         node.set_type(Type::Unit());
     }
     
-} // namespace Khthon
+} // namespace khthon

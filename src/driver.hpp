@@ -17,12 +17,12 @@
 
 // Give prototype of yylex() function, then declare it.
 // Passing driver as an argument for error reporting.
-#define YY_DECL Khthon::Parser::symbol_type yylex(Khthon::Driver &driver)
+#define YY_DECL khthon::Parser::symbol_type yylex(khthon::Driver &driver)
 YY_DECL;
 
-using namespace Khthon;
+using namespace khthon;
 
-namespace Khthon {
+namespace khthon {
 
 
     /**
@@ -37,7 +37,7 @@ namespace Khthon {
         std::string source_file_;
 
         /// @brief The parser.
-        Khthon::Parser *parser;
+        khthon::Parser *parser;
 
         /// @brief Stores the tokens.
         std::vector<Parser::symbol_type> tokens;  
@@ -66,7 +66,7 @@ namespace Khthon {
         const std::string source_file() { return source_file_; }
 
         /// @brief Returns the default location: current_source_file: 1: 1.
-        Khthon::location default_location() const;
+        khthon::location default_location() const;
 
         /// @brief The root of the AST. Used as a handle to parse the whole tree.
         std::shared_ptr<ProgramNode> ast_root;

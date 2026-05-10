@@ -1,11 +1,11 @@
 #include "semantics.hpp"
 
-namespace Khthon {
+namespace khthon {
 
     void ClassesVisitor::visit(const ProgramNode& node) const {
         
         // Inject the built-in Object class
-        Khthon::location builtin_loc = driver_.default_location();
+        khthon::location builtin_loc = driver_.default_location();
         ClassInfo object_info("Object", "Object", builtin_loc);
 
         // Object's built-in methods
@@ -117,4 +117,4 @@ namespace Khthon {
 
         checker_.add_class(class_info);
     }
-} // namespace Khthon
+} // namespace khthon

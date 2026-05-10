@@ -20,7 +20,7 @@
 
     /* Code to include at the beginning of the lexer file. */
     using namespace std;
-    using namespace Khthon;
+    using namespace khthon;
     
     /**
      * @brief Transforms strings of escaped characters into

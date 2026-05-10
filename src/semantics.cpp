@@ -8,9 +8,9 @@
 
 using namespace std;
 
-using Khthon::Type;
+using khthon::Type;
 
-namespace Khthon {
+namespace khthon {
 
 
         /*================================================++
@@ -20,7 +20,7 @@ namespace Khthon {
     FieldInfo::FieldInfo(
         string              name, 
         Type                type, 
-        Khthon::location    loc
+        khthon::location    loc
     ) : 
         name_(std::move(name)), 
         type_(std::move(type)), 
@@ -30,7 +30,7 @@ namespace Khthon {
     FormalInfo::FormalInfo(
         string              name, 
         Type                type, 
-        Khthon::location    loc
+        khthon::location    loc
     ) : 
         name_(std::move(name)), 
         type_(std::move(type)), 
@@ -39,9 +39,9 @@ namespace Khthon {
 
     MethodInfo::MethodInfo(
         string                  name,
-        Khthon::Type            return_type,
+        khthon::Type            return_type,
         vector<FormalInfo>      formals,
-        Khthon::location        loc
+        khthon::location        loc
     ) : 
         name_(std::move(name)),
         return_type_(std::move(return_type)),
@@ -52,7 +52,7 @@ namespace Khthon {
     ClassInfo::ClassInfo(
         std::string         name, 
         std::string         parent, 
-        Khthon::location    loc
+        khthon::location    loc
     ) : 
         name_(std::move(name)), 
         parent_(std::move(parent)), 
@@ -60,7 +60,7 @@ namespace Khthon {
     {}
 
     ClassInfo ClassInfo::Dummy() {
-        return ClassInfo("Dummy", "Object", Khthon::location());
+        return ClassInfo("Dummy", "Object", khthon::location());
     }
 
     bool ClassInfo::add_field(FieldInfo f) {
