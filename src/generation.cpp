@@ -397,21 +397,21 @@ namespace khthon {
         // create a vtable constant.
         vector<Constant*> methods;
         for (const auto& method : node.methods()) {
-            methods.push_back(functions_.at(
-                mangle::meth(class_name, method->name()))
+            methods.push_back(
+                functions_.at(mangle::meth(class_name, method->name()))
             );
         }
 
         Constant* vtable_const = methods.empty()
-            ? ConstantAggregateZero::get(vtable_struct)     // no methods
-            : ConstantStruct::get(vtable_struct, methods);  // real pointers
+            ? ConstantAggregateZero::get(vtable_struct)     // No methods.
+            : ConstantStruct::get(vtable_struct, methods);  // Real pointers.
 
         auto* vtable_global = new GlobalVariable(
             *module_,
             vtable_struct,
-            true,                           // isConstant
+            true,                   // It is constant.
             GlobalValue::InternalLinkage,
-            vtable_const,                   // initializer
+            vtable_const,           // Provide a constant initializer.
             mangle::vt_global(class_name)
         );
 
