@@ -4,6 +4,7 @@
 #include "llvm_compatibility.hpp"
 #include "driver.hpp"
 #include "semantics.hpp"
+#include "types.hpp"
 
 namespace Khthon {
 

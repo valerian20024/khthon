@@ -65,6 +65,7 @@ build/*
 *.synctex.gz
 
 *.drawio.bkp
+*.drawio.dtm
 
 ## Doxygen
 

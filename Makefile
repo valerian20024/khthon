@@ -50,6 +50,7 @@ SRC = 	ast.cpp \
 		main.cpp \
 		print_visitor.cpp \
 		semantics.cpp \
+		types.cpp \
 		types_visitor.cpp
 
 HEADERS =	ast.hpp \
@@ -60,6 +61,7 @@ HEADERS =	ast.hpp \
 			llvm_compatibility.hpp \
 			mangling.hpp \
 			semantics.hpp \
+			types.hpp \
 			visitors.hpp
 
 # The software (Bison, Flex) generated code.
