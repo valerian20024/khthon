@@ -105,6 +105,7 @@ Now that I have more experience both in compiler design and in C++, there are ma
     \item Push further the Debug mechanics when compiling to have accurate and clean logging of what's happening. For now it's a bit mingled and not standardized.
     \item More consistent use of C++ features, such as move semantics.
     \item Clearly separating interface and implementation, even when having trivial methods, for example in \texttt{ast.hpp}.
+    \item \texttt{Driver::print\_diagnostics} should print them in order (line, column) when compiling in release mode and keep the original order when compiling in Debug mode.
 \end{enumerate}
 
 This project will outlive the scope of this course and I shall improve Khthon in my free time.

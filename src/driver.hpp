@@ -87,6 +87,9 @@ namespace khthon {
         /// @return 0 if no error happened during compilation. Non-zero otherwise.
         int generate(bool make_executable = false);
 
+        /// @brief Print the information about a token.
+        void print_token(Parser::symbol_type token, std::ostream& out);
+
         /// @brief Print all the tokens, that is the output of the lexical analysis
         void print_tokens(std::ostream& out);
 

@@ -259,12 +259,7 @@ namespace khthon {
         return 0;
     }
 
-    /**
-     * @brief Print the information about a token
-     *
-     * @param token the token
-     */
-    static void print_token(Parser::symbol_type token, std::ostream& out) {
+    void Driver::print_token(Parser::symbol_type token, std::ostream& out) {
         position pos = token.location.begin;
         Parser::token_type type = (Parser::token_type)token.type_get();
 
@@ -324,8 +319,6 @@ namespace khthon {
             cerr << internal_error_banner() << reason << endl;
     }
 
-    
-
     void Driver::report(std::shared_ptr<Diagnostic> d) {
         if (d->level() == ErrorLevel::Error)
             error_count_++;
@@ -377,9 +370,6 @@ namespace khthon {
         report(make_shared<SemanticDiagnostic>(l, ErrorLevel::Error, reason));
     }
 
-    //todo sort the errors by line and columns
-    //todo Then also errors, warnings, notes for a same line
-    //todo Only if not in debug mode. Keep the original order in debug mode
     void Driver::print_diagnostics() const {
         for (const auto& d : diagnostics_)
             cerr << d->to_string() << endl;
