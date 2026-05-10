@@ -10,17 +10,14 @@
 #include "ast.hpp"
 #include "diagnostics.hpp"
 
-/*
-? Who should have driver as reference to be able to send InternalDiagnostics ?
-    Instead, create a DiagnosticHandler class that has the duty to log new diags, etc.
-*/
+/**
+ * This file contains the interface of the Driver class.
+ */
 
 // Give prototype of yylex() function, then declare it.
 // Passing driver as an argument for error reporting.
 #define YY_DECL khthon::Parser::symbol_type yylex(khthon::Driver &driver)
 YY_DECL;
-
-using namespace khthon;
 
 namespace khthon {
 

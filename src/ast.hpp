@@ -11,16 +11,9 @@
 #include "types.hpp"
 #include "operators.hpp"
 
-/*
-? Should I put back every scope ?
-?   that is : khthon::Type for example
-
-? Is it better to keep make_shared or use unique ptr?
-
-? Merging both UnaryOp and BinaryOp into Operator?
-
-? add driver reference in classes to be able to log internal errors?
-*/
+/**
+ * This file contains the interface for the Abstract Syntax Tree nodes.
+ */
 
 namespace khthon {
 
@@ -36,8 +29,6 @@ namespace khthon {
     struct ClassMembers {
         NodeList<FieldNode> fields;
         NodeList<MethodNode> methods;
-
-        ClassMembers() {}
     };
 
     /// @brief Abstract class for nodes. 

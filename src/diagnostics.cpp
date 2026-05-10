@@ -2,7 +2,6 @@
 #include "colors.hpp"
 
 using namespace std;
-using namespace khthon;
 using namespace colors;
 
 namespace khthon {

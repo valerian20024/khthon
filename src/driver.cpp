@@ -12,7 +12,6 @@
 #include "diagnostics.hpp"
 
 using namespace std;
-using namespace khthon;
 using namespace colors;
 
 /*

@@ -1,7 +1,6 @@
 #include "semantics.hpp"
 
 using namespace std;
-using namespace khthon;
 
 namespace khthon {
 
