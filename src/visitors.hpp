@@ -5,6 +5,11 @@
 #include <vector>
 #include <memory>
 
+/**
+ * This file contains the interface of the visitors abstract classes
+ * and their specialization as well as the interface of PrintVisitor.
+ */
+
 using namespace std;
 
 namespace khthon {
