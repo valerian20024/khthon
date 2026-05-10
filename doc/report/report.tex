@@ -3,6 +3,7 @@
 \usepackage{url}
 \usepackage{hyperref}
 \usepackage{xcolor}
+\usepackage{pdfpages}
 
 \begin{document}
 
@@ -28,10 +29,7 @@
                 Roland GREFFE
 		\end{flushleft}
 	\end{minipage}
-    
     \hfill 
-    
-    % --- Authors ---
 	\begin{minipage}[t]{0.49\textwidth}
 		\begin{flushright} \large
         \textbf{Authors:} \\
@@ -67,16 +65,6 @@ I started fresh from the Flex/Bison example provided. Reused part of the lexer a
 
 Using Flex, Bison, LLVM C++ API (IRBuilder).
 
-Classes : 
-
-\section{Summary}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{images/uliege-FSA.png}
-    \caption{}
-\end{figure}
-
 
 \section{Capabilities}
 
@@ -95,17 +83,18 @@ Decided to incorporate small duplicate checks inside the ClassesVisitor for an e
 If the class has been defines several times, there's likely a big problem, so the compiler won't take the time to inspect every fields and methods inside it, which could potentially be all duplicated. 
 We simply tell it is duplicated and return early, not adding this class to the symbol table for further inspections.
 
-\section{Potential improvements}
+\section{Project improvements}
 Now that I have more experience both in compiler design and in C++, there are many things I would like to improve, most notably:
 
 \begin{enumerate}
     \item Change the lexer to only take one keyword token and use a hash table to decide its content.
     \item Create a dedicated \texttt{ErrorLogger} instead of putting the responsibility of error management to \texttt{Driver}. The errors could be more descriptive as well, copying the line from the source file to indicate the user where it happened. Using Bison's \texttt{location} to clearly highlight the error.
     \item Create some namespaces. As the code grew, \texttt{khthon::Type} is conflicting with \texttt{llvm::Type}. It would be a good time to start splitting into namespaces.
-    \item Push further the Debug mechanics when compiling to have accurate and clean logging of what's happening. For now it's a bit mingled and not standardized.
+    \item Push further the debug mechanics when compiling to have accurate and clean logging of what's happening. For now it's a bit mingled and not standardized.
     \item More consistent use of C++ features, such as move semantics.
     \item Clearly separating interface and implementation, even when having trivial methods, for example in \texttt{ast.hpp}.
     \item \texttt{Driver::print\_diagnostics} should print them in order (line, column) when compiling in release mode and keep the original order when compiling in Debug mode.
+    \item Work on the test script and pipeline its execution using e.g. Github actions.
 \end{enumerate}
 
 This project will outlive the scope of this course and I shall improve Khthon in my free time.
@@ -119,5 +108,13 @@ Updating the container, adding gdb to debug inside the container. Using more rec
 Mainly to help understand LLVM IR, discuss and refine code organization, help with some C++ concepts.
 
 However, the code is mine.
+
+\appendix
+
+\section{Classes}
+
+A document describing the classes, the files and their link is given afterwards.
+
+\includepdf{images/schematics/overview.pdf}
 
 \end{document}

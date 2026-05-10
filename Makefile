@@ -140,6 +140,7 @@ $(SRC_DIR)/lexer.cpp: $(SRC_DIR)/lexer.lex
 # Ensure parser and lexer are generated before any compilation
 $(OBJ): $(SRC_DIR)/parser.hpp $(SRC_DIR)/lexer.cpp
 
+# Compile the runtime to an object file.
 $(RUNTIME_OBJ): $(RUNTIME_SRC) | $(BUILD_DIR)
 	@echo -e $(C_PEACH)"Runtime:   "$(C_END) $@;
 	@clang -c $< -o $@

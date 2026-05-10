@@ -58,17 +58,20 @@ build/*
 
 
 ## Report
-*.aux
-*.fdb_latexmk
-*.fls
-*.log
-*.synctex.gz
+doc/report/*.pdf
+doc/report/*.out
+doc/report/*.aux
+doc/report/*.fdb_latexmk
+doc/report/*.fls
+doc/report/*.log
+doc/report/*.synctex.gz
+
+# Drawio
 
 *.drawio.bkp
 *.drawio.dtm
 
 ## Doxygen
 
-doc/report/*.pdf
 doc/doxygen/html
 doc/doxygen/latex
