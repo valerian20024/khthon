@@ -5,6 +5,7 @@
 #include "driver.hpp"
 #include "semantics.hpp"
 #include "types.hpp"
+#include "operators.hpp"
 
 namespace Khthon {
 

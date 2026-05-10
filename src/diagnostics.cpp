@@ -5,8 +5,8 @@ using namespace std;
 using namespace Khthon;
 using namespace colors;
 
-namespace Khthon
-{
+namespace Khthon {
+    
     string LexicalDiagnostic::to_string() const {
         return format_location()
             + ": lexical error: \n"

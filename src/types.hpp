@@ -3,9 +3,9 @@
 
 #include <string>
 
-namespace Khthon
-{
-        /// @brief Represents a type in VSOP.
+namespace Khthon {
+    
+    /// @brief Represents a type in VSOP.
     class Type {
     private: 
         enum class Kind { 

@@ -48,6 +48,7 @@ SRC = 	ast.cpp \
 		driver.cpp \
 		generation.cpp \
 		main.cpp \
+		operators.cpp \
 		print_visitor.cpp \
 		semantics.cpp \
 		types.cpp \
@@ -60,6 +61,7 @@ HEADERS =	ast.hpp \
 			generation.hpp \
 			llvm_compatibility.hpp \
 			mangling.hpp \
+			operators.hpp \
 			semantics.hpp \
 			types.hpp \
 			visitors.hpp

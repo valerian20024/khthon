@@ -1,3 +1,6 @@
+#ifndef COLORS_HPP
+#define COLORS_HPP
+
 #include <string>
 
 /// @brief Contains methods printing in the terminal.
@@ -41,3 +44,5 @@ namespace colors {
         );
     }
 }
+
+#endif
