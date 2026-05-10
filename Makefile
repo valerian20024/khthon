@@ -25,7 +25,9 @@ SRC_DIR		= src
 
 BUILD_DIR	= build
 
-REPORT_DIR	= doc/report
+REPORT_DIR	= doc/report/
+
+DOC_DIR		= doc/doxygen
 
 #-----------------------------------------------------------------------------
 #  Runtime
@@ -88,6 +90,7 @@ ARCHIVE_FILES = Makefile \
 			) \
 			$(RUNTIME_DIR)/object.c \
 			$(RUNTIME_DIR)/object.h \
+			$(DOC_DIR)/html \
 			$(REPORT_DIR)/report.pdf
 
 # -----------------------------------------------------------------------------
