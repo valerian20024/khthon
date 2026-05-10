@@ -91,7 +91,7 @@ ARCHIVE_FILES = Makefile \
 			$(RUNTIME_DIR)/object.c \
 			$(RUNTIME_DIR)/object.h \
 			$(DOC_DIR)/html \
-			$(REPORT_DIR)/report.pdf
+			report.pdf
 
 # -----------------------------------------------------------------------------
 #  Colors
@@ -155,7 +155,11 @@ $(RUNTIME_OBJ): $(RUNTIME_SRC) | $(BUILD_DIR)
 # Add a root directory called vscompiler in the archive
 archive: $(ARCHIVE_FILES)
 	@echo -e $(C_GREEN)"Creating archive..."$(C_END);
+	@cp $(REPORT_DIR)/report.pdf ./report.pdf
 	@tar -cJf $(ARCHIVE) --transform='s,^,vsopcompiler/,' $^
+
+report.pdf: 
+	@cp $(REPORT_DIR)/report.pdf report.pdf
 
 install-tools:
 	@:
@@ -168,6 +172,7 @@ clean:
 			$(SRC_DIR)/parser.hpp \
 			$(SRC_DIR)/location.hh
 	@rm -f $(ARCHIVE)
+	@rm -f report.pdf
 
 # Target specific variable assignment for debugging.
 # All compiled code will be compiled with the DEBUG variable and debug symbols.

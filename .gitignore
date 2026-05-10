@@ -66,6 +66,8 @@ doc/report/*.fls
 doc/report/*.log
 doc/report/*.synctex.gz
 
+report.pdf
+
 # Drawio
 
 *.drawio.bkp
