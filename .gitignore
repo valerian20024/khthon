@@ -41,6 +41,7 @@
 *.dwo
 
 # Khthon project
+
 ## Source
 vsopc
 lexer.cpp
@@ -56,13 +57,17 @@ vsopcompiler.tar.xz
 build/*
 
 
-## Latex
+## Report
 *.aux
 *.fdb_latexmk
 *.fls
 *.log
 *.synctex.gz
-doc/report/*.pdf
 
+*.drawio.bkp
+
+## Doxygen
+
+doc/report/*.pdf
 doc/doxygen/html
 doc/doxygen/latex

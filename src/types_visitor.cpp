@@ -36,17 +36,19 @@ namespace Khthon {
 
     bool TypesVisitor::check_binop_operands(
         const BinaryOperation& op,
-        const Type& t_left,
-        const Type& t_right
+        const Type& type_l,
+        const Type& type_r
     ) const {
 
         // Handling the special case of equality.
         if (op.is_equality())
-            return (t_left == t_right) || (t_left.is_custom() && t_right.is_custom());
+            return (type_l == type_r) 
+                || (type_l.is_custom() && type_r.is_custom());
 
         // If the given operands are among the pairs expected by the operation.
-        for (const auto& [expected_left, expected_right] : op.valid_operand_types()) {
-            if (conforms(t_left, expected_left) && conforms(t_right, expected_right))
+        for (const auto& [expect_l, expect_r] : op.valid_operand_types()) {
+            if (   conforms(type_l, expect_l) 
+                && conforms(type_r, expect_r))
                 return true;
         }
         return false;

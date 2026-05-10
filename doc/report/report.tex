@@ -2,6 +2,7 @@
 \usepackage{graphicx} % Required for inserting images
 \usepackage{url}
 \usepackage{hyperref}
+\usepackage{xcolor}
 
 \begin{document}
 
@@ -18,55 +19,73 @@
 	{\Large \bfseries Compiler Project Report} \\
 	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
 
-    % --- Minipage ---
+    % --- Teachers ---
 	\begin{minipage}[t]{0.49\textwidth}
 		\begin{flushleft} \large
 		    \textbf{Teacher:} \\
-                Pascal FONTAINE \\[0.5 cm]
+                Pascal FONTAINE \\ [0.5 cm]
             \textbf{Teaching Assistant:} \\
                 Roland GREFFE
 		\end{flushleft}
 	\end{minipage}
+    
     \hfill 
+    
+    % --- Authors ---
 	\begin{minipage}[t]{0.49\textwidth}
 		\begin{flushright} \large
         \textbf{Authors:} \\
             Valérian WISLEZ s200825
 		\end{flushright}
 	\end{minipage}
-    
+    % --- Year ---
     \vfill
-    \textsc{\Large Academic Year 2025-2026} \\[1.0 cm]	
+    \textsc{\Large Academic Year 2025-2026} \\ [1.0 cm]	
 \end{titlepage}
 
 
 \section{Introduction}
 
-The compiler is named Khthon: derived from the greek $\chi\theta o \nu \iota o \zeta$ ("khthonios"), meaning "from the ground", metaphorically to transform high level language to a more ground-based IR. 
+We will first give an overview of the project before moving into more details.
 
-The git repository \footnote{\url{https://github.com/valerian20024/khthon}} is also available for more extensive investigation. 
+The compiler is named Khthon: derived from the greek $\chi\theta o \nu \iota o \zeta$ ("khthonios"), meaning "from the ground", metaphorically transforming high level language to a more ground-based IR. 
+
+The git repository \footnote{\url{https://github.com/valerian20024/khthon}} is also available. There is much more in it than the sole source code and report posted on the submission platform.
 
 A Doxygen documentation is given with the source code, though it might not be complete.
 
-I have done the project alone this year because I have had some troubles in my team work.I have attended the course in 2024-2025, which allowed me to get some experience with the 3 first parts.
+I have attended the course in 2024-2025, which allowed me to get some experience with the 3 first steps. I decided to do the project alone this year because I have had some troubles in my team work last year and I thought I could reuse some parts to have a quick start. 
+
+As of \textcolor{red}{10 May 2026}, the project state can be summarized using VSCodeCounter's\footnote{\url{https://marketplace.visualstudio.com/items?itemName=uctakeoff.vscode-counter}} output: \textcolor{red}{23 files,  4257 codes, 639 comments, 1082 blanks, all 5978 lines}
+
+Unfortunately, I cannot state precisely how much time I have passed on the project, but I estimate it to be about $200$ hours, all in all. While that may seem a lot, it is mainly because I have used this project as an experimenting ground for learning C++. I was also quite passionate about it and willing to do it right. I have put some effort into readibility, architecture and correctness. While it may not be perfect since this is still the first actual C++ project I have tackled, I clearly feel I have improved my skills with this project.
 
 \section{Architecture}
 
+\subsection{Development roadmap}
+I started fresh from the Flex/Bison example provided. Reused part of the lexer and parser from last year's project. I could not reuse the Semantic Analysis part because the architecture was completely different and the code was somewhat cursed. Instead, I went for a visitor pattern.
 
-Based the code on the Flex/Bison example. Reused part of the lexer and parser from last year's project.
-Visitor pattern. Using Flex, Bison, LLVM C++ API (IRBuilder).
+Using Flex, Bison, LLVM C++ API (IRBuilder).
 
 Classes : 
+
+\section{Summary}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{images/uliege-FSA.png}
+    \caption{}
+\end{figure}
 
 
 \section{Capabilities}
 
-Here is a review of what the code is capable of doing and the limitations it has.
+Here is a review of what the code is capable of doing as well as its limitations.
 \begin{enumerate}
-    \item Lexical Analysis: 39/39 tests passed. No special comment.
+    \item Lexical Analysis: 39/39 tests passed. No further comment.
     \item Syntax Analysis: 50/55 tests passed. A few errors are not handled as I have had some troubles to understand and use Bison's error recovery system.
-    \item Semantic Analysis: ?/? tests passed.
-    \item Code Generation: ?/? tests passed. Khthon can produce an executable, link with the runtime and output some IR. It outputs mostly the foundation (VTables, class globals, etc.). Further constructs are unfortunately not compiled. 
+    \item Semantic Analysis: \textcolor{red}{?/? tests passed.}
+    \item Code Generation: \textcolor{red}{?/? tests passed}. Khthon can produce an executable, link with the runtime and output some IR. It outputs mostly the foundation (VTables, class globals, etc.). Further constructs are unfortunately not compiled. 
 \end{enumerate}
 
 
@@ -81,21 +100,23 @@ Now that I have more experience both in compiler design and in C++, there are ma
 
 \begin{enumerate}
     \item Change the lexer to only take one keyword token and use a hash table to decide its content.
-    \item Create a dedicated ErrorLogger instead of putting the responsibility of error related mechanics to Driver.
-    \item Create some namespaces because the code gets quite big now, and Khthon::Type is conflicting with llvm::Type.
+    \item Create a dedicated \texttt{ErrorLogger} instead of putting the responsibility of error management to \texttt{Driver}. The errors could be more descriptive as well, copying the line from the source file to indicate the user where it happened. Using Bison's \texttt{location} to clearly highlight the error.
+    \item Create some namespaces. As the code grew, \texttt{Khthon::Type} is conflicting with \texttt{llvm::Type}. It would be a good time to start splitting into namespaces.
     \item Push further the Debug mechanics when compiling to have accurate and clean logging of what's happening. For now it's a bit mingled and not standardized.
     \item More consistent use of C++ features, such as move semantics.
+    \item Clearly separating interface and implementation, even when having trivial methods, for example in \texttt{ast.hpp}.
 \end{enumerate}
+
+This project will outlive the scope of this course and I shall improve Khthon in my free time.
 
 \section{Course improvements}
 Adding more VSOP example, at least code that covers the whole language. For example, there is no while example.
 
-Updating the container, adding gdb to debug inside the container.
+Updating the container, adding gdb to debug inside the container. Using more recent version of LLVM and clang.
 
 \section{Use of AI Tools}
 Mainly to help understand LLVM IR, discuss and refine code organization, help with some C++ concepts.
 
 However, the code is mine.
-
 
 \end{document}

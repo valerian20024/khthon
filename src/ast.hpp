@@ -1,12 +1,12 @@
 #ifndef AST_HPP
 #define AST_HPP
 
-#include <memory>       // for smart pointers
-#include <string>       // for std::string
-#include <vector>       // for std::vector
-#include <optional>     // for std::optional
+#include <memory>
+#include <string>
+#include <vector>
+#include <optional>
 
-#include "location.hh"  // for Bison location 
+#include "location.hh"
 #include "visitors.hpp"
 
 /*
@@ -56,7 +56,9 @@ namespace Khthon {
 
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
 
-    // Datastructure to hold fields and methods together when parsing a class
+    /// @brief Datastructure to hold fields and methods together when 
+    /// parsing a class.
+    
     struct ClassMembers {
         NodeList<FieldNode> fields;
         NodeList<MethodNode> methods;
@@ -92,13 +94,22 @@ namespace Khthon {
         explicit Type(std::string name) : 
             kind_(Kind::CUSTOM), custom_name_(std::move(name)) { }
 
-        // Static factory methods.
-
+        /// @brief Factory method constructing a new int32 type. 
         static Type Int32()   { return Type(Kind::INT32); }
+
+        /// @brief Factory method constructing a new bool type.
         static Type Bool()    { return Type(Kind::BOOL); }
+
+        /// @brief Factory method constructing a new string type.
         static Type String()  { return Type(Kind::STRING); }
+
+        /// @brief Factory method constructing a new unit type.
         static Type Unit()    { return Type(Kind::UNIT); }
+
+        /// @brief Factory method constructing a new default type.
         static Type Default() { return Type(Kind::DEFAULT); }
+
+        /// @brief Factory method constructing Object.
         static Type Object()  { return Type("Object"); }
 
         /// @brief Any class in VSOP is a type. 
@@ -106,7 +117,6 @@ namespace Khthon {
 
         /// @brief Primitive types are `int32`, `string`, `bool` and `unit` in VSOP.
         bool is_primitive() const { return kind_ != Kind::DEFAULT && !is_custom(); }
-
         bool is_int32()     const { return kind_ == Kind::INT32; }
         bool is_bool()      const { return kind_ == Kind::BOOL; }
         bool is_string()    const { return kind_ == Kind::STRING; }
@@ -237,7 +247,7 @@ namespace Khthon {
 
 
     /*================================================++
-    ||               ABSTRACT CLASSES                 ||
+    ||                   AST NODES                    ||
     ++================================================*/
 
 
@@ -283,11 +293,6 @@ namespace Khthon {
         /// @warning Mutates the node even if declared as const.
         void set_type(const Khthon::Type& t) { type_ = t; }
     };
-
-
-    /*================================================++
-    ||                CONCRETE NODES                  ||
-    ++================================================*/
 
 
     class ProgramNode : public Node {
@@ -420,14 +425,16 @@ namespace Khthon {
             visitor.visit(*this);
         }
 
-        const std::string& name() const { return name_; }
-        const Type& type() const { return type_; }
+        const std::string& name() const             { return name_; }
+        const Type& type() const                    { return type_; }
         const NodeList<FormalNode>& formals() const { return formals_; }
-        const std::shared_ptr<Expr>& body() const { return body_; }
+        const std::shared_ptr<Expr>& body() const   { return body_; }
 
         /// @brief Creating a dummy node to fill the tree and find more errors.
-        static std::shared_ptr<MethodNode> 
-        makeDummy(Khthon::location location, std::string name);
+        static std::shared_ptr<MethodNode> makeDummy(
+            Khthon::location location, 
+            std::string name
+        );
     };
 
 
@@ -618,8 +625,8 @@ namespace Khthon {
             visitor.visit(*this);
         }
 
-        const auto& guardian() const { return guardian_; }
-        const auto& consequent() const { return consequent_; }
+        const auto& guardian() const    { return guardian_; }
+        const auto& consequent() const  { return consequent_; }
         const auto& alternative() const { return alternative_; }
     };
 
@@ -739,9 +746,9 @@ namespace Khthon {
             visitor.visit(*this);
         }
         
-        const BinaryOperation& operation() const { return operation_; }
-        const auto& left() const { return left_; }
-        const auto& right() const { return right_; }
+        const BinaryOperation& operation() const    { return operation_; }
+        const auto& left() const                    { return left_; }
+        const auto& right() const                   { return right_; }
     };
 
 
@@ -800,9 +807,9 @@ namespace Khthon {
             visitor.visit(*this);
         }
         
-        const auto& receiver() const { return receiver_; }
+        const auto& receiver() const    { return receiver_; }
         const std::string& name() const { return method_name_; }
-        const auto& args() const { return arguments_; }
+        const auto& args() const        { return arguments_; }
     };
 
 
@@ -855,10 +862,10 @@ namespace Khthon {
         }
         
         const std::string& name() const { return name_; }
-        const Type& type() const { return type_; }
-        bool has_initializer() const { return initializer_.has_value(); }
+        const Type& type() const        { return type_; }
+        bool has_initializer() const    { return initializer_.has_value(); }
         const auto& initializer() const { return initializer_; }
-        const auto& scope() const { return scope_; }
+        const auto& scope() const       { return scope_; }
     };
 
 
