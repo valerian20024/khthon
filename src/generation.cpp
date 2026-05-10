@@ -12,7 +12,7 @@ namespace khthon {
         // This avoids a chicken and egg problem: we can use pointers to 
         // the vtable and object type before constructing them concretely.
         StructType* object_vtable = StructType::create(
-            context_, Mangle::vt_struct("Object")
+            context_, mangle::vt_struct("Object")
         );
         StructType* object = StructType::create(context_, "Object");
 
@@ -64,21 +64,21 @@ namespace khthon {
             );
         };
 
-        declare(Mangle::meth("Object", "print"),
+        declare(mangle::meth("Object", "print"),
             object_ptr, {object_ptr, i8_ptr});
-        declare(Mangle::meth("Object", "printBool"),  
+        declare(mangle::meth("Object", "printBool"),  
             object_ptr, {object_ptr, i1});
-        declare(Mangle::meth("Object", "printInt32"), 
+        declare(mangle::meth("Object", "printInt32"), 
             object_ptr, {object_ptr, i32});
-        declare(Mangle::meth("Object", "inputLine"),
+        declare(mangle::meth("Object", "inputLine"),
             i8_ptr,     {object_ptr});
-        declare(Mangle::meth("Object", "inputBool"),
+        declare(mangle::meth("Object", "inputBool"),
             i1,         {object_ptr});
-        declare(Mangle::meth("Object", "inputInt32"), 
+        declare(mangle::meth("Object", "inputInt32"), 
             i32,        {object_ptr});
-        declare(Mangle::ctor("Object"),
+        declare(mangle::ctor("Object"),
             object_ptr, {});
-        declare(Mangle::init("Object"),
+        declare(mangle::init("Object"),
             object_ptr, {object_ptr});
 
         // Declaring the vtable global as external.
@@ -88,7 +88,7 @@ namespace khthon {
             true,      // It is constant.
             GlobalValue::ExternalLinkage,
             nullptr,  // Linker provides the initializer.
-            Mangle::vt_global("Object")
+            mangle::vt_global("Object")
         );
 
         declare("malloc", 
@@ -121,7 +121,7 @@ namespace khthon {
         builder_.SetInsertPoint(bb);
 
         // Instanciate Main class.
-        auto* new_function = module_->getFunction(Mangle::ctor("Main"));
+        auto* new_function = module_->getFunction(mangle::ctor("Main"));
         auto* main_object  = builder_.CreateCall(
             new_function,
             {},
@@ -129,7 +129,7 @@ namespace khthon {
         );
 
         // Call main method of Main.
-        auto* main_method = module_->getFunction(Mangle::meth("Main", "main"));
+        auto* main_method = module_->getFunction(mangle::meth("Main", "main"));
         auto* return_value = builder_.CreateCall(
             main_method,
             {main_object},
@@ -150,14 +150,14 @@ namespace khthon {
         auto* init_method = Function::Create(
             init_signature,
             GlobalValue::ExternalLinkage,
-            Mangle::init(class_name),
+            mangle::init(class_name),
             *module_
         );
 
         // Only parameter of init is self.
         init_method->arg_begin()->setName("self");
 
-        functions_[Mangle::init(class_name)] = init_method;
+        functions_[mangle::init(class_name)] = init_method;
 
         // Creating the entry point.
         BasicBlock* bb = BasicBlock::Create(context_, "entry", init_method);
@@ -184,7 +184,7 @@ namespace khthon {
 
     void CodeGenOrchestrator::emit_class_new(const ClassNode& node) {
         const string class_name = node.name();
-        const string class_constructor = Mangle::ctor(class_name);
+        const string class_constructor = mangle::ctor(class_name);
 
         StructType* class_struct = class_structs_.at(class_name);
         llvm::Type* class_ptr = class_struct->getPointerTo();
@@ -229,7 +229,7 @@ namespace khthon {
         auto* obj = builder_.CreateBitCast(raw_mem, class_ptr, "obj");
 
         // Call the init method.
-        auto* init_fn = module_->getFunction(Mangle::init(class_name));
+        auto* init_fn = module_->getFunction(mangle::init(class_name));
         builder_.CreateCall(init_fn, {obj});
 
         // Return the initialized object.
@@ -248,7 +248,7 @@ namespace khthon {
         const string class_name = node.name();
 
         StructType* vtable_struct = StructType::create(
-            context_, Mangle::vt_struct(class_name)
+            context_, mangle::vt_struct(class_name)
         );
 
         vtable_structs_[class_name] = vtable_struct;
@@ -302,7 +302,7 @@ namespace khthon {
     ) {
         const string class_name  = class_node.name();
         const string method_name = method_node.name();
-        const string mangled = Mangle::meth(class_name, method_name);
+        const string mangled = mangle::meth(class_name, method_name);
 
         StructType* class_struct = class_structs_[class_name];
 
@@ -398,7 +398,7 @@ namespace khthon {
         vector<Constant*> methods;
         for (const auto& method : node.methods()) {
             methods.push_back(functions_.at(
-                Mangle::meth(class_name, method->name()))
+                mangle::meth(class_name, method->name()))
             );
         }
 
@@ -412,7 +412,7 @@ namespace khthon {
             true,                           // isConstant
             GlobalValue::InternalLinkage,
             vtable_const,                   // initializer
-            Mangle::vt_global(class_name)
+            mangle::vt_global(class_name)
         );
 
         vtable_globals_[class_name] = vtable_global;
