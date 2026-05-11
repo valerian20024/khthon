@@ -32,11 +32,7 @@ namespace khthon {
     private:
         khthon::location loc_;
     public:
-        Node(
-            khthon::location l
-        ) : 
-            loc_(l) 
-        { }
+        Node(khthon::location l) : loc_(l) { }
         virtual ~Node() = default;
 
         virtual std::string accept(const Visitor<std::string>&) const = 0;
@@ -52,11 +48,7 @@ namespace khthon {
         khthon::Type type_ = Type();
 
     public:
-        Expr(
-            khthon::location l
-        ) : 
-            Node(l) 
-        {}
+        Expr(khthon::location l) : Node(l) { }
         virtual ~Expr() = default;
 
         virtual std::string accept(const Visitor<std::string>&) const = 0;
@@ -75,13 +67,8 @@ namespace khthon {
     private:
         NodeList<ClassNode> classes_;
     public:
-        ProgramNode(
-            khthon::location l, 
-            NodeList<ClassNode> cs
-        ) : 
-            Node(l), 
-            classes_(std::move(cs)) 
-        { }
+        ProgramNode(khthon::location l, NodeList<ClassNode> cs) : 
+            Node(l), classes_(std::move(cs)) { }
 
         std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
@@ -166,10 +153,10 @@ namespace khthon {
             visitor.visit(*this);
         }
 
-        const std::string& name() const { return name_; }
-        const Type& type() const { return type_; }
-        bool has_init() const { return initializer_.has_value(); }
-        const auto& initializer() const { return initializer_; }
+        const std::string& name() const     { return name_; }
+        const Type& type() const            { return type_; }
+        bool has_init() const               { return initializer_.has_value(); }
+        const auto& initializer() const     { return initializer_; }
     };
 
 
@@ -243,7 +230,7 @@ namespace khthon {
         }
 
         const std::string& name() const { return name_; }
-        const Type& type() const { return type_; }
+        const Type& type() const        { return type_; }
     };
 
 
@@ -251,13 +238,8 @@ namespace khthon {
     private:
         NodeList<Expr> expressions_;
     public:
-        BlockExpr(
-            khthon::location l, 
-            NodeList<Expr> es
-        ) : 
-            Expr(l), 
-            expressions_(std::move(es)) 
-        {}
+        BlockExpr(khthon::location l, NodeList<Expr> es) : 
+            Expr(l), expressions_(std::move(es)) { }
 
         std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
@@ -285,13 +267,8 @@ namespace khthon {
     private:
         std::string value_;
     public:
-        StringLiteralExpr(
-            khthon::location l, 
-            std::string v
-        ) : 
-            Expr(l), 
-            value_(std::move(v)) 
-        {}
+        StringLiteralExpr(khthon::location l, std::string v) : 
+            Expr(l), value_(std::move(v)) { }
 
         std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
@@ -311,13 +288,8 @@ namespace khthon {
     private:
         int value_;
     public:
-        IntegerLiteralExpr(
-            khthon::location l, 
-            int val
-        ) : 
-            Expr(l), 
-            value_(val) 
-        {}
+        IntegerLiteralExpr(khthon::location l, int val) : 
+            Expr(l), value_(val) { }
 
         std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
@@ -337,13 +309,8 @@ namespace khthon {
     private:
         bool value_;
     public:
-        BoolLiteralExpr(
-            khthon::location l, 
-            bool val
-        ) : 
-            Expr(l), 
-            value_(val) 
-        {}
+        BoolLiteralExpr(khthon::location l, bool val) : 
+            Expr(l), value_(val) { }
 
         std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
@@ -444,13 +411,8 @@ namespace khthon {
     private:
         std::string identifier_;
     public:
-        NewExpr(
-            khthon::location l, 
-            std::string i
-        ) :
-            Expr(l),
-            identifier_(i)
-        {}
+        NewExpr(khthon::location l, std::string i) :
+            Expr(l), identifier_(i) { }
 
         std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
@@ -535,13 +497,8 @@ namespace khthon {
     private:
         std::string identifier_;
     public:
-        VariableExpr(
-            khthon::location l, 
-            std::string i
-        ) :
-            Expr(l),
-            identifier_(i)
-        {}
+        VariableExpr(khthon::location l, std::string i) :
+            Expr(l), identifier_(i) { }
 
         std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
@@ -594,7 +551,7 @@ namespace khthon {
 
     class SelfExpr : public Expr {
     public:
-        explicit SelfExpr(khthon::location l) : Expr(l) {}
+        explicit SelfExpr(khthon::location l) : Expr(l) { }
 
         std::string accept(Visitor<std::string> const& v) const override { 
             return v.visit(*this); 
