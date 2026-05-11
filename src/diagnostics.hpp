@@ -22,9 +22,9 @@ namespace khthon
             ErrorLevel level = ErrorLevel::Error,
             std::string reason = ""
         ) : 
-            loc_(std::move(location)), 
-            level_(std::move(level)),
-            reason_(std::move(reason)) 
+            loc_(location),
+            level_(level),
+            reason_(reason)
         {}
 
         /// @brief Cleanly formats the filename, line and column of the Diagnostic.

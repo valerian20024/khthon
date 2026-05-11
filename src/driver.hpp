@@ -33,6 +33,9 @@ namespace khthon {
         /// @brief The source file to compile.
         std::string source_file_;
 
+        /// @brief Stable pointer for Bison locations
+        std::shared_ptr<std::string> filename_ptr_;
+
         /// @brief The parser.
         khthon::Parser *parser;
 
@@ -57,7 +60,7 @@ namespace khthon {
     public:
         /// @brief Construct a new Driver.
         /// @param source_file The file containing the source code.
-        Driver(const std::string &source_file) : source_file_(source_file) {}
+        Driver(const std::string &source_file);
 
         /// @return The compiled source file.
         const std::string source_file() { return source_file_; }

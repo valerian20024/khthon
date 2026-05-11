@@ -29,9 +29,11 @@ namespace khthon {
 
     string Diagnostic::format_location() const {
         const position& pos = loc_.begin;
-        string filename = (pos.filename && !pos.filename->empty())
-            ? *pos.filename
-            : "<unknown>";
+        
+        string filename = "<unknown>";
+
+        if (pos.filename && !pos.filename->empty())
+            filename = *pos.filename;
 
         return filename
             + ":"

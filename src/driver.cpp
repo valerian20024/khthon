@@ -67,17 +67,21 @@ namespace khthon {
         {Parser::token::STRING_LITERAL,     "string-literal"},
     };
 
+    Driver::Driver(const std::string &source_file) : source_file_(source_file) {
+        std::string display_name = source_file.empty() 
+            ? "<unknown>" 
+            : source_file;
+        
+        // This must live throughout the program life, to be able to create
+        // new default_location().
+        filename_ptr_ = std::make_shared<std::string>(std::move(display_name));
+    }
+
     khthon::location Driver::default_location() const {
         khthon::location loc;
 
-        string filename = source_file_.empty() 
-            ? "<unknown>" 
-            : source_file_;
-            
-        auto filename_ptr = std::make_shared<string>(filename);
-
-        loc.begin.filename = filename_ptr.get();
-        loc.end.filename   = filename_ptr.get();
+        loc.begin.filename = filename_ptr_.get();
+        loc.end.filename   = filename_ptr_.get();
     
         loc.begin.line   = 1;
         loc.begin.column = 1;
