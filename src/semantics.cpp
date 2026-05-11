@@ -303,42 +303,41 @@ namespace khthon {
         return result;
     }
 
-    /*
+    
     vector<MethodInfo> ClassManager::collect_methods(
         const string class_name
     ) const {
-        // Collect ancestry from child to root.
-        vector<const ClassInfo> ancestry;
+        // Collect ancestry chain from child to root.
+        vector<ClassInfo> ancestry;
         string current = class_name;
 
         while (true) {
             auto info_opt = get_class(current);
-            if (!info_opt) 
+            if (!info_opt)
                 break;
-            
+
             ancestry.push_back(info_opt.value());
 
-            if (current == "Object") 
+            if (current == "Object")
                 break;
-            
+
             current = info_opt->parent();
         }
 
-        // Walk from root to child, building the ordered method list.
-        // Use a map from name -> index to track slot assignments.
+        // Walk from root to child, respecting overrides.
         vector<MethodInfo> result;
         map<string, size_t> slot_map;  // method name -> index in result
 
         for (auto it = ancestry.rbegin(); it != ancestry.rend(); ++it) {
-            for (const auto& [name, method] : it->methods()) {
-                auto existing = slot_map.find(name);
-
+            for (const auto& method : it->methods()) {
+                
+                auto existing = slot_map.find(method.name());
                 if (existing != slot_map.end()) {
-                    // Override: replace the method at the existing slot.
+                    // Override: replace at the existing slot, preserving the index.
                     result[existing->second] = method;
                 } else {
-                    // New method: append at the end.
-                    slot_map[name] = result.size();
+                    // New method: assign the next available slot.
+                    slot_map[method.name()] = result.size();
                     result.push_back(method);
                 }
             }
@@ -346,7 +345,7 @@ namespace khthon {
 
         return result;
     }
-    */
+    
     
     /*================================================++
     ||                 SCOPE MANAGER                  ||

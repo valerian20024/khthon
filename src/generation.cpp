@@ -257,37 +257,28 @@ namespace khthon {
     void CodeGenOrchestrator::finalize_class_vtable(const ClassNode& node) {
         const string class_name = node.name();
         StructType* vtable_struct = vtable_structs_[class_name];
-        StructType* class_struct = class_structs_[class_name];
+        StructType* class_struct  = class_structs_[class_name];
 
-        // Stores the methods signatures.
+        // Store methods signatures recording their slot index in the vtable.
         vector<llvm::Type*> slot_types;
-        
-        // Record the slot index of each method in the vtable.
         unsigned slot_index = 0;
 
-        for (const auto& method : node.methods()) {
-            const string method_name = method->name();
+        for (const auto& method : collect_methods(class_name)) {
+            const string method_name = method.name();
 
-            // Stores the types of the method's parameters.
-            vector<llvm::Type*> method_parameters;
+            // Method parameters.
+            vector<llvm::Type*> params;
+            params.push_back(class_struct->getPointerTo());  // self
 
-            // The first parameter is always 'self', a pointer to the class.
-            method_parameters.push_back(class_struct->getPointerTo());
+            for (const auto& formal : method.formals())
+                params.push_back(to_llvm(formal.type()));
 
-            for (const auto& formal : method->formals())
-                method_parameters.push_back(to_llvm(formal->type()));
+            // Method return type.
+            llvm::Type* ret = to_llvm(method.return_type());
 
-            // The return type.
-            llvm::Type* return_type = to_llvm(method->type());
-
-            // Create the LLVM construct for this method.
-            llvm::Type* method_ptr_type = FunctionType::get(
-                return_type, 
-                method_parameters, 
-                false               // is not vararg
-            )->getPointerTo();
-
-            slot_types.push_back(method_ptr_type);
+            slot_types.push_back(
+                FunctionType::get(ret, params, false)->getPointerTo()
+            );
 
             // Record the slot index for this method.
             vtable_indices_[class_name][method_name] = slot_index++;
@@ -349,7 +340,7 @@ namespace khthon {
             builder_.CreateRetVoid();
         } else if (return_type->isIntegerTy()) {
             // Covers both int32 (i32) and bool (i1).
-            builder_.CreateRet(ConstantInt::get(return_type, 3));  // value of 0
+            builder_.CreateRet(ConstantInt::get(return_type, 0));  // value of 0
         } else {
             // Pointer types (string, custom classes): return null for now.
             builder_.CreateRet(ConstantPointerNull::get(
@@ -434,6 +425,13 @@ namespace khthon {
     ) const {
         return checker_.class_manager().collect_fields(class_name);
     }
+
+    vector<MethodInfo> CodeGenOrchestrator::collect_methods(
+        const string class_name
+    ) const {
+        return checker_.class_manager().collect_methods(class_name);
+    }
+
 
     CodeGenOrchestrator::CodeGenOrchestrator(
         Driver& driver, 

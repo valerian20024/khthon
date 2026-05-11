@@ -1,4 +1,4 @@
-class Main2 {    
+class Main {    
     main() : int32 { 0 }
 }
 

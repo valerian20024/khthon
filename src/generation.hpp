@@ -78,6 +78,11 @@ namespace khthon {
             const std::string class_name
         ) const;
 
+        /// @brief Wrapper that returns all the methods of a given class.
+        std::vector<khthon::MethodInfo> collect_methods(
+            const std::string class_name
+        ) const;
+
         
 
     public:
