@@ -64,6 +64,12 @@ namespace khthon {
         /// @brief Emit all methods of a class.
         void emit_methods(const ClassNode& node);
 
+        /// @brief Emits a thunk for an inherited method.
+        void emit_thunk(
+            const std::string& class_name, 
+            const MethodInfo& method_info
+        );
+
         /// @brief Fill in the class struct body.
         void finalize_class_struct(const ClassNode& node);
 

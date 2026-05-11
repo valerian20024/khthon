@@ -298,19 +298,19 @@ namespace khthon {
         StructType* class_struct = class_structs_[class_name];
 
         // Build parameter types.
-        vector<llvm::Type*> param_types;
+        vector<llvm::Type*> params;
 
-        param_types.push_back(class_struct->getPointerTo());  // self
+        params.push_back(class_struct->getPointerTo());  // self
         
         for (const auto& formal : method_node.formals())
-            param_types.push_back(to_llvm(formal->type()));  // formals
+            params.push_back(to_llvm(formal->type()));  // formals
         
         llvm::Type* return_type = to_llvm(method_node.type());  // return type
 
         // Create the method in the module.
         auto* method_signature = FunctionType::get(
             return_type, 
-            param_types, 
+            params, 
             false
         );
 
@@ -357,6 +357,88 @@ namespace khthon {
         for (const auto& method : node.methods())
             emit_method(node, *method);
     }
+
+void CodeGenOrchestrator::emit_thunk(
+    const std::string& class_name,
+    const MethodInfo& method_info
+) {
+    const std::string method_name = method_info.name();
+    const std::string mangled = mangle::meth(class_name, method_name);
+
+    // If the method is already implemented in this class, no need for thunk.
+    if (module_->getFunction(mangled))
+        return;
+
+    // Build parameter types with this class as receiver.
+    std::vector<llvm::Type*> params;
+    params.push_back(class_structs_[class_name]->getPointerTo()); // self
+
+    for (const auto& formal : method_info.formals())
+        params.push_back(to_llvm(formal.type()));
+
+    llvm::Type* ret = to_llvm(method_info.return_type());
+
+    auto* signature = llvm::FunctionType::get(ret, params, false);
+    auto* thunk = Function::Create(
+        signature,
+        GlobalValue::ExternalLinkage,
+        mangled,
+        *module_
+    );
+
+    // Name arguments.
+    auto arg_it = thunk->arg_begin();
+    arg_it->setName("self");
+    ++arg_it;
+    for (const auto& formal : method_info.formals()) {
+        arg_it->setName(formal.name());
+        ++arg_it;
+    }
+
+    BasicBlock* bb = BasicBlock::Create(context_, "entry", thunk);
+    builder_.SetInsertPoint(bb);
+
+    // Find the real implementation (from ancestor)
+    std::string provider = class_name;
+    Function* real_fn = nullptr;
+
+    while (true) {
+        real_fn = module_->getFunction(mangle::meth(provider, method_name));
+        
+        if (real_fn) 
+            break;
+        if (provider == "Object") 
+            break;
+
+        provider = checker_.get_class(provider).parent();
+    }
+
+    if (!real_fn) {
+        driver_.internal_error(
+            "emit_thunk: could not find real implementation for " 
+            + class_name + "::" + method_name
+        );
+        builder_.CreateUnreachable();
+        return;
+    }
+
+    // Prepare arguments for the real call
+    std::vector<Value*> args;
+    Value* self = thunk->arg_begin();
+    args.push_back(builder_.CreateBitCast(self, real_fn->arg_begin()->getType()));
+    
+    for (auto it = std::next(thunk->arg_begin()); it != thunk->arg_end(); ++it)
+        args.push_back(it);
+
+    Value* result = builder_.CreateCall(real_fn, args);
+
+    if (ret->isVoidTy())
+        builder_.CreateRetVoid();
+    else
+        builder_.CreateRet(result);
+
+    functions_[mangled] = thunk;
+}
 
     void CodeGenOrchestrator::finalize_class_struct(const ClassNode& node) {
         const string class_name = node.name();
@@ -420,6 +502,7 @@ namespace khthon {
                 ));
             }
 
+            /*
             // CRITICAL: We may need to bitcast the function pointer to match
             // the expected type in this class's vtable (Main* instead of Object*)
             llvm::Type* expected_slot_type = vtable_struct->getElementType(slots.size());
@@ -430,8 +513,11 @@ namespace khthon {
             ) {
                 slot_value = ConstantExpr::getBitCast(fn, expected_slot_type);
             }
-
+            
             slots.push_back(slot_value);
+            */
+
+            slots.push_back(fn);
         }
 
         // Creating initializer for the VTable global.
