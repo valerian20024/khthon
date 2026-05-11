@@ -438,9 +438,6 @@ void CodeGenOrchestrator::emit_thunk(
         return;
     }
 
-
-    comment("comment");
-
     // Calling the real function.
     std::vector<Value*> args;
     Value* self = thunk->arg_begin();
@@ -460,7 +457,6 @@ void CodeGenOrchestrator::emit_thunk(
 
     functions_[mangled] = thunk;
 
-    
 }
 
     void CodeGenOrchestrator::finalize_class_struct(const ClassNode& node) {

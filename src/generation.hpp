@@ -89,10 +89,7 @@ namespace khthon {
             const std::string class_name
         ) const;
 
-        /// @brief Inserts a comment in the LLVM IR at the current insertion point.
-        /// @note This is only intended for debugging purpose.
-        ///       Requires to compile in debug mode.
-        void comment(const std::string& text);
+        
 
     public:
         CodeGenOrchestrator(Driver& driver, SemanticChecker& checker);
@@ -101,8 +98,13 @@ namespace khthon {
         /// @param root The AST root.
         void generate(const shared_ptr<ProgramNode>& root);
 
-        /// Print the LLVM IR to the given stream.
+        /// @brief Print the LLVM IR to the given stream.
         void print_ir(llvm::raw_ostream& out) const;
+
+        /// @brief Inserts a comment in the LLVM IR at the current insertion point.
+        /// @note This is only intended for debugging purpose.
+        ///       Requires to compile in debug mode.
+        void comment(const std::string& text);
     };
 
 } // namespace khthon
