@@ -105,6 +105,46 @@ namespace khthon {
         /// @note This is only intended for debugging purpose.
         ///       Requires to compile in debug mode.
         void comment(const std::string& text);
+
+        /// @brief Handle to the context. 
+        llvm::LLVMContext& context();
+    };
+
+
+
+    class CodeGenVisitor : public MutableVisitor<llvm::Value*> {
+    private:
+        Driver& driver_;
+        CodeGenOrchestrator& orchestrator_;
+
+    public:
+        explicit CodeGenVisitor(Driver& d, CodeGenOrchestrator& cgo) : 
+            driver_(d), orchestrator_(cgo) { }
+
+        llvm::Value* visit(ProgramNode& node) override;
+        
+        /*
+        llvm::Value* visit(ClassNode& node) override;
+        llvm::Value* visit(MethodNode& node) override;
+        llvm::Value* visit(FormalNode& node) override;
+        llvm::Value* visit(FieldNode& node) override;
+        llvm::Value* visit(BlockExpr& node) override;
+        llvm::Value* visit(StringLiteralExpr& node) override;
+        llvm::Value* visit(IntegerLiteralExpr& node) override;
+        llvm::Value* visit(BoolLiteralExpr& node) override;
+        llvm::Value* visit(UnitLiteralExpr& node) override;
+        llvm::Value* visit(IfExpr& node) override;
+        llvm::Value* visit(AssignExpr& node) override;
+        llvm::Value* visit(NewExpr& node) override;
+        llvm::Value* visit(UnOpExpr& node) override;
+        llvm::Value* visit(BinOpExpr& node) override;
+        llvm::Value* visit(VariableExpr& node) override;
+        llvm::Value* visit(CallExpr& node) override;
+        llvm::Value* visit(SelfExpr& node) override;
+        llvm::Value* visit(LetExpr& node) override;
+        llvm::Value* visit(WhileExpr& node) override;
+        */
+        
     };
 
 } // namespace khthon

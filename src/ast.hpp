@@ -10,6 +10,7 @@
 #include "visitors.hpp"
 #include "types.hpp"
 #include "operators.hpp"
+#include "llvm_compatibility.hpp"
 
 /**
  * This file contains the interface for the Abstract Syntax Tree nodes.
@@ -95,6 +96,9 @@ namespace khthon {
         }
         void accept(MutableVoidVisitor& visitor) override {
             visitor.visit(*this);
+        }
+        llvm::Value* accept(MutableVisitor<llvm::Value*>& visitor) {
+            return visitor.visit(*this);
         }
 
         const NodeList<ClassNode>& classes() const { return classes_; }

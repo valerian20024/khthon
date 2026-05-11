@@ -566,17 +566,6 @@ void CodeGenOrchestrator::emit_thunk(
         return checker_.class_manager().collect_methods(class_name);
     }
 
-    void CodeGenOrchestrator::comment(const string& text) {
-        if (enable_advanced_logging) {
-            // Create a function type: void()
-            auto* FTy = llvm::FunctionType::get(builder_.getVoidTy(), false);
-            // Create inline assembly that is just a comment
-            auto* IA = llvm::InlineAsm::get(FTy, "; " + text, "", false);
-            // Call it
-            builder_.CreateCall(IA);
-        }
-    }
-
     CodeGenOrchestrator::CodeGenOrchestrator(
         Driver& driver, 
         SemanticChecker& checker
@@ -621,6 +610,9 @@ void CodeGenOrchestrator::emit_thunk(
         for (const auto& c : root->classes()) 
             emit_class_new(*c);
 
+        CodeGenVisitor visitor(driver_, *this);
+        llvm::Value* result = root->accept(visitor);
+
         // Lastly we emit the entrypoint.
         emit_entry_point();
     }
@@ -628,6 +620,22 @@ void CodeGenOrchestrator::emit_thunk(
     void CodeGenOrchestrator::print_ir(raw_ostream& out) const {
         module_->print(out, nullptr);
     }
+
+    void CodeGenOrchestrator::comment(const string& text) {
+        if (enable_advanced_logging) {
+            // Create a function type: void()
+            auto* FTy = llvm::FunctionType::get(builder_.getVoidTy(), false);
+            // Create inline assembly that is just a comment
+            auto* IA = llvm::InlineAsm::get(FTy, "; " + text, "", false);
+            // Call it
+            builder_.CreateCall(IA);
+        }
+    }
+
+    llvm::LLVMContext& CodeGenOrchestrator::context() {
+        return context_;
+    }
+
 
 } // namespace khthon
 
