@@ -18,11 +18,6 @@
 
 namespace khthon {
 
-    using StringVisitor         = Visitor<std::string>;
-    using VoidVisitor           = Visitor<void>;
-    using MutableStringVisitor  = MutableVisitor<std::string>;
-    using MutableVoidVisitor    = MutableVisitor<void>;
-
     template <typename T> using NodeList = std::vector<std::shared_ptr<T>>;
 
     /// @brief Datastructure to hold fields and methods together when 
@@ -44,9 +39,9 @@ namespace khthon {
         { }
         virtual ~Node() = default;
 
-        virtual std::string accept(const StringVisitor&) const = 0;
-        virtual void accept(MutableVoidVisitor&) = 0;
-        virtual void accept(const VoidVisitor&) const = 0;
+        virtual std::string accept(const Visitor<std::string>&) const = 0;
+        virtual void accept(MutableVisitor<void>&) = 0;
+        virtual void accept(const Visitor<void>&) const = 0;
 
         khthon::location location() const { return loc_; }
     };
@@ -64,9 +59,9 @@ namespace khthon {
         {}
         virtual ~Expr() = default;
 
-        virtual std::string accept(const StringVisitor&) const = 0;
-        virtual void accept(MutableVoidVisitor&) = 0;
-        virtual void accept(const VoidVisitor&) const = 0;
+        virtual std::string accept(const Visitor<std::string>&) const = 0;
+        virtual void accept(MutableVisitor<void>&) = 0;
+        virtual void accept(const Visitor<void>&) const = 0;
 
         const khthon::Type& type() const { return type_; }
 
@@ -88,13 +83,13 @@ namespace khthon {
             classes_(std::move(cs)) 
         { }
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
         llvm::Value* accept(MutableVisitor<llvm::Value*>& visitor) {
@@ -126,13 +121,13 @@ namespace khthon {
             methods_(std::move(ms)) 
         { }
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
 
@@ -161,13 +156,13 @@ namespace khthon {
             initializer_(std::move(i)) 
         { }
         
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
 
@@ -199,13 +194,13 @@ namespace khthon {
             body_(std::move(b))
         { }
         
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
 
@@ -237,13 +232,13 @@ namespace khthon {
             type_(std::move(t))
         { }
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
 
@@ -264,13 +259,13 @@ namespace khthon {
             expressions_(std::move(es)) 
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
 
@@ -298,13 +293,13 @@ namespace khthon {
             value_(std::move(v)) 
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
         
@@ -324,13 +319,13 @@ namespace khthon {
             value_(val) 
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
 
@@ -350,13 +345,13 @@ namespace khthon {
             value_(val) 
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
         
@@ -368,13 +363,13 @@ namespace khthon {
     public:
         explicit UnitLiteralExpr(khthon::location l) : Expr(l) {}
 
-        std::string accept(StringVisitor const& v) const override { 
+        std::string accept(Visitor<std::string> const& v) const override { 
             return v.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
     };
@@ -399,13 +394,13 @@ namespace khthon {
             alternative_(std::move(a))
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
 
@@ -430,13 +425,13 @@ namespace khthon {
             value_(v)
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
 
@@ -457,13 +452,13 @@ namespace khthon {
             identifier_(i)
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
 
@@ -486,13 +481,13 @@ namespace khthon {
             operand_(operand)
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
         
@@ -520,13 +515,13 @@ namespace khthon {
             right_(right)
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
         
@@ -548,13 +543,13 @@ namespace khthon {
             identifier_(i)
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
         
@@ -581,13 +576,13 @@ namespace khthon {
             arguments_(std::move(as))
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
         
@@ -601,13 +596,13 @@ namespace khthon {
     public:
         explicit SelfExpr(khthon::location l) : Expr(l) {}
 
-        std::string accept(StringVisitor const& v) const override { 
+        std::string accept(Visitor<std::string> const& v) const override { 
             return v.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
     };
@@ -635,13 +630,13 @@ namespace khthon {
             initializer_(std::move(i))
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
         
@@ -669,13 +664,13 @@ namespace khthon {
             body_(b)
         {}
 
-        std::string accept(StringVisitor const& visitor) const override { 
+        std::string accept(Visitor<std::string> const& visitor) const override { 
             return visitor.visit(*this); 
         }
-        void accept(VoidVisitor const& visitor) const override { 
+        void accept(Visitor<void> const& visitor) const override { 
             visitor.visit(*this); 
         }
-        void accept(MutableVoidVisitor& visitor) override {
+        void accept(MutableVisitor<void>& visitor) override {
             visitor.visit(*this);
         }
         
