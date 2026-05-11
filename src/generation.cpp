@@ -354,8 +354,16 @@ namespace khthon {
     }
 
     void CodeGenOrchestrator::emit_methods(const ClassNode& node) {
+        const string class_name = node.name();
+
+        // Emit methods belonging to this class.
         for (const auto& method : node.methods())
             emit_method(node, *method);
+        
+        // Then emit thunks for inherited methods.
+        for (const auto& method_info : collect_methods(class_name)) {
+            emit_thunk(class_name, method_info);
+        }
     }
 
 void CodeGenOrchestrator::emit_thunk(
@@ -371,7 +379,9 @@ void CodeGenOrchestrator::emit_thunk(
 
     // Build parameter types with this class as receiver.
     std::vector<llvm::Type*> params;
-    params.push_back(class_structs_[class_name]->getPointerTo()); // self
+
+    // self, that is %Class*
+    params.push_back(class_structs_[class_name]->getPointerTo()); 
 
     for (const auto& formal : method_info.formals())
         params.push_back(to_llvm(formal.type()));
@@ -402,12 +412,18 @@ void CodeGenOrchestrator::emit_thunk(
     std::string provider = class_name;
     Function* real_fn = nullptr;
 
+    // First go up one level
+    if (provider != "Object")
+        provider = checker_.get_class(provider).parent();
+
     while (true) {
-        real_fn = module_->getFunction(mangle::meth(provider, method_name));
-        
+        std::string candidate_mangled = mangle::meth(provider, method_name);
+        real_fn = module_->getFunction(candidate_mangled);
+
         if (real_fn) 
             break;
-        if (provider == "Object") 
+
+        if (provider == "Object")
             break;
 
         provider = checker_.get_class(provider).parent();
@@ -422,15 +438,20 @@ void CodeGenOrchestrator::emit_thunk(
         return;
     }
 
-    // Prepare arguments for the real call
+
+    comment("comment");
+
+    // Calling the real function.
     std::vector<Value*> args;
     Value* self = thunk->arg_begin();
-    args.push_back(builder_.CreateBitCast(self, real_fn->arg_begin()->getType()));
+    args.push_back(
+        builder_.CreateBitCast(self, real_fn->arg_begin()->getType())
+    );
     
     for (auto it = std::next(thunk->arg_begin()); it != thunk->arg_end(); ++it)
         args.push_back(it);
 
-    Value* result = builder_.CreateCall(real_fn, args);
+    Value* result = builder_.CreateCall(real_fn, args, "call_real");
 
     if (ret->isVoidTy())
         builder_.CreateRetVoid();
@@ -438,6 +459,8 @@ void CodeGenOrchestrator::emit_thunk(
         builder_.CreateRet(result);
 
     functions_[mangled] = thunk;
+
+    
 }
 
     void CodeGenOrchestrator::finalize_class_struct(const ClassNode& node) {
@@ -502,21 +525,6 @@ void CodeGenOrchestrator::emit_thunk(
                 ));
             }
 
-            /*
-            // CRITICAL: We may need to bitcast the function pointer to match
-            // the expected type in this class's vtable (Main* instead of Object*)
-            llvm::Type* expected_slot_type = vtable_struct->getElementType(slots.size());
-            Constant* slot_value = fn;
-
-            if (    fn->getFunctionType() 
-                != cast<PointerType>(expected_slot_type)->getElementType()
-            ) {
-                slot_value = ConstantExpr::getBitCast(fn, expected_slot_type);
-            }
-            
-            slots.push_back(slot_value);
-            */
-
             slots.push_back(fn);
         }
 
@@ -562,6 +570,16 @@ void CodeGenOrchestrator::emit_thunk(
         return checker_.class_manager().collect_methods(class_name);
     }
 
+    void CodeGenOrchestrator::comment(const string& text) {
+        if (enable_advanced_logging) {
+            // Create a function type: void()
+            auto* FTy = llvm::FunctionType::get(builder_.getVoidTy(), false);
+            // Create inline assembly that is just a comment
+            auto* IA = llvm::InlineAsm::get(FTy, "; " + text, "", false);
+            // Call it
+            builder_.CreateCall(IA);
+        }
+    }
 
     CodeGenOrchestrator::CodeGenOrchestrator(
         Driver& driver, 

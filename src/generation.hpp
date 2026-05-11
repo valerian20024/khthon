@@ -89,7 +89,10 @@ namespace khthon {
             const std::string class_name
         ) const;
 
-        
+        /// @brief Inserts a comment in the LLVM IR at the current insertion point.
+        /// @note This is only intended for debugging purpose.
+        ///       Requires to compile in debug mode.
+        void comment(const std::string& text);
 
     public:
         CodeGenOrchestrator(Driver& driver, SemanticChecker& checker);
