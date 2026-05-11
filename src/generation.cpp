@@ -385,7 +385,6 @@ namespace khthon {
             fields.push_back(to_llvm(field.type()));
         }
 
-
         class_struct->setBody(fields);
     }
 

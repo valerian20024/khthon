@@ -218,14 +218,37 @@ namespace khthon {
         return nullopt;
     }
 
+    
     vector<FieldInfo> ClassManager::collect_fields(
         const string class_name
     ) const {
-        (void) class_name;
-        return vector<FieldInfo>();
+        // Collect ancestry chain from child to root.
+        vector<ClassInfo> ancestry;
+        string current = class_name;
+
+        while (true) {
+            auto info_opt = get_class(current);
+            if (!info_opt) 
+                break;
+
+            ancestry.push_back(info_opt.value());
+
+            if (current == "Object") 
+                break;
+
+            current = info_opt->parent();
+        }
+
+        // Walk from root to child so fields are in base-first order.
+        vector<FieldInfo> result;
+        for (auto it = ancestry.rbegin(); it != ancestry.rend(); ++it) {
+            const auto& fields = it->fields();
+            result.insert(result.end(), fields.begin(), fields.end());
+        }
+
+        return result;
     }
-
-
+    
     /*================================================++
     ||                 SCOPE MANAGER                  ||
     ++================================================*/
