@@ -420,7 +420,18 @@ namespace khthon {
                 ));
             }
 
-            slots.push_back(fn);
+            // CRITICAL: We may need to bitcast the function pointer to match
+            // the expected type in this class's vtable (Main* instead of Object*)
+            llvm::Type* expected_slot_type = vtable_struct->getElementType(slots.size());
+            Constant* slot_value = fn;
+
+            if (    fn->getFunctionType() 
+                != cast<PointerType>(expected_slot_type)->getElementType()
+            ) {
+                slot_value = ConstantExpr::getBitCast(fn, expected_slot_type);
+            }
+
+            slots.push_back(slot_value);
         }
 
         // Creating initializer for the VTable global.
