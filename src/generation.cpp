@@ -335,7 +335,7 @@ namespace khthon {
         builder_.SetInsertPoint(bb);
 
         //! Stub: return the default value for the return type.
-        //! Later this will be replaced by visiting the method body AST.
+        /*
         if (return_type->isVoidTy()) {
             builder_.CreateRetVoid();
         } else if (return_type->isIntegerTy()) {
@@ -347,6 +347,7 @@ namespace khthon {
                 cast<PointerType>(return_type)
             ));
         }
+        */
         //! end of stub
 
         CodeGenVisitor visitor(driver_, *this);
