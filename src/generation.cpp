@@ -383,19 +383,52 @@ namespace khthon {
         const string class_name = node.name();
         StructType* vtable_struct = vtable_structs_[class_name];
 
-        // We have to get the methods associated to this class and
-        // create a vtable constant.
-        vector<Constant*> methods;
-        for (const auto& method : node.methods()) {
-            methods.push_back(
-                functions_.at(mangle::meth(class_name, method->name()))
-            );
+        vector<Constant*> slots;
+
+        for (const auto& method_info : collect_methods(class_name)) {
+            const string& method_name = method_info.name();
+
+            // Find the most-derived class that actually implements this method
+            // (i.e. where the function was emitted)
+            string provider = class_name;
+            llvm::Function* fn = nullptr;
+
+            while (true) {
+                string mangled = mangle::meth(provider, method_name);
+                fn = module_->getFunction(mangled);
+
+                if (fn) 
+                    break;  // Found the implementation
+
+                if (provider == "Object")
+                    break;
+
+                // Go up to parent
+                auto info = checker_.get_class(provider);
+                provider = info.parent();
+            }
+
+            if (!fn) {
+                driver_.internal_error(
+                    "emit_vtable: could not find implementation for " 
+                    + class_name + "::" + method_name
+                );
+
+                // Fallback: use null pointer
+                slots.push_back(llvm::ConstantPointerNull::get(
+                    cast<PointerType>(vtable_struct->getElementType(slots.size()))
+                ));
+            }
+
+            slots.push_back(fn);
         }
 
-        Constant* vtable_const = methods.empty()
+        // Creating initializer for the VTable global.
+        Constant* vtable_const = slots.empty()
             ? ConstantAggregateZero::get(vtable_struct)     // No methods.
-            : ConstantStruct::get(vtable_struct, methods);  // Real pointers.
+            : ConstantStruct::get(vtable_struct, slots);  // Real pointers.
 
+        // Emitting the VTable global
         auto* vtable_global = new GlobalVariable(
             *module_,
             vtable_struct,

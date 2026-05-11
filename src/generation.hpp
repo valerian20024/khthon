@@ -73,12 +73,12 @@ namespace khthon {
         /// @brief Helper to convert from VSOP types to LLVM types.
         llvm::Type* to_llvm(const khthon::Type& t);
 
-        /// @brief Wrapper that returns all the fields of a given class.
+        /// @brief Wrapper that returns all the accessible fields of a class.
         std::vector<khthon::FieldInfo> collect_fields(
             const std::string class_name
         ) const;
 
-        /// @brief Wrapper that returns all the methods of a given class.
+        /// @brief Wrapper that returns all the accessible methods of a class.
         std::vector<khthon::MethodInfo> collect_methods(
             const std::string class_name
         ) const;

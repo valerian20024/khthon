@@ -1,32 +1,6 @@
 class Main {    
-    main() : int32 { 0 }
+    main() : int32 {
+        print("hello world");
+        0
+    }
 }
-
-(*
-class One {
-
-}
-
-class Two {
-
-}
-
-class Three {
-
-}
-
-class Parent {
-    field1: One;
-    field2: Two;
-    field3: Three;
-
-    parent() : int32 { 0 }
-}
-
-class Child extends Parent {
-    parent_field: unit;
-    child_field: string;
-
-    child() : int32 { 0 }
-}
-*)
