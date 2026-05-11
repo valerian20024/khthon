@@ -95,6 +95,7 @@ Now that I have more experience both in compiler design and in C++, there are ma
     \item Clearly separating interface and implementation, even when having trivial methods, for example in \texttt{ast.hpp}.
     \item \texttt{Driver::print\_diagnostics} should print them in order (line, column) when compiling in release mode and keep the original order when compiling in Debug mode.
     \item Work on the test script and pipeline its execution using e.g. Github actions.
+    \item Change the order private - public to public then private in every class because it's more idiomatic in C++. Methods could be reordered in a more logical way in many classes.
 \end{enumerate}
 
 This project will outlive the scope of this course and I shall improve Khthon in my free time.

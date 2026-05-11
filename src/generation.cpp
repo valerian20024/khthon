@@ -380,9 +380,9 @@ namespace khthon {
         unsigned slot = 1;
 
         // Walk up the class hierarchy to collect fields.
-        for (const auto& field : collect_fields(class_name)) {
-            field_indices_[class_name][field.name()] = slot++;
-            fields.push_back(to_llvm(field.type()));
+        for (const auto& info : collect_fields(class_name)) {
+            field_indices_[class_name][info.name()] = slot++;
+            fields.push_back(to_llvm(info.type()));
         }
 
         class_struct->setBody(fields);

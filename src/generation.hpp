@@ -73,11 +73,12 @@ namespace khthon {
         /// @brief Helper to convert from VSOP types to LLVM types.
         llvm::Type* to_llvm(const khthon::Type& t);
 
-        /// @brief Wrapper. 
-        /// @see SemanticChecker::collect_fields()
+        /// @brief Wrapper that returns all the fields of a given class.
         std::vector<khthon::FieldInfo> collect_fields(
             const std::string class_name
         ) const;
+
+        
 
     public:
         CodeGenOrchestrator(Driver& driver, SemanticChecker& checker);

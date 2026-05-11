@@ -28,8 +28,8 @@ namespace khthon {
     {}
 
     FormalInfo::FormalInfo(
-        string              name, 
-        Type                type, 
+        string              name,
+        Type                type,
         khthon::location    loc
     ) : 
         name_(std::move(name)), 
@@ -48,6 +48,14 @@ namespace khthon {
         formals_(std::move(formals)),
         location_(std::move(loc))
     {}
+
+    bool MethodInfo::has_formals() const {
+        return !formals_.empty();
+    }
+
+    int MethodInfo::formals_count() const {
+        return static_cast<int>(formals_.size());
+    }
 
     ClassInfo::ClassInfo(
         std::string         name, 
@@ -74,9 +82,39 @@ namespace khthon {
     }
 
     bool ClassInfo::add_method(MethodInfo m) {
-        auto [it, inserted] = methods_.emplace(m.name(), std::move(m));
-        return inserted;
+        // Check for duplicates
+        for (const auto& existing : methods_)
+            if (existing.name() == m.name())
+                return false;
+
+        methods_.push_back(std::move(m));
+        return true;
     }
+
+    bool ClassInfo::has_field(const string field_name) const {
+        return get_field(field_name).has_value();
+    }
+
+    bool ClassInfo::has_method(const string method_name) const {
+        return get_method(method_name).has_value();
+    }
+
+    optional<FieldInfo> ClassInfo::get_field(const string name) const {
+        for (const auto& f : fields_)
+            if (f.name() == name)
+                return f;
+        return nullopt;
+    }
+
+    optional<MethodInfo> ClassInfo::get_method(const string name) const {
+        for (const auto& m : methods_)
+            if (m.name() == name)
+                return m;
+        return nullopt;
+    }
+
+
+
 
 
     /*================================================++
@@ -129,7 +167,6 @@ namespace khthon {
         }
     }
 
-
     Type ClassManager::ancestor(
         const Type& t1, 
         const Type& t2
@@ -165,6 +202,20 @@ namespace khthon {
         }
     }
 
+    bool SemanticChecker::has_field(
+        const std::string& field_name, 
+        const std::string& class_name
+    ) const {
+        return lookup_field(field_name, class_name).has_value();
+    }
+
+    bool SemanticChecker::has_method(
+        const std::string& method_name,
+        const std::string& class_name
+    ) const {
+        return lookup_method(method_name, class_name).has_value();
+    }
+
     optional<FieldInfo> ClassManager::lookup_field(
         const string& field_name,
         const string& class_name
@@ -195,7 +246,7 @@ namespace khthon {
     }
 
     optional<MethodInfo> ClassManager::lookup_method(
-        const string& name,
+        const string& method_name,
         const string& class_name
     ) const {
         string candidate = class_name;
@@ -205,9 +256,12 @@ namespace khthon {
                 return nullopt;
 
             const auto& methods = info->methods();
-            auto it = methods.find(name);
-            if (it != methods.end())
-                return it->second;
+            auto it = methods.begin();
+            while (it != methods.end()) {
+                if (it->name() == method_name)
+                    return *it;
+                ++it;
+            }
 
             // Stop after Object, but check its methods first.
             if (candidate == "Object")
@@ -248,6 +302,51 @@ namespace khthon {
 
         return result;
     }
+
+    /*
+    vector<MethodInfo> ClassManager::collect_methods(
+        const string class_name
+    ) const {
+        // Collect ancestry from child to root.
+        vector<const ClassInfo> ancestry;
+        string current = class_name;
+
+        while (true) {
+            auto info_opt = get_class(current);
+            if (!info_opt) 
+                break;
+            
+            ancestry.push_back(info_opt.value());
+
+            if (current == "Object") 
+                break;
+            
+            current = info_opt->parent();
+        }
+
+        // Walk from root to child, building the ordered method list.
+        // Use a map from name -> index to track slot assignments.
+        vector<MethodInfo> result;
+        map<string, size_t> slot_map;  // method name -> index in result
+
+        for (auto it = ancestry.rbegin(); it != ancestry.rend(); ++it) {
+            for (const auto& [name, method] : it->methods()) {
+                auto existing = slot_map.find(name);
+
+                if (existing != slot_map.end()) {
+                    // Override: replace the method at the existing slot.
+                    result[existing->second] = method;
+                } else {
+                    // New method: append at the end.
+                    slot_map[name] = result.size();
+                    result.push_back(method);
+                }
+            }
+        }
+
+        return result;
+    }
+    */
     
     /*================================================++
     ||                 SCOPE MANAGER                  ||
@@ -285,7 +384,7 @@ namespace khthon {
 
     void SemanticChecker::check_main() const {
         
-        auto main_info = class_manager_.get_class("Main");
+        const auto& main_info = class_manager_.get_class("Main");
         if (!main_info) {
             driver_.semantic_error(
                 driver_.default_location(),  // no meaningful location
@@ -294,10 +393,8 @@ namespace khthon {
             return;
         }
 
-        // Check main method exists
-        const auto& methods = main_info->methods();
-        auto main_method = methods.find("main");
-        if (main_method == methods.end()) {
+        const auto& main_method = main_info->get_method("main");
+        if (!main_method) {
             driver_.semantic_error(
                 main_info->location(),
                 "class 'Main' has no 'main' method"
@@ -305,21 +402,17 @@ namespace khthon {
             return;
         }
 
-        const MethodInfo& method_info = main_method->second;
-
-        // Check main takes no formals
-        if (!method_info.formals().empty()) {
+        if (main_method->has_formals()) {
             driver_.semantic_error(
-                method_info.location(),
+                main_method->location(),
                 "method 'main' must take no arguments"
             );
         }
 
-        // Check main returns int32
-        const Type& return_type = method_info.return_type();
+        const Type& return_type = main_method->return_type();
         if (!return_type.is_int32()) {
             driver_.semantic_error(
-                method_info.location(),
+                main_method->location(),
                 "method 'main' must return 'int32', found '" 
                 + return_type.to_string() + "'"
             );
@@ -424,7 +517,7 @@ namespace khthon {
             if (class_info.methods().empty()) {
                 cout << "    (none)\n";
             } else {
-                for (const auto& [method_name, method_info] : class_info.methods()) {
+                for (const auto& method_info : class_info.methods()) {
                     // Method name.
                     cout << "    " 
                         << method_info.name()

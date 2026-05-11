@@ -1,7 +1,8 @@
-class Main {    
+class Main2 {    
     main() : int32 { 0 }
 }
 
+(*
 class One {
 
 }
@@ -28,3 +29,4 @@ class Child extends Parent {
 
     child() : int32 { 0 }
 }
+*)

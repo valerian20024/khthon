@@ -73,6 +73,10 @@ namespace khthon {
         MethodInfo(std::string name, khthon::Type return_type, 
             std::vector<FormalInfo> formals, khthon::location loc);
 
+        bool has_formals() const;
+
+        int formals_count() const;
+
         const std::string& name() const                 { return name_; }
         const khthon::Type& return_type() const         { return return_type_; }
         const std::vector<FormalInfo>& formals() const  { return formals_; }
@@ -89,7 +93,7 @@ namespace khthon {
         std::string parent_;
         khthon::location location_;
         std::vector<FieldInfo> fields_;
-        std::map<std::string, MethodInfo> methods_;
+        std::vector<MethodInfo> methods_;
 
     public:
         ClassInfo(std::string name, std::string parent, khthon::location loc);
@@ -102,15 +106,23 @@ namespace khthon {
         /// @return `true` if the field has been added. `false` otherwise.
         bool add_field(FieldInfo f);
 
-        /// @return `false` if a method with that name already exists. 
-        /// `true` otherwise.
+        /// @brief Adds a method to the ClassInfo if it does not already exists.
+        /// @return `true` if the method has been added. `false` otherwise.
         bool add_method(MethodInfo m);
+
+        bool has_field(std::string field_name) const;
+
+        bool has_method(std::string method_name) const;
+
+        std::optional<FieldInfo> get_field(const std::string name) const;
+
+        std::optional<MethodInfo> get_method(const std::string name) const;
 
         const std::string& name() const                 { return name_; }
         const std::string& parent() const               { return parent_; }
         const khthon::location& location() const        { return location_; }
         const std::vector<FieldInfo>& fields() const    { return fields_; }
-        const std::map<std::string, MethodInfo>& methods() const { return methods_; }
+        const std::vector<MethodInfo>& methods() const  { return methods_; }
     };
  
 
@@ -292,6 +304,16 @@ namespace khthon {
         std::optional<Type> resolve(
             const std::string& name, 
             const std::string& current_class
+        ) const;
+
+        bool has_field(
+            const std::string& field_name, 
+            const std::string& class_name
+        ) const;
+
+        bool has_method(
+            const std::string& method_name,
+            const std::string& class_name
         ) const;
 
         std::optional<FieldInfo> lookup_field(
