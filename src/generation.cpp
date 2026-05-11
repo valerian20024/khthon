@@ -349,6 +349,9 @@ namespace khthon {
         }
         //! end of stub
 
+        CodeGenVisitor visitor(driver_, *this);
+        llvm::Value* result = method_node.body()->accept(visitor);
+
         // Register the function for later use.
         functions_[mangled] = method;
     }

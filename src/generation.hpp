@@ -89,8 +89,6 @@ namespace khthon {
             const std::string class_name
         ) const;
 
-        
-
     public:
         CodeGenOrchestrator(Driver& driver, SemanticChecker& checker);
 
@@ -111,7 +109,6 @@ namespace khthon {
     };
 
 
-
     class CodeGenVisitor : public MutableVisitor<llvm::Value*> {
     private:
         Driver& driver_;
@@ -123,6 +120,9 @@ namespace khthon {
 
         llvm::Value* visit(ProgramNode& node) override;
         
+        llvm::Value* visit(IntegerLiteralExpr& node) override;
+
+
         /*
         llvm::Value* visit(ClassNode& node) override;
         llvm::Value* visit(MethodNode& node) override;
@@ -130,7 +130,6 @@ namespace khthon {
         llvm::Value* visit(FieldNode& node) override;
         llvm::Value* visit(BlockExpr& node) override;
         llvm::Value* visit(StringLiteralExpr& node) override;
-        llvm::Value* visit(IntegerLiteralExpr& node) override;
         llvm::Value* visit(BoolLiteralExpr& node) override;
         llvm::Value* visit(UnitLiteralExpr& node) override;
         llvm::Value* visit(IfExpr& node) override;
