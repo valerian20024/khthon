@@ -15,13 +15,16 @@ namespace khthon
     protected:
         location loc_;
         ErrorLevel level_;
+        std::string reason_;
 
         Diagnostic(
             location location = khthon::location(),
-            ErrorLevel level = ErrorLevel::Error
+            ErrorLevel level = ErrorLevel::Error,
+            std::string reason = ""
         ) : 
             loc_(std::move(location)), 
-            level_(std::move(level)) 
+            level_(std::move(level)),
+            reason_(std::move(reason)) 
         {}
 
         /// @brief Cleanly formats the filename, line and column of the Diagnostic.
@@ -37,55 +40,31 @@ namespace khthon
 
         /// @brief Formats the header for a Diagnostic.
         /// @return The formatted header.
-        const std::string header() const;
-        const location& loc() const { return loc_; }
-        const ErrorLevel& level() const { return level_; };
+        const std::string   header() const;
+        const location&     loc() const { return loc_; }
+        const ErrorLevel&   level() const { return level_; };
     };
 
     class LexicalDiagnostic : public Diagnostic {
-    private:
-        std::string reason_;
     public:
-        LexicalDiagnostic(
-            location l,
-            ErrorLevel e,
-            std::string r
-        ) : 
-            Diagnostic(l, e),
-            reason_(std::move(r))
-        {}
+        LexicalDiagnostic(location l, ErrorLevel e, std::string reason) : 
+            Diagnostic(l, e, reason) { }
     
         std::string to_string() const override;
     };
 
     class SyntaxDiagnostic : public Diagnostic {
-    private:
-        std::string reason_;
     public:
-        SyntaxDiagnostic(
-            location l,
-            ErrorLevel e,
-            std::string r
-        ) : 
-            Diagnostic(l, e),
-            reason_(std::move(r))
-        {}
+        SyntaxDiagnostic(location l, ErrorLevel e, std::string reason) : 
+            Diagnostic(l, e, reason) { }
     
         std::string to_string() const override;
     };
     
     class SemanticDiagnostic : public Diagnostic {
-    private:
-        std::string reason_;
     public:
-        SemanticDiagnostic(
-            location l,
-            ErrorLevel e,
-            std::string r
-        ) : 
-            Diagnostic(l, e),
-            reason_(std::move(r))
-        {}
+        SemanticDiagnostic(location l, ErrorLevel e, std::string reason) : 
+            Diagnostic(l, e, reason) { }
     
         std::string to_string() const override;
     };

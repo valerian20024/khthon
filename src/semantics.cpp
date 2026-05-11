@@ -396,7 +396,7 @@ namespace khthon {
         const auto& main_method = main_info->get_method("main");
         if (!main_method) {
             driver_.semantic_error(
-                main_info->location(),
+                driver_.default_location(),
                 "class 'Main' has no 'main' method"
             );
             return;
@@ -407,15 +407,18 @@ namespace khthon {
                 main_method->location(),
                 "method 'main' must take no arguments"
             );
+            return;
         }
 
         const Type& return_type = main_method->return_type();
+        
         if (!return_type.is_int32()) {
             driver_.semantic_error(
                 main_method->location(),
                 "method 'main' must return 'int32', found '" 
                 + return_type.to_string() + "'"
             );
+            return;
         }
     }
 

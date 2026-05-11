@@ -70,9 +70,11 @@ namespace khthon {
     khthon::location Driver::default_location() const {
         khthon::location loc;
 
-        auto filename_ptr = std::make_shared<string>(source_file_.empty() 
-            ? "<unknown>"
-            : source_file_);
+        string filename = source_file_.empty() 
+            ? "<unknown>" 
+            : source_file_;
+            
+        auto filename_ptr = std::make_shared<string>(filename);
 
         loc.begin.filename = filename_ptr.get();
         loc.end.filename   = filename_ptr.get();
