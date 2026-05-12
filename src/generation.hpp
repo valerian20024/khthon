@@ -2,6 +2,7 @@
 #define GENERATION_HPP
 
 #include "llvm_compatibility.hpp"
+#include "config.hpp"
 #include "driver.hpp"
 #include "semantics.hpp"
 #include "types.hpp"
@@ -137,6 +138,11 @@ namespace khthon {
 
         /// @brief Wrapper for providing the IRBuilder handle.
         inline llvm::IRBuilder<>& builder();
+
+        /// @brief Logs a message from CodeGenVisitor.
+        /// @note For debugging purpose. Only outputs when compiling in 
+        /// debug mode.
+        void trace(const string& message) const;
 
     public:
         CodeGenVisitor(Driver& d, CodeGenOrchestrator& cgo) : 

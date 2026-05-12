@@ -59,6 +59,7 @@ SRC = 	ast.cpp \
 HEADERS =	ast.hpp \
 			colors.hpp \
 			diagnostics.hpp \
+			config.hpp \
 			driver.hpp \
 			generation.hpp \
 			llvm_compatibility.hpp \

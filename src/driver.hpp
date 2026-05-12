@@ -21,7 +21,6 @@ YY_DECL;
 
 namespace khthon {
 
-
     /**
      * @brief The Driver class acts as a central coordinator. 
      * 

@@ -2,20 +2,16 @@
 #define SEMANTICS_HPP
 
 #include "ast.hpp"
+#include "config.hpp"
 #include "driver.hpp"
+#include "visitors.hpp"
 
 #include <map>
 #include <string>
 #include <unordered_set>
+#include <string>
 
 namespace khthon {
-
-    inline constexpr bool enable_advanced_logging =
-#ifdef DEBUG
-    true;
-#else
-    false;
-#endif
 
     /**
      * @brief This class acts as a container for informations related to a 

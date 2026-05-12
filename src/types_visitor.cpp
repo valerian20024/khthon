@@ -114,20 +114,22 @@ namespace khthon {
         return true;
     }
 
+    
     void TypesVisitor::trace(const string& message) const { 
-        if (khthon::enable_advanced_logging)
-            cout << message << endl;
+        if (enable_advanced_logging)
+            cout << "[TypesVisitor] " << message << endl;
     }
+    
 
     void TypesVisitor::visit(ProgramNode& node) {
-        trace("TypesVisitor visits ProgramNode");
+        trace("visited ProgramNode");
 
         for (const auto& c : node.classes())
             c->accept(*this);
     }
 
     void TypesVisitor::visit(ClassNode& node) {
-        trace("TypesVisitor visits ClassNode");
+        trace("visited ClassNode");
         
         current_class_name_ = node.name();
         
@@ -141,7 +143,7 @@ namespace khthon {
     }
 
     void TypesVisitor::visit(MethodNode& node) {
-        trace("TypesVisitor visits MethodNode");
+        trace("visited MethodNode");
 
         check_type_exists(node.type(), node.location());
         for (const auto& formal : node.formals())
@@ -175,14 +177,14 @@ namespace khthon {
     }
 
     void TypesVisitor::visit(FormalNode& node) {
-        trace("TypesVisitor visits FormalNode");
+        trace("visited FormalNode");
 
         (void) node;
         return;
     }
 
     void TypesVisitor::visit(FieldNode& node) {
-        trace("TypesVisitor visits FieldNode");
+        trace("visited FieldNode");
 
         check_type_exists(node.type(), node.location());
 
@@ -191,7 +193,7 @@ namespace khthon {
     }
 
     void TypesVisitor::visit(BlockExpr& node) {
-        trace("TypesVisitor visits BlockExpr");
+        trace("visited BlockExpr");
 
         // Empty blocks yield unit.
         if (node.is_empty()) {
@@ -208,31 +210,31 @@ namespace khthon {
     }
 
     void TypesVisitor::visit(StringLiteralExpr& node) { 
-        trace("TypesVisitor visits StringLiteralExpr");
+        trace("visited StringLiteralExpr");
 
         node.set_type(Type::String());
     }
 
     void TypesVisitor::visit(IntegerLiteralExpr& node) { 
-        trace("TypesVisitor visits IntegerLiteralExpr");
+        trace("visited IntegerLiteralExpr");
 
         node.set_type(Type::Int32());
     }
 
     void TypesVisitor::visit(BoolLiteralExpr& node) { 
-        trace("TypesVisitor visits BoolLiteralExpr");
+        trace("visited BoolLiteralExpr");
 
         node.set_type(Type::Bool());
     }
 
     void TypesVisitor::visit(UnitLiteralExpr& node) { 
-        trace("TypesVisitor visits UnitLiteralExpr");
+        trace("visited UnitLiteralExpr");
 
         node.set_type(Type::Unit());
     }
 
     void TypesVisitor::visit(IfExpr& node) { 
-        trace("TypesVisitor visits IfExpr");
+        trace("visited IfExpr");
 
         node.guardian()->accept(*this);
         node.consequent()->accept(*this);
@@ -282,7 +284,7 @@ namespace khthon {
     }
 
     void TypesVisitor::visit(AssignExpr& node) {
-        trace("TypesVisitor visits AssignExpr");
+        trace("visited AssignExpr");
 
         // self is not assignable in VSOP.
         if (node.name() == "self") {
@@ -323,7 +325,7 @@ namespace khthon {
     }
 
     void TypesVisitor::visit(NewExpr& node) {
-        trace("TypesVisitor visits NewExpr");
+        trace("visited NewExpr");
 
         const string& class_name = node.identifier();
 
@@ -340,7 +342,7 @@ namespace khthon {
     }
 
     void TypesVisitor::visit(UnOpExpr& node) { 
-        trace("TypesVisitor visits UnOpExpr");
+        trace("visited UnOpExpr");
 
         node.operand()->accept(*this);
 
@@ -362,7 +364,7 @@ namespace khthon {
     }
 
     void TypesVisitor::visit(BinOpExpr& node) { 
-        trace("TypesVisitor visits BinOpExpr");
+        trace("visited BinOpExpr");
 
         node.left()->accept(*this);
         node.right()->accept(*this);  
@@ -387,7 +389,7 @@ namespace khthon {
     }
 
     void TypesVisitor::visit(VariableExpr& node) { 
-        trace("TypesVisitor visits VariableExpr");
+        trace("visited VariableExpr");
 
         auto type = checker_.resolve(node.identifier(), current_class_name_);
         if (!type) {
@@ -403,7 +405,7 @@ namespace khthon {
     }
 
     void TypesVisitor::visit(CallExpr& node) { 
-        trace("TypesVisitor visits CallExpr");
+        trace("visited CallExpr");
 
         // Visiting the object receving the call.
         node.receiver()->accept(*this);
@@ -447,13 +449,13 @@ namespace khthon {
     }
 
     void TypesVisitor::visit(SelfExpr& node) { 
-        trace("TypesVisitor visits SelfExpr");
+        trace("visited SelfExpr");
 
         node.set_type(Type(current_class_name_));
     }
 
     void TypesVisitor::visit(LetExpr& node) { 
-        trace("TypesVisitor visits LetExpr");
+        trace("visited LetExpr");
     
         check_type_exists(node.type(), node.location());
 
@@ -487,7 +489,7 @@ namespace khthon {
     }
 
     void TypesVisitor::visit(WhileExpr& node) { 
-        trace("TypesVisitor visits WhileExpr");
+        trace("visited WhileExpr");
         
         node.condition()->accept(*this);
         node.body()->accept(*this);

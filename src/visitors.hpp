@@ -1,6 +1,8 @@
 #ifndef VISITORS_HPP
 #define VISITORS_HPP
 
+#include "config.hpp"
+
 #include <string>
 #include <vector>
 #include <memory>
