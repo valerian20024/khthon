@@ -354,13 +354,8 @@ namespace khthon {
         SemanticChecker& checker_;
 
     public:
-        explicit ClassesVisitor(
-            Driver& d, 
-            SemanticChecker& sc
-        ) : 
-            driver_(d), 
-            checker_(sc) 
-        {}
+        explicit ClassesVisitor(Driver& d, SemanticChecker& sc) : 
+            driver_(d), checker_(sc) { }
 
         void visit(const ProgramNode& node) const override;
 
@@ -373,13 +368,14 @@ namespace khthon {
      */
     class TypesVisitor : public MutableVisitor<void> {
     private:
-        // Handle to main driver.
+        /// @brief Handle to main driver.
         Driver& driver_;
 
-        // Handle to the classes symbol table.
+        /// @brief Handle to the semantic checker.
         SemanticChecker& checker_;
 
-        std::string current_class_name_;  // For handling 'self' keyword.
+        /// @brief The current class the visitor is visiting.
+        std::string current_class_name_;  
 
         /// @brief Checks the `actual` type conforms to the one `expected`.
         bool conforms(const Type& actual, const Type& expected) const;
@@ -399,27 +395,25 @@ namespace khthon {
             const Type& t_right
         ) const;
 
-
+        //todo 
         bool check_formals(
             const MethodInfo& method,
             const std::vector<std::shared_ptr<Expr>>& args,
             const khthon::location& loc
         ) const;
 
-        bool check_type_exists(const Type& type, const khthon::location& loc) const;
-
+        //todo
+        bool check_type_exists(
+            const Type& type, 
+            const khthon::location& loc
+        ) const;
 
         /// @brief Prints a tracing message when debugging is enabled.
         void trace(const std::string& message) const;
 
     public:
-        explicit TypesVisitor(
-            Driver& d, 
-            SemanticChecker& sc
-        ) : 
-            driver_(d), 
-            checker_(sc) 
-        {}
+        explicit TypesVisitor(Driver& d, SemanticChecker& sc) : 
+            driver_(d), checker_(sc) { }
 
         void visit(ProgramNode& node) override;
         void visit(ClassNode& node) override;

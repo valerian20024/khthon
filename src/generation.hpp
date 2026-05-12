@@ -112,17 +112,31 @@ namespace khthon {
 
         /// @brief Handle to the builder. 
         llvm::IRBuilder<>& builder();
-
-
     };
 
-
+    /**
+     * @brief The code generation visitor generates LLVM code for expressions.
+     */
     class CodeGenVisitor : public MutableVisitor<llvm::Value*> {
     private:
+        /// @brief Handle to driver.
         Driver& driver_;
+
+        /// @brief Handle to code generation orchestrator.
         CodeGenOrchestrator& orchestrator_;
 
+        /// @brief Contains bindings to LLVM values: self, method formals, 
+        /// and local variables.
         std::map<std::string, llvm::Value*> named_values_ = {};
+
+        /// @brief Wrapper for providing the LLVMContext handle.
+        inline llvm::LLVMContext& context();
+        
+        /// @brief Wrapper for providing the Module handle.
+        inline llvm::Module& module();
+
+        /// @brief Wrapper for providing the IRBuilder handle.
+        inline llvm::IRBuilder<>& builder();
 
     public:
         CodeGenVisitor(Driver& d, CodeGenOrchestrator& cgo) : 
@@ -134,7 +148,11 @@ namespace khthon {
         /// @brief Unbinds a named llvm::Value*.
         void unbind(std::string name);
 
+        /// @brief Prints out the variables bindings of the visitor.
+        /// @note For debugging purposes.
         void print_named_values() const;
+
+        // todo remove the unused visit method, like fieldNode, classNode, etc.
 
         llvm::Value* visit(ProgramNode& node) override;
         llvm::Value* visit(ClassNode& node) override;
