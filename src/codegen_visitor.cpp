@@ -23,20 +23,38 @@ namespace khthon {
         }
     }
 
+    
+    
+
+    
+
+    
+
     llvm::Value* CodeGenVisitor::visit(ProgramNode& node) {
         (void) node;
         cout << as_error("CodeGenVisitor has visited a ProgramNode") << endl;
         return nullptr;
     }
-    
-    llvm::Value* CodeGenVisitor::visit(IntegerLiteralExpr& node) {
-        cout << as_error("CodeGenVisitor has visited a IntegerLiterlaNode") << endl;
-        return llvm::ConstantInt::get(
-            llvm::Type::getInt32Ty(orchestrator_.context()), node.value(), true
-        );
+
+    llvm::Value* CodeGenVisitor::visit(ClassNode& node) {
+        (void) node;
+        return nullptr;
     }
 
+    llvm::Value* CodeGenVisitor::visit(FormalNode& node) {
+        (void) node;
+        return nullptr;
+    }
+
+    llvm::Value* CodeGenVisitor::visit(FieldNode& node) {
+        (void) node;
+        return nullptr;
+    }
+    
     llvm::Value* CodeGenVisitor::visit(MethodNode& node) {
+
+        (void) node;
+
         cout << as_error("CodeGenVisitor has visited a MethodNode") << endl;
         return llvm::ConstantInt::get(
             llvm::Type::getInt32Ty(orchestrator_.context()), 42, true
@@ -44,6 +62,8 @@ namespace khthon {
     }
 
     llvm::Value* CodeGenVisitor::visit(BlockExpr& node) {
+        (void) node;
+
         cout << as_error("CodeGenVisitor has visited a BlockExpr") << endl;
         
         //orchestrator_.builder().CreateRet(ConstantInt::get(return_type, 0));
@@ -52,7 +72,78 @@ namespace khthon {
             llvm::Type::getInt32Ty(orchestrator_.context()), 42, true
         );
     }
-    
 
+    llvm::Value* CodeGenVisitor::visit(IntegerLiteralExpr& node) {
+        cout << as_error("CodeGenVisitor has visited a IntegerLiterlaNode") << endl;
+        return llvm::ConstantInt::get(
+            llvm::Type::getInt32Ty(orchestrator_.context()), node.value(), true
+        );
+    }
+
+    llvm::Value* CodeGenVisitor::visit(StringLiteralExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+
+    llvm::Value* CodeGenVisitor::visit(BoolLiteralExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+
+    llvm::Value* CodeGenVisitor::visit(UnitLiteralExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+
+    llvm::Value* CodeGenVisitor::visit(IfExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+
+    llvm::Value* CodeGenVisitor::visit(AssignExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+
+    llvm::Value* CodeGenVisitor::visit(NewExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+
+    llvm::Value* CodeGenVisitor::visit(UnOpExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+    
+    llvm::Value* CodeGenVisitor::visit(BinOpExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+    
+    llvm::Value* CodeGenVisitor::visit(VariableExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+    
+    llvm::Value* CodeGenVisitor::visit(CallExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+    
+    llvm::Value* CodeGenVisitor::visit(SelfExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+    
+    llvm::Value* CodeGenVisitor::visit(LetExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+    
+    llvm::Value* CodeGenVisitor::visit(WhileExpr& node) {
+        (void) node;
+        return nullptr;
+    }
+    
 } // namespace khthon
 

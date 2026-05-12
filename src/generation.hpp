@@ -137,18 +137,12 @@ namespace khthon {
         void print_named_values() const;
 
         llvm::Value* visit(ProgramNode& node) override;
-        
-        llvm::Value* visit(IntegerLiteralExpr& node) override;
-
-        llvm::Value* visit(MethodNode& node) override;
-
-        llvm::Value* visit(BlockExpr& node) override;
-
-
-        /*
         llvm::Value* visit(ClassNode& node) override;
         llvm::Value* visit(FormalNode& node) override;
         llvm::Value* visit(FieldNode& node) override;
+        llvm::Value* visit(MethodNode& node) override;
+        llvm::Value* visit(BlockExpr& node) override;
+        llvm::Value* visit(IntegerLiteralExpr& node) override;
         llvm::Value* visit(StringLiteralExpr& node) override;
         llvm::Value* visit(BoolLiteralExpr& node) override;
         llvm::Value* visit(UnitLiteralExpr& node) override;
@@ -161,9 +155,7 @@ namespace khthon {
         llvm::Value* visit(CallExpr& node) override;
         llvm::Value* visit(SelfExpr& node) override;
         llvm::Value* visit(LetExpr& node) override;
-        llvm::Value* visit(WhileExpr& node) override;
-        */
-        
+        llvm::Value* visit(WhileExpr& node) override;       
     };
 
 } // namespace khthon
