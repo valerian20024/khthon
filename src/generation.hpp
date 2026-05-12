@@ -146,7 +146,9 @@ namespace khthon {
 
     public:
         CodeGenVisitor(Driver& d, CodeGenOrchestrator& cgo) : 
-            driver_(d), orchestrator_(cgo) { }
+            driver_(d), orchestrator_(cgo) { 
+                (void) driver_;
+            }
 
         /// @brief Binds a named llvm::Value* to its name.
         void bind(std::string name, llvm::Value* value);

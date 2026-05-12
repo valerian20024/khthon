@@ -7,7 +7,7 @@ LLVM_CONFIG	= llvm-config
 
 CXXFLAGS	= $(shell ${LLVM_CONFIG} --cppflags) \
 				-Wall -Wextra -std=c++17 -MMD -MP \
-				-DRUNTIME_PATH=\"$(abspath $(RUNTIME_OBJ))\"
+				-DRUNTIME_PATH=\"$(RUNTIME_OBJ)\"
 
 LDFLAGS		= $(shell ${LLVM_CONFIG} --ldflags --system-libs --libs all)
 
@@ -39,7 +39,11 @@ RUNTIME_DIR = $(SRC_DIR)/runtime
 
 RUNTIME_SRC = $(RUNTIME_DIR)/object.c
 
-RUNTIME_OBJ = $(BUILD_DIR)/object.o
+RUNTIME_BUILD_OBJ = $(BUILD_DIR)/object.o
+
+RUNTIME_INSTALL_DIR = /usr/local/lib/vsop
+
+RUNTIME_OBJ = $(RUNTIME_INSTALL_DIR)/object.o
 
 # -----------------------------------------------------------------------------
 #  Sources
@@ -150,7 +154,8 @@ $(OBJ): $(SRC_DIR)/parser.hpp $(SRC_DIR)/lexer.cpp
 # Compile the runtime to an object file.
 $(RUNTIME_OBJ): $(RUNTIME_SRC) | $(BUILD_DIR)
 	@echo -e $(C_PEACH)"Runtime:   "$(C_END) $@;
-	@clang -c $< -o $@
+	@sudo mkdir -p $(RUNTIME_INSTALL_DIR)
+	@sudo clang -c $< -o $@
 
 # -----------------------------------------------------------------------------
 #  Utility targets
@@ -176,6 +181,7 @@ clean:
 			$(SRC_DIR)/parser.hpp \
 			$(SRC_DIR)/location.hh
 	@rm -f $(ARCHIVE)
+	@sudo rm -rf $(RUNTIME_INSTALL_DIR)
 	@rm -f report.pdf
 
 # Target specific variable assignment for debugging.
