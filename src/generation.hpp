@@ -106,6 +106,14 @@ namespace khthon {
 
         /// @brief Handle to the context. 
         llvm::LLVMContext& context();
+
+        /// @brief Handle to the module. 
+        llvm::Module& module();
+
+        /// @brief Handle to the builder. 
+        llvm::IRBuilder<>& builder();
+
+
     };
 
 
@@ -114,9 +122,19 @@ namespace khthon {
         Driver& driver_;
         CodeGenOrchestrator& orchestrator_;
 
+        std::map<std::string, llvm::Value*> named_values_ = {};
+
     public:
-        explicit CodeGenVisitor(Driver& d, CodeGenOrchestrator& cgo) : 
+        CodeGenVisitor(Driver& d, CodeGenOrchestrator& cgo) : 
             driver_(d), orchestrator_(cgo) { }
+
+        /// @brief Binds a named llvm::Value* to its name.
+        void bind(std::string name, llvm::Value* value);
+
+        /// @brief Unbinds a named llvm::Value*.
+        void unbind(std::string name);
+
+        void print_named_values() const;
 
         llvm::Value* visit(ProgramNode& node) override;
         

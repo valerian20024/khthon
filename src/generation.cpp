@@ -321,37 +321,26 @@ namespace khthon {
             *module_
         );
 
-        // Name the parameters for readability in the IR.
-        auto arg_it = method->arg_begin();
-        arg_it->setName("self");
-        ++arg_it;
-        for (const auto& formal : method_node.formals()) {
-            arg_it->setName(formal->name());
-            ++arg_it;
-        }
-
         // Create the entry basic block and a stub body.
         BasicBlock* bb = BasicBlock::Create(context_, "entry", method);
         builder_.SetInsertPoint(bb);
 
-        //! Stub: return the default value for the return type.
-        /*
-        if (return_type->isVoidTy()) {
-            builder_.CreateRetVoid();
-        } else if (return_type->isIntegerTy()) {
-            // Covers both int32 (i32) and bool (i1).
-            builder_.CreateRet(ConstantInt::get(return_type, 0));  // value of 0
-        } else {
-            // Pointer types (string, custom classes): return null for now.
-            builder_.CreateRet(ConstantPointerNull::get(
-                cast<PointerType>(return_type)
-            ));
-        }
-        */
-        //! end of stub
-
         CodeGenVisitor visitor(driver_, *this);
+
+        // Bind self and formals into the local map.
+        auto arg_it = method->arg_begin();
+        visitor.bind("self", arg_it++);
+        for (const auto& formal : method_node.formals())
+            visitor.bind(formal->name(), arg_it++);
+    
+        visitor.print_named_values();
+
         llvm::Value* result = method_node.body()->accept(visitor);
+
+        if (return_type->isVoidTy())
+            builder_.CreateRetVoid();
+        else
+            builder_.CreateRet(result);
 
         // Register the function for later use.
         functions_[mangled] = method;
@@ -639,6 +628,15 @@ void CodeGenOrchestrator::emit_thunk(
     llvm::LLVMContext& CodeGenOrchestrator::context() {
         return context_;
     }
+     
+    llvm::Module& CodeGenOrchestrator::module() {
+        return *module_;
+    }
+
+    llvm::IRBuilder<>& CodeGenOrchestrator::builder() {
+        return builder_;
+    }
+
 
 
 } // namespace khthon
