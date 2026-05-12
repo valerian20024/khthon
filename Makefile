@@ -98,7 +98,6 @@ ARCHIVE_FILES = Makefile \
 			$(RUNTIME_DIR)/object.c \
 			$(RUNTIME_DIR)/object.h \
 			$(DOC_DIR)/html \
-			$(TESTS_DIR)/ \
 			report.pdf
 
 # -----------------------------------------------------------------------------
@@ -182,6 +181,7 @@ clean:
 			$(SRC_DIR)/location.hh
 	@rm -f $(ARCHIVE)
 	@sudo rm -rf $(RUNTIME_INSTALL_DIR)
+	@rm -f output.ll
 	@rm -f report.pdf
 
 # Target specific variable assignment for debugging.
