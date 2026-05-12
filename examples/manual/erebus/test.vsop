@@ -1,5 +1,6 @@
 class Main {
     main() : int32 {
+        self.print("In the name of Hades, Olympus, I greet you all");
         0
     }
 }

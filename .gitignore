@@ -49,6 +49,7 @@ location.hh
 parser.cpp
 parser.hpp
 vsopcompiler.tar.xz
+output.ll
 
 .VSCodeCounter/
 
