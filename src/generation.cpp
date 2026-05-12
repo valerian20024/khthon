@@ -603,9 +603,6 @@ void CodeGenOrchestrator::emit_thunk(
         for (const auto& c : root->classes()) 
             emit_class_new(*c);
 
-        CodeGenVisitor visitor(driver_, *this);
-        llvm::Value* result = root->accept(visitor);
-
         // Lastly we emit the entrypoint.
         emit_entry_point();
     }

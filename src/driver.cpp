@@ -250,9 +250,14 @@ namespace khthon {
             + ir_file + " "
             + RUNTIME_PATH;
 
+        //! ad hoc debugging
+        cerr << "Systemcall: " + cmd << endl;
+
         // Executing the command in a shell.
         int status = system(cmd.c_str());
         int exit_code = WEXITSTATUS(status);
+
+        cerr << "Exit code is :" + to_string(exit_code) << endl;
 
         if (exit_code != 0) {
             internal_error(
