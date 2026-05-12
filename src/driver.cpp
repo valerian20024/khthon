@@ -91,14 +91,11 @@ namespace khthon {
         return loc;
     }
 
+    /// @brief Builds a string for the final VSOP executable.
     static string build_executable_name(const string& source_file) {
         std::filesystem::path p(source_file);
-        // stem() gives the filename without extension: "bar.vsop" -> "bar"
-        // parent_path() gives the directory: "foo/"
-        // Combining them gives "foo/bar"
         return (p.parent_path() / p.stem()).string();
     }
-
 
     int Driver::lex() {
         int res = 0;
@@ -231,8 +228,7 @@ namespace khthon {
         string ir_file  = "build/output.ll";
         string exe_file = build_executable_name(source_file_);
 
-        cout << exe_file << endl;
-
+        // Printing the IR into the temporary file.
         error_code ec;
         llvm::raw_fd_ostream ir_stream(ir_file, ec);
         if (ec) {
@@ -246,8 +242,8 @@ namespace khthon {
 
         // RUNTIME_PATH is a macro added at compile time by the Makefile.
         string cmd = "clang -o " 
-            + exe_file + " "
-            + ir_file + " "
+            + exe_file + " " 
+            + ir_file + " " 
             + RUNTIME_PATH;
 
         //! ad hoc debugging
@@ -256,8 +252,9 @@ namespace khthon {
         // Executing the command in a shell.
         int status = system(cmd.c_str());
         int exit_code = WEXITSTATUS(status);
-
-        cerr << "Exit code is :" + to_string(exit_code) << endl;
+        
+        //! ad hoc debugging
+        cerr << "Exit code is : " + to_string(exit_code) << endl;
 
         if (exit_code != 0) {
             internal_error(
