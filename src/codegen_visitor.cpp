@@ -157,6 +157,10 @@ namespace khthon {
     
     Value* CodeGenVisitor::visit(SelfExpr& node) {
         trace("visited a SelfExpr");
+
+        //? return self in named_values_
+        //? something like return named_values_.at("self");
+
         (void) node;
         return nullptr;
     }

@@ -204,10 +204,16 @@ namespace khthon {
         BasicBlock* bb = BasicBlock::Create(context_, "entry", constructor);
         builder_.SetInsertPoint(bb);
 
-        // Compute sizeof(ClassName) using the standard GEP trick.
-        // GEP a null pointer by 1 element, then ptrtoint — gives the byte size.
-        auto* null_ptr = ConstantPointerNull::get(cast<PointerType>(class_ptr));
+        // Compute sizeof(Class) using the standard GEP trick.
+
+        // Create a pointer to the Class pointing to null.
+        auto* null_ptr = ConstantPointerNull::get(
+            cast<PointerType>(class_ptr)
+        );
         
+        // "If I had an array of these structs starting at address 0, 
+        // what would the address of the element at index 1 be?""
+        // => You get the size of the Class.
         auto* size_ptr = builder_.CreateConstGEP1_32(
             class_struct, 
             null_ptr, 
@@ -215,22 +221,24 @@ namespace khthon {
             "size_ptr"
         );
 
+        // Converts the raw address into an integer, representing the number
+        // of bytes needed for allocation.
         auto* size = builder_.CreatePtrToInt(
             size_ptr, 
             llvm::Type::getInt64Ty(context_), 
             "size"
         );
 
-        // Call malloc.
+        // Call mallow and allocate the required memory.
         auto* malloc_fn = module_->getFunction("malloc");
         auto* raw_mem = builder_.CreateCall(malloc_fn, {size}, "raw_mem");
 
-        // Cast the raw memory returned by malloc to this class.
+        // Malloc only returns raw memory. Create a pointer to this Class.
         auto* obj = builder_.CreateBitCast(raw_mem, class_ptr, "obj");
 
         // Call the init method.
-        auto* init_fn = module_->getFunction(mangle::init(class_name));
-        builder_.CreateCall(init_fn, {obj});
+        auto* init_method = module_->getFunction(mangle::init(class_name));
+        builder_.CreateCall(init_method, {obj});
 
         // Return the initialized object.
         builder_.CreateRet(obj);
@@ -305,7 +313,7 @@ namespace khthon {
         for (const auto& formal : method_node.formals())
             params.push_back(to_llvm(formal->type()));  // formals
         
-        llvm::Type* return_type = to_llvm(method_node.type());  // return type
+        llvm::Type* return_type = to_llvm(method_node.type());  // ret
 
         // Create the method in the module.
         auto* method_signature = FunctionType::get(
