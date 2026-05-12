@@ -238,10 +238,10 @@ namespace khthon {
 
         // Call the init method.
         auto* init_method = module_->getFunction(mangle::init(class_name));
-        builder_.CreateCall(init_method, {obj});
+        auto* initialized_obj = builder_.CreateCall(init_method, {obj});
 
         // Return the initialized object.
-        builder_.CreateRet(obj);
+        builder_.CreateRet(initialized_obj);
     }
 
     void CodeGenOrchestrator::create_class_struct(const ClassNode& node) {
