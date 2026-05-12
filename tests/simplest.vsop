@@ -1,0 +1,7 @@
+(* Custom file for testing the reference compiler.*)
+
+class Main {
+    main() : int32 {
+        0
+    }
+}

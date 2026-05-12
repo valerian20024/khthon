@@ -1,6 +1,5 @@
-class Main {    
+class Main {
     main() : int32 {
-        (*print("hello world");*)
         0
     }
 }

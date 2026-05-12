@@ -114,9 +114,6 @@ namespace khthon {
     }
 
 
-
-
-
     /*================================================++
     ||                  CLASS MANAGER                 ||
     ++================================================*/
@@ -271,7 +268,6 @@ namespace khthon {
         }
         return nullopt;
     }
-
     
     vector<FieldInfo> ClassManager::collect_fields(
         const string class_name
@@ -302,7 +298,6 @@ namespace khthon {
 
         return result;
     }
-
     
     vector<MethodInfo> ClassManager::collect_methods(
         const string class_name
