@@ -16,7 +16,7 @@ enum class Action {
 };
 
 int main(int argc, char const *argv[]) {
-
+    
     Action action = Action::NATIVE;
     bool extended_VSOP = false;
     string source_file = {};

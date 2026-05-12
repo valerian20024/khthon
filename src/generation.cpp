@@ -575,33 +575,64 @@ void CodeGenOrchestrator::emit_thunk(
     }
 
     void CodeGenOrchestrator::generate(const shared_ptr<ProgramNode>& root) {
+
+        //! ad hoc debugging
+        //cerr << "CodeGenOrchestrator::generate entered1" << endl;
+
         emit_runtime_declarations();
         
+        //! ad hoc debugging
+        //cerr << "CodeGenOrchestrator::generate entered2" << endl;
+
         for (const auto& c : root->classes())
             create_class_vtable(*c);
+
+        //! ad hoc debugging
+        //cerr << "CodeGenOrchestrator::generate entered3" << endl;
 
         for (const auto& c : root->classes())
             create_class_struct(*c);
         
+        //! ad hoc debugging
+        //cerr << "CodeGenOrchestrator::generate entered4" << endl;
+
         for (const auto& c : root->classes())
             finalize_class_vtable(*c);
         
+        //! ad hoc debugging
+        //cerr << "CodeGenOrchestrator::generate entered5" << endl;
+
         for (const auto& c : root->classes())
             finalize_class_struct(*c);
         
+        //! ad hoc debugging
+        //cerr << "CodeGenOrchestrator::generate entered6" << endl;
+
         // Methods must be emitted before vtable globals, so that
         // globals can reference real function pointers.
         for (const auto& c : root->classes())
             emit_methods(*c);
         
+        //! ad hoc debugging
+        //cerr << "CodeGenOrchestrator::generate entered7" << endl;
+
         for (const auto& c : root->classes())
             emit_vtable(*c);
         
+        //! ad hoc debugging
+        //cerr << "CodeGenOrchestrator::generate entered8" << endl;
+
         for (const auto& c : root->classes())
             emit_class_init(*c);
         
+        //! ad hoc debugging
+        //cerr << "CodeGenOrchestrator::generate entered9" << endl;
+
         for (const auto& c : root->classes()) 
             emit_class_new(*c);
+
+        //! ad hoc debugging
+        //cerr << "CodeGenOrchestrator::generate emit_entry_point10" << endl;
 
         // Lastly we emit the entrypoint.
         emit_entry_point();

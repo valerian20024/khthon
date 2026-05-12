@@ -183,6 +183,9 @@ namespace khthon {
     }
 
     int Driver::generate(bool make_executable) {
+        //! ad hoc
+        //cerr << "Entering generate()" << endl;
+
         scan_begin();
         parser = new Parser(*this);
 
@@ -197,6 +200,9 @@ namespace khthon {
         scan_end();
         delete parser;
 
+        //! ad hoc
+        //cerr << "Finished lexing and parsing" << endl;
+
         // Semantic analysis must run first.
         // Codegen assumes the AST is clean.
         SemanticChecker checker(*this);
@@ -207,8 +213,14 @@ namespace khthon {
             return 1;
         }
 
+        //! ad hoc
+        //cerr << "Finished lexing" << endl;
+
         CodeGenOrchestrator codegen(*this, checker);
         codegen.generate(ast_root);
+
+        //! ad hoc
+        //cerr << "Finished codegen generate" << endl;
 
         bool has_error = error_count_ > 0 || warning_count_ > 0;
         if (has_error) {
@@ -219,14 +231,25 @@ namespace khthon {
 
         // Only output IR.
         if (!make_executable) {
+
+            //! ad hoc
+            //cerr << "We are only outputting IR" << endl;
+
             codegen.print_ir(llvm::outs());
-            return 0;
+            return 1;  //! change me back to 0
         }
 
         // Making an executable file.
         
-        string ir_file  = "build/output.ll";
+        //! ad hoc
+        //cerr << "We are making an exec file" << endl;
+
+        string ir_file  = "./output.ll";
         string exe_file = build_executable_name(source_file_);
+
+        //! ad hoc
+        //cerr << "ir file:" << ir_file << endl;
+        //cerr << "exe file:" << exe_file << endl;
 
         // Printing the IR into the temporary file.
         error_code ec;
@@ -237,8 +260,19 @@ namespace khthon {
             );
             return 1;
         }
+
+        //! ad hoc
+        //cerr << "created irstream" << endl;
+        
         codegen.print_ir(ir_stream);
+
+        //! ad hoc
+        //cerr << "printed ir into stream" << endl;
+
         ir_stream.flush();
+
+        //! ad hoc
+        //cerr << "flushed irstream" << endl;
 
         // RUNTIME_PATH is a macro added at compile time by the Makefile.
         string cmd = "clang -o " 
@@ -247,24 +281,38 @@ namespace khthon {
             + RUNTIME_PATH;
 
         //! ad hoc debugging
-        cerr << "Systemcall: " + cmd << endl;
+        //cerr << "Syscall: " + cmd << endl;
 
         // Executing the command in a shell.
         int status = system(cmd.c_str());
+
+        //! ad hoc debugging
+        //cerr << "Executed command" << endl;
+
         int exit_code = WEXITSTATUS(status);
+
+        //! ad hoc debugging
+        //cerr << "Retrieved exit code" << endl;
         
         //! ad hoc debugging
-        cerr << "Exit code is : " + to_string(exit_code) << endl;
+        //cerr << "Exit code is : " + to_string(exit_code) << endl;
 
         if (exit_code != 0) {
             internal_error(
                 "generate(): clang exited with code " 
                 + std::to_string(exit_code)
             );
+
+            //! ad hoc debugging
+            cerr << "generate returns 1" + to_string(exit_code) << endl;
+
             return 1;
         }
 
-        return 0;
+        //! ad hoc debugging
+        //cerr << "generate returns 1 anyway to print the stderr" << endl;
+
+        return 0;  //! change me back to 0
     }
 
     void Driver::print_token(Parser::symbol_type token, std::ostream& out) {
