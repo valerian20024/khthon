@@ -4,6 +4,7 @@ class Main {
         69
     }
     meth() : int32 {
+        "string";
         0
     }
 }

@@ -50,6 +50,7 @@ parser.cpp
 parser.hpp
 vsopcompiler.tar.xz
 output.ll
+ir.ll
 
 .VSCodeCounter/
 

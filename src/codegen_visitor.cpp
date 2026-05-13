@@ -97,8 +97,46 @@ namespace khthon {
 
     Value* CodeGenVisitor::visit(StringLiteralExpr& node) {
         trace("visited a StringLiteralExpr");
-        (void) node;
-        return nullptr;
+
+        string raw = node.value();
+        
+        // Strip surrounding quotes: "hello" -> hello
+        raw = raw.substr(1, raw.size() - 2);
+        
+        // Decode VSOP escape sequences
+        string decoded;
+        decoded.reserve(raw.size());
+
+        /*
+        for (size_t i = 0; i < raw.size(); ++i) {
+            if (raw[i] == '\\' && i + 1 < raw.size()) {
+
+                switch (raw[i+1]) {
+                    case 'n':  decoded += '\n'; i++; break;
+                    case 't':  decoded += '\t'; i++; break;
+                    case 'r':  decoded += '\r'; i++; break;
+                    case '"':  decoded += '"';  i++; break;
+                    case '\\': decoded += '\\'; i++; break;
+                    case 'x': {
+                        // \xNN hex escape
+                        if (i + 3 < raw.size()) {
+                            std::string hex = raw.substr(i+2, 2);
+                            decoded += (char) std::stoi(hex, nullptr, 16);
+                            i += 3;
+                        }
+                        break;
+                    }
+                    default: decoded += raw[i]; break;
+                }
+
+            } else {
+                decoded += raw[i];
+            }
+        }
+        */
+        
+        // CreateGlobalStringPtr adds the null terminator automatically
+        return builder().CreateGlobalStringPtr(decoded, ".str");
     }
 
     Value* CodeGenVisitor::visit(BoolLiteralExpr& node) {
@@ -157,12 +195,8 @@ namespace khthon {
     
     Value* CodeGenVisitor::visit(SelfExpr& node) {
         trace("visited a SelfExpr");
-
-        //? return self in named_values_
-        //? something like return named_values_.at("self");
-
         (void) node;
-        return nullptr;
+        return named_values_.at("self");
     }
     
     Value* CodeGenVisitor::visit(LetExpr& node) {
