@@ -40,7 +40,11 @@ class Main {
         printBool(false = true);
         print("\n");
 
-        
+        printBool(true and true);
+        print("\n");
+
+        printBool(false and false);
+        print("\n");
 
         0
     }
