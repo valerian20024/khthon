@@ -657,7 +657,26 @@ void CodeGenOrchestrator::emit_thunk(
         return builder_;
     }
 
+    llvm::StructType* CodeGenOrchestrator::get_class_struct(
+        const std::string& class_name
+    ) {
+        return class_structs_[class_name];
+    }
+        
+    llvm::StructType* CodeGenOrchestrator::get_vtable_struct(
+        const std::string& class_name
+    ) {
+        return vtable_structs_[class_name];
+    }
     
+    unsigned CodeGenOrchestrator::get_vtable_index(
+        const std::string& class_name, 
+        const std::string& method_name
+    ) {
+        return vtable_indices_[class_name][method_name];
+    }
+
+
 
 } // namespace khthon
 

@@ -1,10 +1,11 @@
 class Main {
     main() : int32 {
-        self.print("In the name of Hades, Olympus, I greet you all");
-        69
+        meth();
+        0
     }
+    
     meth() : int32 {
-        "string\x65";
+        print("In the name of Hades, Olympus, I greet you all\n");
         0
     }
 }
