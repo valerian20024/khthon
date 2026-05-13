@@ -163,7 +163,73 @@ namespace khthon {
     
     Value* CodeGenVisitor::visit(BinOpExpr& node) {
         trace("visited a BinOpExpr");
-        (void) node;
+
+        Value* left  = node.left()->accept(*this);
+        Value* right = node.right()->accept(*this);
+
+        const BinaryOperation& op = node.operation();
+
+
+        switch (op.kind()) {
+        case BinaryOperation::Kind::PLUS:
+            return builder().CreateAdd(left, right, "add");
+        case BinaryOperation::Kind::MINUS:
+            return builder().CreateSub(left, right, "sub");
+        case BinaryOperation::Kind::TIMES:
+            return builder().CreateMul(left, right, "mul");
+        case BinaryOperation::Kind::DIVIDE:
+            return builder().CreateSDiv(left, right, "div");
+
+        default:
+            driver_.internal_error("Unhandled binary operator");
+            return nullptr;
+        }
+
+        // Arithmetic operators
+        if (op.is_arithmetic()) {
+            if (op.to_string() == "^") {
+                // LLVM has no native integer power instruction.
+                // We call the runtime powi or implement it via a loop.
+                // The simplest approach: call llvm.powi.i32 intrinsic.
+                auto* powi = llvm::Intrinsic::getDeclaration(
+                    &module(),
+                    llvm::Intrinsic::powi,
+                    { llvm::Type::getInt32Ty(context()) }
+                );
+                // powi expects (float base, int exp) — only works on floats.
+                // For int32 power, you need a helper or loop instead.
+                // See note below.
+                (void) powi;
+                driver_.internal_error("visit(BinOpExpr): ^ not yet implemented");
+                return nullptr;
+            }
+        }
+
+        // Logical: and
+        if (op.is_logical())
+            return builder().CreateAnd(left, right, "and");
+
+        // Comparison operators
+        if (op.is_comparison()) {
+            if (op.to_string() == "<")
+                return builder().CreateICmpSLT(left, right, "lt");
+            if (op.to_string() == "<=")
+                return builder().CreateICmpSLE(left, right, "le");
+        }
+
+        // Equality: works on int32, bool, string (ptr eq), and class types (ptr eq)
+        if (op.is_equality()) {
+            const Type& t = node.left()->type();
+
+            if (t.is_int32() || t.is_bool())
+                return builder().CreateICmpEQ(left, right, "eq");
+
+            // Strings and class instances: pointer equality
+            if (t.is_string() || t.is_custom())
+                return builder().CreateICmpEQ(left, right, "ptr_eq");
+        }
+
+        driver_.internal_error("visit(BinOpExpr): unhandled binary operator");
         return nullptr;
     }
     

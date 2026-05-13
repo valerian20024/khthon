@@ -10,14 +10,15 @@ namespace khthon {
 
     /// @brief Represents an unary operation in VSOP.
     class UnaryOperation {
-    private:
+    public:
         enum class Kind {
             NOT,
             UMINUS,
             ISNULL,
             DEFAULT
         };
-    
+
+    private:
         Kind kind_ = Kind::DEFAULT;
 
     public:
@@ -34,30 +35,33 @@ namespace khthon {
         bool is_unary_minus()   const { return kind_ == Kind::UMINUS; }
         bool is_isnull()        const { return kind_ == Kind::ISNULL; }
 
-        /// @brief Returns true for unary minus.
-        bool is_arithmetic() const  { return kind_ == Kind::UMINUS; }
+        /// @return `true` for unary minus.
+        bool is_arithmetic()    const { return kind_ == Kind::UMINUS; }
 
-        /// @brief Returns true for the not and isnull operators.
-        bool is_logical() const     { return (kind_ == Kind::NOT) || (kind_ == Kind::ISNULL); }
+        /// @return `true` for the not and isnull operators.
+        bool is_logical()       const { return (kind_ == Kind::NOT) || (kind_ == Kind::ISNULL); }
 
         /// @brief Checks whether this operation is defined in VSOP.
         bool is_undefined()     const { return kind_ == Kind::DEFAULT; }
 
-        /// @brief Returns the type this unary operator operand can be.
+        /// @return The kind of unary operation.
+        UnaryOperation::Kind kind() const { return kind_; }
+
+        /// @return The type this unary operator operand can be.
         std::vector<Type> valid_operand_types() const;
 
-        /// @brief Returns the type this unary operator should result in.
+        /// @return The type this unary operator should result in.
         Type result_type() const;
 
-        /// @brief The `UnaryOperation` string representation, as seen in any valid VSOP code.
+        /// @return The `UnaryOperation` string representation, as seen in any valid VSOP code.
         std::string to_string() const;
     };
 
 
     /// @brief Represents a binary operation in VSOP.
     class BinaryOperation {
-    private:
-        enum class Kind { 
+    public:
+        enum class Kind {
             EQUAL, 
             LOWER, 
             LOWER_EQUAL, 
@@ -69,7 +73,7 @@ namespace khthon {
             AND, 
             DEFAULT
         };
-    
+    private:    
         Kind kind_ = Kind::DEFAULT;
 
     public:
@@ -78,8 +82,6 @@ namespace khthon {
         BinaryOperation() = default;
 
         explicit BinaryOperation(Kind k) : kind_(k) { }
-
-        // Factory methods.
 
         static BinaryOperation Equal()        { return BinaryOperation(Kind::EQUAL); }
         static BinaryOperation Lower()        { return BinaryOperation(Kind::LOWER); }
@@ -105,7 +107,7 @@ namespace khthon {
         bool is_equality() const;
 
         /// @brief Checks whether this operation is defined in VSOP.
-        bool is_undefined()     const { return kind_ == Kind::DEFAULT; }
+        bool is_undefined() const;
 
         /// @brief Returns the types this binary operator operands can be.
         /// @note The vector of pairs allows for future asymmetric and overloaded operators.
@@ -116,6 +118,9 @@ namespace khthon {
 
         /// @brief The `BinaryOperation` string representation, as seen in any valid VSOP code.
         std::string to_string() const;
+
+        /// @return The kind of binary operation.
+        BinaryOperation::Kind kind() const { return kind_; }
     };
 } // namespace khthon
 

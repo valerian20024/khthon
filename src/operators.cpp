@@ -75,6 +75,10 @@ namespace khthon
         return kind_ == Kind::AND;
     }
 
+    bool BinaryOperation::is_undefined() const { 
+        return kind_ == Kind::DEFAULT; 
+    }
+
     std::vector<BinaryOperation::TypePair> 
     BinaryOperation::valid_operand_types() const {
         switch (kind_) {

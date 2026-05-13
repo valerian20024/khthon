@@ -7,7 +7,7 @@ namespace khthon {
     
     /// @brief Represents a type in VSOP.
     class Type {
-    private: 
+    public: 
         enum class Kind { 
             CUSTOM, 
             INT32, 
@@ -17,6 +17,7 @@ namespace khthon {
             DEFAULT
         };    
 
+    private:
         Kind kind_ = Kind::DEFAULT;
         std::string custom_name_ = {};
         
@@ -55,21 +56,25 @@ namespace khthon {
 
         /// @brief Primitive types are `int32`, `string`, `bool` and `unit` in VSOP.
         bool is_primitive() const { return kind_ != Kind::DEFAULT && !is_custom(); }
+        
+        /// @brief Checks whether this `Type` is defined in VSOP.
+        bool is_undefined() const { return kind_ == Kind::DEFAULT; }
+        
         bool is_int32()     const { return kind_ == Kind::INT32; }
         bool is_bool()      const { return kind_ == Kind::BOOL; }
         bool is_string()    const { return kind_ == Kind::STRING; }
         bool is_unit()      const { return kind_ == Kind::UNIT; }
 
-        /// @brief Checks whether this `Type` is defined in VSOP.
-        bool is_undefined() const { return kind_ == Kind::DEFAULT; }
-
         bool operator==(const Type& other) const;
         bool operator!=(const Type& other) const;
 
-        /// @brief Returns the custom type name. An empty string if none.
+        /// @return The kind of type.
+        Type::Kind kind() const { return kind_; }
+
+        /// @return The custom type name. An empty string if none.
         std::string custom_name() const { return custom_name_; }
 
-        /// @brief The `Type` string representation, as seen in any valid VSOP code.
+        /// @return The `Type` string representation, as seen in any valid VSOP code.
         std::string to_string() const;
     };
 } // namespace khthon

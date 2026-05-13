@@ -4,8 +4,18 @@ class Main {
     }
     
     meth() : int32 {
-        printBool(false);
+        printInt32(1 + 2);
         print("\n");
+
+        printInt32(1 - 2);
+        print("\n");
+        
+        printInt32(1 * 2);
+        print("\n");
+        
+        printInt32(2 / 4);
+        print("\n");
+        
         0
     }
 }
