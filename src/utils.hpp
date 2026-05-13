@@ -35,6 +35,46 @@ namespace khthon::utils {
         return std::string(1, static_cast<char>(hex_code));
     }
 
+    /**
+     * @brief Decodes a string like "string\x0a" to an actual "string\\n".
+    */
+    inline std::string decode(std::string& raw) {
+
+        // Strip surrounding quotes: "hello" -> hello
+        raw = raw.substr(1, raw.size() - 2);
+        
+        // Decode VSOP escape sequences
+        std::string decoded;
+        decoded.reserve(raw.size());
+
+        for (size_t i = 0; i < raw.size(); ++i) {
+            if (raw[i] == '\\' && i + 1 < raw.size()) {
+                switch (raw[i+1]) {
+                    case 'n':  decoded += '\n'; i++; break;
+                    case 't':  decoded += '\t'; i++; break;
+                    case 'r':  decoded += '\r'; i++; break;
+                    case '"':  decoded += '"';  i++; break;
+                    case '\\': decoded += '\\'; i++; break;
+                    case 'x': {
+                        // \xNN hex escape
+                        if (i + 3 < raw.size()) {
+                            std::string hex = raw.substr(i+2, 2);
+                            decoded += (char) std::stoi(hex, nullptr, 16);
+                            i += 3;
+                        }
+                        break;
+                    }
+                    default: decoded += raw[i]; break;
+                }
+            } else {
+                decoded += raw[i];
+            }
+        }
+
+        return decoded;
+    }
+
+
 } // namespace khthon::utils
 
 #endif

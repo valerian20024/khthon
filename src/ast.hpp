@@ -86,6 +86,7 @@ namespace khthon {
             return visitor.visit(*this);
         }
 
+        /// @return Handle to the classes.
         const NodeList<ClassNode>& classes() const { return classes_; }
     };
 
@@ -124,9 +125,16 @@ namespace khthon {
             return visitor.visit(*this);
         }
 
+        /// @return The class name.
         const std::string& name() const { return name_; }
+
+        /// @return The parent class name.
         const std::string& parent() const { return parent_; }
+
+        /// @return Handle to the fields.
         const NodeList<FieldNode>& fields() const { return fields_; }
+
+        /// @return Handle to the methods.
         const NodeList<MethodNode>& methods() const { return methods_; }
     };
 
@@ -162,9 +170,16 @@ namespace khthon {
             return visitor.visit(*this);
         }
 
+        /// @return The field name.
         const std::string& name() const     { return name_; }
+
+        /// @return The field type.
         const Type& type() const            { return type_; }
+
+        /// @return Whether the field has an initializer.
         bool has_init() const               { return initializer_.has_value(); }
+
+        /// @return The initializer for this field.
         const auto& initializer() const     { return initializer_; }
     };
 
@@ -203,12 +218,19 @@ namespace khthon {
             return visitor.visit(*this);
         }
 
+        /// @return The method name.
         const std::string& name() const             { return name_; }
+
+        /// @return The method return type.
         const Type& type() const                    { return type_; }
+
+        /// @return Handle to the formals.
         const NodeList<FormalNode>& formals() const { return formals_; }
+
+        /// @return Handle to the body of the method.
         const std::shared_ptr<Expr>& body() const   { return body_; }
 
-        /// @brief Creating a dummy node to fill the tree and find more errors.
+        /// @brief Creates a dummy node with no valuable information.
         static std::shared_ptr<MethodNode> makeDummy(
             khthon::location location, 
             std::string name
@@ -244,7 +266,10 @@ namespace khthon {
             return visitor.visit(*this);
         }
 
+        /// @return The formal name.
         const std::string& name() const { return name_; }
+
+        /// @return The formal class.
         const Type& type() const        { return type_; }
     };
 
@@ -252,6 +277,7 @@ namespace khthon {
     class BlockExpr : public Expr {
     private:
         NodeList<Expr> expressions_;
+
     public:
         BlockExpr(khthon::location l, NodeList<Expr> es) : 
             Expr(l), expressions_(std::move(es)) { }
@@ -269,15 +295,14 @@ namespace khthon {
             return visitor.visit(*this);
         }
 
-        /// @brief Whether this block contains expressions or not.
+        /// @return Whether this block contains expressions or not.
         bool is_empty() const { return expressions_.empty(); }
         
-        /// @brief Return the expressions of this block.
+        /// @return Handle to the block's expressions.
         const NodeList<Expr>& expressions() const { return expressions_; }
 
-        /// @brief Get the last expression of this block.
+        /// @return Handle to the block's last expression. 
         const std::shared_ptr<Expr>& last_expression() const {return expressions_.back(); }
-        
     };
 
 
@@ -301,7 +326,7 @@ namespace khthon {
             return visitor.visit(*this);
         }
 
-        
+        /// @return The literal value.
         std::string value() const { return value_; }
     };
 
@@ -326,6 +351,7 @@ namespace khthon {
             return visitor.visit(*this);
         }
 
+        /// @return The literal value.
         int value() const { return value_; }
     };
 
@@ -350,6 +376,7 @@ namespace khthon {
             return visitor.visit(*this);
         }
         
+        /// @return The literal value.
         bool value() const { return value_; }
     };
     
@@ -405,8 +432,13 @@ namespace khthon {
             return visitor.visit(*this);
         }
 
+        /// @return Handle to the Expr in the condition.
         const auto& guardian() const    { return guardian_; }
+
+        /// @return Handle to the Expr in the "then" case.
         const auto& consequent() const  { return consequent_; }
+
+        /// @return Handle to the Expr in the "else" case.
         const auto& alternative() const { return alternative_; }
     };
 
@@ -439,7 +471,10 @@ namespace khthon {
             return visitor.visit(*this);
         }
 
+        /// @return The name of the assignment.
         const std::string& name() const { return name_; }
+
+        /// @return The value of the assignment.
         const auto& value() const { return value_; }
     };
 
@@ -464,6 +499,7 @@ namespace khthon {
             return visitor.visit(*this);
         }
 
+        /// @return The name of the identifier.
         const std::string& identifier() const { return identifier_; }
     };
 
@@ -496,7 +532,10 @@ namespace khthon {
             return visitor.visit(*this);
         }
         
+        /// @return The unary operation.
         const UnaryOperation& operation() const { return operation_; }
+
+        /// @return The only operand.
         const auto& operand() const { return operand_; }
     };
 
@@ -533,8 +572,13 @@ namespace khthon {
             return visitor.visit(*this);
         }
         
+        /// @return The binary operation.
         const BinaryOperation& operation() const    { return operation_; }
+
+        /// @return The first operand.
         const auto& left() const                    { return left_; }
+
+        /// @return The second operand.
         const auto& right() const                   { return right_; }
     };
 
@@ -559,6 +603,7 @@ namespace khthon {
             return visitor.visit(*this);
         }
         
+        /// @return The identifier name.
         const std::string& identifier() const { return identifier_; }
     };
 
@@ -595,8 +640,13 @@ namespace khthon {
             return visitor.visit(*this);
         }
         
+        /// @return Handle to the callee.
         const auto& receiver() const    { return receiver_; }
+
+        /// @return The name of the method called.
         const std::string& name() const { return method_name_; }
+
+        /// @return Handle to the arguments of the method.
         const auto& args() const        { return arguments_; }
     };
 
@@ -655,10 +705,19 @@ namespace khthon {
             return visitor.visit(*this);
         }
         
+        /// @return Name of the variable.
         const std::string& name() const { return name_; }
+
+        /// @return The type of the variable.
         const Type& type() const        { return type_; }
+
+        /// @return Whether it has an initializer.
         bool has_initializer() const    { return initializer_.has_value(); }
+
+        /// @return Handle to the initializer.
         const auto& initializer() const { return initializer_; }
+
+        /// @return Handle to the expression in which the variable lives.
         const auto& scope() const       { return scope_; }
     };
 
@@ -692,7 +751,10 @@ namespace khthon {
             return visitor.visit(*this);
         }
         
+        /// @return Handle to the expression representing the condition.
         const auto& condition() const { return condition_; }
+
+        /// @return Handle to the expression representing the body.
         const auto& body() const { return body_; }        
     };   
 }

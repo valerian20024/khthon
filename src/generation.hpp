@@ -113,6 +113,16 @@ namespace khthon {
 
         /// @brief Handle to the builder. 
         llvm::IRBuilder<>& builder();
+
+        llvm::StructType* get_class_struct(const std::string& class_name);
+        
+        llvm::StructType* get_vtable_struct(const std::string& class_name);
+        
+        unsigned get_vtable_index(
+            const std::string& class_name, 
+            const std::string& method_name
+        );
+        
     };
 
     /**

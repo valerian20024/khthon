@@ -100,41 +100,9 @@ namespace khthon {
         trace("visited a StringLiteralExpr");
 
         string raw = node.value();
+        string decoded = utils::decode(raw);
         
-        // Strip surrounding quotes: "hello" -> hello
-        raw = raw.substr(1, raw.size() - 2);
-        
-        // Decode VSOP escape sequences
-        string decoded;
-        decoded.reserve(raw.size());
-
-        for (size_t i = 0; i < raw.size(); ++i) {
-            if (raw[i] == '\\' && i + 1 < raw.size()) {
-
-                switch (raw[i + 1]) {
-                    case 'n':  decoded += '\n'; i++; break;
-                    case 't':  decoded += '\t'; i++; break;
-                    case 'r':  decoded += '\r'; i++; break;
-                    case '"':  decoded += '"';  i++; break;
-                    case '\\': decoded += '\\'; i++; break;
-                    case 'x': {
-                        // \xNN hex escape
-                        if (i + 3 < raw.size()) {
-                            string hex = raw.substr(i + 2, 2);
-                            decoded += (char) stoi(hex, nullptr, 16);
-                            i += 3;
-                        }
-                        break;
-                    }
-                    default: decoded += raw[i]; break;
-                }
-
-            } else {
-                decoded += raw[i];
-            }
-        }
-        
-        // CreateGlobalStringPtr adds the null terminator \00 automatically
+        // Adds the null terminator automatically.
         return builder().CreateGlobalStringPtr(decoded, ".str");
     }
 
@@ -188,8 +156,59 @@ namespace khthon {
     
     Value* CodeGenVisitor::visit(CallExpr& node) {
         trace("visited a CallExpr");
+
         (void) node;
         return nullptr;
+/*
+        // 1. Evaluate receiver and args
+        Value* receiver = node.receiver()->accept(*this);
+        
+        std::vector<Value*> args;
+        for (const auto& arg : node.args())
+            args.push_back(arg->accept(*this));
+
+        // 2. Get the receiver's static class name from the AST type annotation
+        const std::string class_name = node.receiver()->type().custom_name();
+
+        // 3. Get the vtable slot index for this method
+        unsigned slot = orchestrator_.get_vtable_index(class_name, node.name());
+
+        // 4. Load the vtable pointer from slot 0 of the receiver struct
+        auto* class_struct  = orchestrator_.get_class_struct(class_name);
+        auto* vtable_struct = orchestrator_.get_vtable_struct(class_name);
+
+        auto* vtable_ptr_addr = builder().CreateStructGEP(
+            class_struct, receiver, 0, "vtable_ptr_addr"
+        );
+        auto* vtable_ptr = builder().CreateLoad(
+            vtable_struct->getPointerTo(), vtable_ptr_addr, "vtable"
+        );
+
+        // 5. Load the function pointer from the vtable slot
+        auto* fn_ptr_addr = builder().CreateStructGEP(
+            vtable_struct, vtable_ptr, slot, "fn_ptr_addr"
+        );
+        auto* fn_ptr_type = vtable_struct->getElementType(slot);  // e.g. %Object*(%Main*, i8*)*
+        auto* fn_ptr = builder().CreateLoad(fn_ptr_type, fn_ptr_addr, "fn_ptr");
+
+        // 6. The function pointer expects a specific self type (e.g. %Main*)
+        //    Extract it and bitcast receiver if needed
+        auto* fn_type = cast<FunctionType>(
+            cast<PointerType>(fn_ptr_type)->getElementType()
+        );
+        Value* casted_self = builder().CreateBitCast(
+            receiver, fn_type->getParamType(0), "self_cast"
+        );
+
+        // 7. Assemble the full argument list: self first, then the rest
+        std::vector<Value*> call_args;
+        call_args.push_back(casted_self);
+        for (auto* arg : args)
+            call_args.push_back(arg);
+
+        // 8. Call
+        return builder().CreateCall(fn_type, fn_ptr, call_args, "call");
+*/
     }
     
     Value* CodeGenVisitor::visit(SelfExpr& node) {
