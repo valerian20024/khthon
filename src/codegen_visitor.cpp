@@ -1,5 +1,6 @@
-#include "generation.hpp"
 #include "colors.hpp"
+#include "generation.hpp"
+#include "mangling.hpp"
 #include "utils.hpp"
 
 using namespace std;
@@ -228,8 +229,26 @@ namespace khthon {
 
     Value* CodeGenVisitor::visit(NewExpr& node) {
         trace("visited a NewExpr");
-        (void) node;
-        return nullptr;
+    
+        const string& class_name = node.identifier();
+
+        const string ctor_name = mangle::ctor(class_name);
+        Function* ctor = module().getFunction(ctor_name);
+
+        if (!ctor) {
+            driver_.internal_error(
+                "visit (New): constructor not found for class " + class_name
+            );
+            return nullptr;
+        }
+
+        Value* new_object = builder().CreateCall(
+            ctor, 
+            {}, 
+            "new_" + class_name
+        );
+
+        return new_object;
     }
 
     Value* CodeGenVisitor::visit(UnOpExpr& node) {

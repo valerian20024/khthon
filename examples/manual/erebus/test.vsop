@@ -1,51 +1,13 @@
 class Main {
     main() : int32 {
-        meth()
+        (new Icecream).scream();
+        0
     }
-    
-    meth() : int32 {
-        printInt32(1 + 2);
-        print("\n");
+}
 
-        printInt32(1 - 2);
-        print("\n");
-        
-        printInt32(1 * 2);
-        print("\n");
-        
-        printInt32(2 / 4);
-        print("\n");
-
-        printInt32(2 ^ 3);
-        print("\n");
-
-        printBool(1 <= 2);
-        print("\n");
-
-        printBool(1 < 2);
-        print("\n");
-        
-        printBool(4 <= 2);
-        print("\n");
-
-        printBool(4 = 4);
-        print("\n");
-
-        printBool(false = false);
-        print("\n");
-
-        printBool(false = true);
-        print("\n");
-
-        printBool(false = true);
-        print("\n");
-
-        printBool(true and true);
-        print("\n");
-
-        printBool(false and false);
-        print("\n");
-
+class Icecream {
+    scream() : int32 {
+        print("Scream\n");
         0
     }
 }

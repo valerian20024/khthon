@@ -257,6 +257,8 @@ namespace khthon {
 
         // Return the newly initialized object
         ReturnInst::Create(context_, initialized, entry);
+
+        cout << "EMIT CLASS NEW FOR " + class_name << endl;
     }
 
     void CodeGenOrchestrator::create_class_struct(const ClassNode& node) {
@@ -605,28 +607,25 @@ void CodeGenOrchestrator::emit_thunk(
 
         for (const auto& c : root->classes())
             create_class_struct(*c);
-        
+
         for (const auto& c : root->classes())
             finalize_class_vtable(*c);
-        
+
         for (const auto& c : root->classes())
             finalize_class_struct(*c);
-        
-        // Methods must be emitted before vtable globals, so that
-        // globals can reference real function pointers.
+
         for (const auto& c : root->classes())
             emit_methods(*c);
-        
+
         for (const auto& c : root->classes())
             emit_vtable(*c);
-        
+
         for (const auto& c : root->classes())
             emit_class_init(*c);
-        
-        for (const auto& c : root->classes()) 
+
+        for (const auto& c : root->classes())
             emit_class_new(*c);
 
-        // Lastly we emit the entrypoint.
         emit_entry_point();
     }
 
