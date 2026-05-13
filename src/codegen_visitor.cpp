@@ -27,6 +27,83 @@ namespace khthon {
         }
     }
 
+    Value* CodeGenVisitor::emit_power(Value* base, Value* expo) {
+
+        /* The loop logic is the following:
+
+            result = 1
+            while (exp > 0):
+                result = result * base
+                exp = exp - 1
+            return result
+        */
+
+        // Find the current function we're inserting into.
+        Function* current_fn = builder().GetInsertBlock()->getParent();
+
+        // Create the four basic blocks.
+        auto* bb_init = builder().GetInsertBlock();
+        auto* bb_cond = BasicBlock::Create(context(), "pow_cond", current_fn);
+        auto* bb_body = BasicBlock::Create(context(), "pow_body", current_fn);
+        auto* bb_exit = BasicBlock::Create(context(), "pow_exit", current_fn);
+
+        // Helper representing an int32 in LLVM.
+        llvm::Type* int32 = llvm::Type::getInt32Ty(context());
+
+        // Jump from current block into the loop condition.
+        builder().CreateBr(bb_cond);
+
+        // >>> Basic block: pow_cond
+        // We check whether exponent is greater than 0.
+        builder().SetInsertPoint(bb_cond);
+
+            // Create phi nodes.
+            PHINode* result_phi = builder().CreatePHI(int32, 2, "result");
+            PHINode* exp_phi    = builder().CreatePHI(int32, 2, "exp");
+
+            // Seed values from entry.
+            // result_phi starts at 1.
+            // exp_phui starts at the value of the right operand.
+            result_phi->addIncoming(ConstantInt::get(int32, 1), bb_init);
+            exp_phi->addIncoming(expo, bb_init);
+
+            // Loop condition: exp > 0
+            Value* cond = builder().CreateICmpSGT(
+                exp_phi,
+                ConstantInt::get(int32, 0), 
+                "exp_gt_0"
+            );
+            builder().CreateCondBr(cond, bb_body, bb_exit);
+
+        // >>> Basic block: pow_body
+        // We compute the new result and exponent values.
+        builder().SetInsertPoint(bb_body);
+            
+            // Multiply the result with the base of the exponant.
+            Value* new_result = builder().CreateMul(
+                result_phi,
+                base,
+                "new_result"
+            );
+
+            // Decrement the exponent.
+            Value* new_exp = builder().CreateSub(
+                exp_phi,
+                ConstantInt::get(int32, 1), 
+                "new_exp"
+            );
+
+            // Feed updated values back into the PHI nodes.
+            result_phi->addIncoming(new_result, bb_body);
+            exp_phi->addIncoming(new_exp, bb_body);
+
+            builder().CreateBr(bb_cond);
+
+        // >>> Basic block: pow_exit
+        builder().SetInsertPoint(bb_exit);
+            return result_phi;  // The last value of result_phi is our answer.
+    }
+
     inline LLVMContext& CodeGenVisitor::context() {
         return orchestrator_.context();
     }
@@ -181,56 +258,7 @@ namespace khthon {
                 return builder().CreateSDiv(left, right, "div");
 
             case BinaryOperation::Kind::POWER: {
-                // Grab the current function we're inserting into.
-                llvm::Function* current_fn = builder().GetInsertBlock()->getParent();
-
-                // Create the four basic blocks.
-                llvm::BasicBlock* bb_init = builder().GetInsertBlock();
-                llvm::BasicBlock* bb_cond = llvm::BasicBlock::Create(context(), "pow_cond", current_fn);
-                llvm::BasicBlock* bb_body = llvm::BasicBlock::Create(context(), "pow_body", current_fn);
-                llvm::BasicBlock* bb_exit = llvm::BasicBlock::Create(context(), "pow_exit", current_fn);
-
-                llvm::Type* i32 = llvm::Type::getInt32Ty(context());
-
-                // Jump from current block into the loop condition.
-                builder().CreateBr(bb_cond);
-
-                // --- pow_cond ---
-                // PHI nodes pick up values from the two incoming edges:
-                // the first iteration (from bb_init) and back-edges (from bb_body).
-                builder().SetInsertPoint(bb_cond);
-                llvm::PHINode* result_phi = builder().CreatePHI(i32, 2, "result");
-                llvm::PHINode* exp_phi    = builder().CreatePHI(i32, 2, "exp");
-
-                // Seed values from entry: result starts at 1, exp starts at `right`.
-                result_phi->addIncoming(llvm::ConstantInt::get(i32, 1), bb_init);
-                exp_phi->addIncoming(right, bb_init);
-
-                // Loop condition: exp > 0
-                llvm::Value* cond = builder().CreateICmpSGT(
-                    exp_phi, 
-                    llvm::ConstantInt::get(i32, 0), 
-                    "exp_gt_0"
-                );
-                builder().CreateCondBr(cond, bb_body, bb_exit);
-
-                // --- pow_body ---
-                builder().SetInsertPoint(bb_body);
-
-                llvm::Value* new_result = builder().CreateMul(result_phi, left,  "new_result");
-                llvm::Value* new_exp    = builder().CreateSub(exp_phi,    
-                    llvm::ConstantInt::get(i32, 1), "new_exp"
-                );
-
-                // Back-edge: feed updated values back into the PHI nodes.
-                result_phi->addIncoming(new_result, bb_body);
-                exp_phi->addIncoming(new_exp,    bb_body);
-
-                builder().CreateBr(bb_cond);
-
-                // --- pow_exit ---
-                builder().SetInsertPoint(bb_exit);
-                return result_phi;  // The last value of result_phi is our answer.
+                return emit_power(left, right);
             }
             
             case BinaryOperation::Kind::AND:

@@ -140,6 +140,9 @@ namespace khthon {
         /// and local variables.
         std::map<std::string, llvm::Value*> named_values_ = {};
 
+        /// @brief Emits a power operator by implementing a loop.
+        llvm::Value* emit_power(llvm::Value* left, llvm::Value* right);
+
         /// @brief Wrapper to provide the LLVMContext handle.
         inline llvm::LLVMContext& context();
         
