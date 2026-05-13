@@ -143,21 +143,16 @@ namespace khthon {
     void CodeGenOrchestrator::emit_class_init(const ClassNode& node) {
         const string class_name = node.name();
         StructType* class_struct = class_structs_.at(class_name);
-        llvm::Type* class_ptr = class_struct->getPointerTo();
-
-        // Creating this class' init method.
-        auto* init_signature = FunctionType::get(class_ptr, {class_ptr}, false);
-        auto* init_method = Function::Create(
-            init_signature,
-            GlobalValue::ExternalLinkage,
-            mangle::init(class_name),
-            *module_
-        );
+        
+        // Retrieve the forward declaration.
+        auto* init_method = module_->getFunction(mangle::init(class_name));
+        if (!init_method) {
+            driver_.internal_error("emit_class_init: declaration not found for " + class_name);
+            return;
+        }
 
         // Only parameter of init is self.
         init_method->arg_begin()->setName("self");
-
-        functions_[mangle::init(class_name)] = init_method;
 
         // Creating the entry point.
         BasicBlock* bb = BasicBlock::Create(context_, "entry", init_method);
@@ -169,16 +164,13 @@ namespace khthon {
         // class structure.
         auto* vtable_global = vtable_globals_.at(class_name);
         auto* vtable_ptr = builder_.CreateStructGEP(
-            class_struct,     // The class structure
+            class_struct,   // The class structure
             self,           // Pointer
             0,              // First index of the class structure
             "vtable_ptr"    // Name
         );
 
-        // Storing in the code.
         builder_.CreateStore(vtable_global, vtable_ptr);
-
-        // Return self.
         builder_.CreateRet(self);
     }
 
@@ -189,16 +181,11 @@ namespace khthon {
         StructType* class_struct = class_structs_.at(class_name);
         llvm::Type* class_ptr    = class_struct->getPointerTo();
 
-        // Creating the class constructor. Signature: () -> Classname*
-        auto* signature   = FunctionType::get(class_ptr, {}, false);
-        auto* constructor = Function::Create(
-            signature,
-            GlobalValue::ExternalLinkage,
-            class_constructor,
-            *module_
-        );
-
-        functions_[class_constructor] = constructor;
+        auto* constructor = module_->getFunction(mangle::ctor(class_name));
+        if (!constructor) {
+            driver_.internal_error("emit_class_new: declaration not found for " + class_name);
+            return;
+        }
 
         // Create entry point.        
         BasicBlock* entry = BasicBlock::Create(
@@ -257,8 +244,6 @@ namespace khthon {
 
         // Return the newly initialized object
         ReturnInst::Create(context_, initialized, entry);
-
-        cout << "EMIT CLASS NEW FOR " + class_name << endl;
     }
 
     void CodeGenOrchestrator::create_class_struct(const ClassNode& node) {
@@ -310,6 +295,37 @@ namespace khthon {
         }
 
         vtable_struct->setBody(slot_types);
+    }
+
+
+    void CodeGenOrchestrator::declare_class_init(const ClassNode& node) {
+        const string class_name = node.name();
+        StructType* class_struct = class_structs_.at(class_name);
+        llvm::Type* class_ptr = class_struct->getPointerTo();
+
+        auto* signature = FunctionType::get(class_ptr, {class_ptr}, false);
+        auto* initializer = Function::Create(
+            signature,
+            GlobalValue::ExternalLinkage,
+            mangle::init(class_name),
+            *module_
+        );
+        functions_[mangle::init(class_name)] = initializer;
+    }
+
+    void CodeGenOrchestrator::declare_class_new(const ClassNode& node) {
+        const string class_name = node.name();
+        StructType* class_struct = class_structs_.at(class_name);
+        llvm::Type* class_ptr = class_struct->getPointerTo();
+
+        auto* signature = FunctionType::get(class_ptr, {}, false);
+        auto* constructor = Function::Create(
+            signature,
+            GlobalValue::ExternalLinkage,
+            mangle::ctor(class_name),
+            *module_
+        );
+        functions_[mangle::ctor(class_name)] = constructor;
     }
 
     void CodeGenOrchestrator::emit_method(
@@ -602,29 +618,19 @@ void CodeGenOrchestrator::emit_thunk(
     void CodeGenOrchestrator::generate(const shared_ptr<ProgramNode>& root) {
         emit_runtime_declarations();
         
-        for (const auto& c : root->classes())
-            create_class_vtable(*c);
+        for (const auto& c : root->classes())   create_class_vtable(*c);
+        for (const auto& c : root->classes())   create_class_struct(*c);
+        for (const auto& c : root->classes())   finalize_class_vtable(*c);
+        for (const auto& c : root->classes())   finalize_class_struct(*c);
 
-        for (const auto& c : root->classes())
-            create_class_struct(*c);
+        for (const auto& c : root->classes())   declare_class_init(*c);
+        for (const auto& c : root->classes())   declare_class_new(*c);
+        for (const auto& c : root->classes())   emit_methods(*c);
+        
+        for (const auto& c : root->classes())   emit_vtable(*c);
 
-        for (const auto& c : root->classes())
-            finalize_class_vtable(*c);
-
-        for (const auto& c : root->classes())
-            finalize_class_struct(*c);
-
-        for (const auto& c : root->classes())
-            emit_methods(*c);
-
-        for (const auto& c : root->classes())
-            emit_vtable(*c);
-
-        for (const auto& c : root->classes())
-            emit_class_init(*c);
-
-        for (const auto& c : root->classes())
-            emit_class_new(*c);
+        for (const auto& c : root->classes())   emit_class_init(*c);
+        for (const auto& c : root->classes())   emit_class_new(*c);
 
         emit_entry_point();
     }

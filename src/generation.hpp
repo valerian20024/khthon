@@ -59,6 +59,10 @@ namespace khthon {
         /// @brief Fill in the vtable body with methods signatures.
         void finalize_class_vtable(const ClassNode& node);
 
+        void declare_class_init(const ClassNode& node);
+
+        void declare_class_new(const ClassNode& node);
+
         /// @brief Emit one method of a class.
         void emit_method(const ClassNode& class_node, const MethodNode& method_node);
 
