@@ -2,8 +2,10 @@
     #include <string>
     #include <stack>
 
-    #include "parser.hpp"
+    #include "config.hpp"
     #include "driver.hpp"
+    #include "parser.hpp"
+    #include "utils.hpp"
 %}
 
     /* Flex options
@@ -23,19 +25,11 @@
     using namespace khthon;
     
     /**
-     * @brief Transforms strings of escaped characters into
-     * a printable ASCII representation. 
-     * 
-     * @example Transforms a "\x61" into "a".
-     * @example "\x01" is not converted because it is not printable.
-     */
-    static std::string printable_hex_value(const std::string& hex_string);
-    
-    /**
      * @brief Prints the whole stack content. Used for debugging nested
      * comments start positions.
+     * @note Only used for debugging.
      */
-    void dump_stack_content(std::stack<position> s);
+    static void debug_stack(std::stack<position> s);
 
     /**
      * @brief This function simply converts a Bison position to a punctual location.
@@ -310,7 +304,7 @@ ASSIGN                          "<-"
     {ESCAPED_RETURN}        {current_string += "\\x0d";}
     {ESCAPED_QUOTES}        {current_string += "\\x22";}
     {ESCAPED_BACKSLASH}     {current_string += "\\x5c";}
-    {ESCAPED_HEX}           {current_string += printable_hex_value(yytext);}
+    {ESCAPED_HEX}           {current_string += khthon::utils::to_printable(yytext);}
 
     {ESCAPED_E} {
         position tmp = loc.begin;
@@ -365,6 +359,8 @@ ASSIGN                          "<-"
     }
 
     <<EOF>> {
+        debug_stack(comments_start_pos);
+
         if (!comments_start_pos.empty()) {
             driver.lexical_error(point_location(comments_start_pos.top()), "Unmatched comment.");
             BEGIN(INITIAL);
@@ -390,18 +386,16 @@ ASSIGN                          "<-"
 
 void Driver::scan_begin() {
     
-    loc.initialize(&(Driver::source_file_));
+    loc.initialize(&source_file_);
 
-    // When no file is provided, defaults to stdin
-    if (Driver::source_file_.empty() || Driver::source_file_ == "-")
+    // When no file is provided, defaults to stdin.
+    if (source_file_.empty() || source_file_ == "-") {
         yyin = stdin;
-    else if (!(yyin = fopen(Driver::source_file_.c_str(), "r"))) {
-        
-        //todo use the error system.
-        cerr << "cannot open " 
-             << Driver::source_file_ 
-             << ": " 
-             << strerror(errno) << endl;
+    } else if (!(yyin = fopen(source_file_.c_str(), "r"))) {
+        internal_error(
+            "Cannot open: " + source_file_ + "\n" 
+            + "errno: " + strerror(errno)
+        );
         exit(EXIT_FAILURE);
     }
 }
@@ -410,36 +404,15 @@ void Driver::scan_end() {
     fclose(yyin);
 }
 
-static string printable_hex_value(const string& hex_string) {
-    // Verify input
-    if (hex_string.size() < 4 || hex_string.substr(0, 2) != "\\x") {
-        cerr << "Error in printable_hex_value: "
-                "incorrect escaped character" 
-             << endl;
+static void debug_stack(std::stack<position> s) {
+    if (enable_advanced_logging) {
+        std::cout << "--- Unclosed comments stack (top) ---" << std::endl;
+        while (!s.empty()) {
+            std::cout << s.top() << std::endl;
+            s.pop();
+        }
+        std::cout << "-----------------------------------------------" << std::endl;
     }
-
-    // Remove the escaping header ("\x")
-    int hex_code = stoi(hex_string.substr(2), nullptr, 16);
-
-    /* 
-    Only change the value for printable hexadecimal characters.
-    Avoid ASCII non-printable characters and both " and \
-    */
-    if (hex_code <= 0x1f || hex_code >= 0x7f ||
-        hex_code == 0x5c || hex_code == 0x22) {
-        return hex_string;
-    }
-
-    return string(1, static_cast<char>(hex_code));
-}
-
-void dump_stack_content(std::stack<position> s) {
-    std::cout << "--- Unclosed comments stack (top) ---" << std::endl;
-    while (!s.empty()) {
-        std::cout << s.top() << std::endl;
-        s.pop();
-    }
-    std::cout << "-----------------------------------------------" << std::endl;
 }
 
 inline location point_location(const position& p) {

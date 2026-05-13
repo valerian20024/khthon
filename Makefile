@@ -73,6 +73,7 @@ HEADERS =	ast.hpp \
 			operators.hpp \
 			semantics.hpp \
 			types.hpp \
+			utils.hpp \
 			visitors.hpp
 
 # The software (Bison, Flex) generated code.

@@ -1,5 +1,6 @@
 #include "generation.hpp"
 #include "colors.hpp"
+#include "utils.hpp"
 
 using namespace std;
 using namespace colors;
