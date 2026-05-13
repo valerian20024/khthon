@@ -123,8 +123,12 @@ namespace khthon {
 
     Value* CodeGenVisitor::visit(BoolLiteralExpr& node) {
         trace("visited a BoolLiteralExpr");
-        (void) node;
-        return nullptr;
+        
+        return ConstantInt::get(
+            llvm::Type::getInt1Ty(context()), 
+            node.value() ? 1 : 0, 
+            false  // Unsigned
+        );
     }
 
     Value* CodeGenVisitor::visit(UnitLiteralExpr& node) {
@@ -172,38 +176,46 @@ namespace khthon {
     Value* CodeGenVisitor::visit(CallExpr& node) {
         trace("visited a CallExpr");
 
+        // Evaluating receiver and arguments.
         Value* receiver = node.receiver()->accept(*this);
-        
         vector<Value*> args;
         for (const auto& arg : node.args())
             args.push_back(arg->accept(*this));
 
-        // Get the receiver's static class name from the AST type annotation
         const string receiver_name = node.receiver()->type().custom_name();
-
-        // Get the vtable slot index for this method
-        unsigned slot = vtable_index(receiver_name, node.name());
+        const string method_name = node.name();
 
         // Load the vtable pointer from slot 0 of the receiver struct
         auto* receiver_struct = class_struct(receiver_name);
         auto* receiver_vtable = vtable_struct(receiver_name);
 
+        // Computes the address where the VTable is stored.
         Value* vtable_ptr_addr = builder().CreateStructGEP(
-            receiver_struct, receiver, 0, "vtable_ptr_addr"
+            receiver_struct, 
+            receiver, 
+            0, 
+            "vtable_ptr_addr"
         );
 
+        // Reading the address.
         LoadInst* vtable_ptr = builder().CreateLoad(
             receiver_vtable->getPointerTo(), 
             vtable_ptr_addr, 
             "vtable"
         );
 
-        // Load the function pointer from the vtable slot
+        // Get the vtable slot index for this method.
+        unsigned slot = vtable_index(receiver_name, method_name);
+
+        // Load the function pointer from the vtable slot.
         Value* fn_ptr_addr = builder().CreateStructGEP(
-            receiver_vtable, vtable_ptr, slot, "fn_ptr_addr"
+            receiver_vtable, 
+            vtable_ptr, 
+            slot, 
+            "fn_ptr_addr"
         );
 
-        // e.g. %Object*(%Main*, i8*)*
+        // e.g. %Object* (%Main*, i8*)*
         llvm::Type* fn_ptr_type = receiver_vtable->getElementType(slot);  
         LoadInst* fn_ptr = builder().CreateLoad(
             fn_ptr_type, 
@@ -211,17 +223,20 @@ namespace khthon {
             "fn_ptr"
         );
 
-        // The function pointer expects a specific self type (e.g. %Main*)
-        // Extract it and bitcast receiver if needed
-        auto* fn_type = cast<FunctionType>(
+        // The function pointer expects a specific self type (e.g. %Main*).
+        // Extract it and bitcast receiver if needed.
+        FunctionType* fn_type = cast<FunctionType>(
             cast<PointerType>(fn_ptr_type)->getElementType()
         );
 
+        // Casting.
         Value* casted_self = builder().CreateBitCast(
-            receiver, fn_type->getParamType(0), "self_cast"
+            receiver, 
+            fn_type->getParamType(0),
+            "self_cast"
         );
 
-        // Assemble the full argument list: self first, then the rest
+        // Assemble the argument list: "self" first, then the rest.
         vector<Value*> call_args;
         call_args.push_back(casted_self);
         for (auto* arg : args)

@@ -4,7 +4,8 @@ class Main {
     }
     
     meth() : int32 {
-        print("In the name of Hades, Olympus, I greet you all\n");
-        1
+        printBool(false);
+        print("\n");
+        0
     }
 }
