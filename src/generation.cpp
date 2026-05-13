@@ -657,7 +657,7 @@ void CodeGenOrchestrator::emit_thunk(
         return builder_;
     }
 
-
+    
 
 } // namespace khthon
 

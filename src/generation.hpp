@@ -122,7 +122,7 @@ namespace khthon {
             const std::string& class_name, 
             const std::string& method_name
         );
-        
+
     };
 
     /**
@@ -140,14 +140,26 @@ namespace khthon {
         /// and local variables.
         std::map<std::string, llvm::Value*> named_values_ = {};
 
-        /// @brief Wrapper for providing the LLVMContext handle.
+        /// @brief Wrapper to provide the LLVMContext handle.
         inline llvm::LLVMContext& context();
         
-        /// @brief Wrapper for providing the Module handle.
+        /// @brief Wrapper to provide the Module handle.
         inline llvm::Module& module();
 
-        /// @brief Wrapper for providing the IRBuilder handle.
+        /// @brief Wrapper to provide the IRBuilder handle.
         inline llvm::IRBuilder<>& builder();
+
+        /// @brief Wrapper to provide the class struct of class_name. 
+        inline llvm::StructType* class_struct(const std::string& class_name);
+
+        /// @brief Wrapper to provide the vtable struct of class_name.
+        inline llvm::StructType* vtable_struct(const std::string& class_name);
+        
+        /// @brief Wrapper to provide the vtable index of a method in a class.
+        inline unsigned vtable_index(
+            const std::string& class_name, 
+            const std::string& method_name
+        );
 
         /// @brief Logs a message from CodeGenVisitor.
         /// @note For debugging purpose. Only outputs when compiling in 
