@@ -8,17 +8,14 @@ namespace khthon
         switch (kind_) {
             case Kind::NOT:
                 return { Type::Bool() };
-
             case Kind::UMINUS:
                 return { Type::Int32() };
-            
             case Kind::ISNULL:
                 return { Type::Object() };  // sentinel value
 
-            default: {
+            default:
                 cerr << "valid_operand_type(): Unknown kind." << endl;
                 return { Type::Default() };
-            }
         }
     }
 
@@ -26,17 +23,14 @@ namespace khthon
         switch (kind_) {
             case Kind::NOT:
                 return Type::Bool();
-
             case Kind::UMINUS:
                 return Type::Int32();
-            
             case Kind::ISNULL:
                 return Type::Bool();
 
-            default: {
+            default:
                 cerr << "result_type(): Unknown kind." << endl;
                 return Type::Default();
-            }
         }
     }
 
@@ -48,10 +42,9 @@ namespace khthon
             case UnaryOperation::Kind::ISNULL:      return "isnull";
             case UnaryOperation::Kind::DEFAULT:     return "DEFAULT_UNOP";
             
-            default: {
+            default:
                 cerr << "to_string(): Unknown unary operation." << endl;
                 return "";
-            }
         }
     }
 
@@ -82,7 +75,6 @@ namespace khthon
     std::vector<BinaryOperation::TypePair> 
     BinaryOperation::valid_operand_types() const {
         switch (kind_) {
-
             case Kind::PLUS:
             case Kind::MINUS:
             case Kind::TIMES:
@@ -107,10 +99,9 @@ namespace khthon
                     {Type::Object(), Type::Object()},  // sentinel value
                 };
 
-            default: {
+            default:
                 cerr << "valid_operand_types(): unknown BinOp kind." << endl;
                 return {};
-            }
         }
     }
 
@@ -129,10 +120,9 @@ namespace khthon
             case Kind::EQUAL:   
                 return Type::Bool();
 
-            default: {
+            default:
                 cerr << "result_type(): Unknown kind." << endl;
                 return Type::Default();
-            }
         }
     }
 
@@ -149,10 +139,9 @@ namespace khthon
             case BinaryOperation::Kind::AND:            return "and";
             case BinaryOperation::Kind::DEFAULT:        return "DEFAULT_BINOP";
             
-            default: {
+            default:
                 cerr << "to_string(): Unknown binary operation." << endl;
                 return "";
-            }
         }
     }
 } // namespace khthon

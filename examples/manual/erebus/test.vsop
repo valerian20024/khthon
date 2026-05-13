@@ -15,6 +15,9 @@ class Main {
         
         printInt32(2 / 4);
         print("\n");
+
+        printInt32(2 ^ 3);
+        print("\n");
         
         0
     }

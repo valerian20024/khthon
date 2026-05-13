@@ -171,66 +171,91 @@ namespace khthon {
 
 
         switch (op.kind()) {
-        case BinaryOperation::Kind::PLUS:
-            return builder().CreateAdd(left, right, "add");
-        case BinaryOperation::Kind::MINUS:
-            return builder().CreateSub(left, right, "sub");
-        case BinaryOperation::Kind::TIMES:
-            return builder().CreateMul(left, right, "mul");
-        case BinaryOperation::Kind::DIVIDE:
-            return builder().CreateSDiv(left, right, "div");
+            case BinaryOperation::Kind::PLUS:
+                return builder().CreateAdd(left, right, "add");
+            case BinaryOperation::Kind::MINUS:
+                return builder().CreateSub(left, right, "sub");
+            case BinaryOperation::Kind::TIMES:
+                return builder().CreateMul(left, right, "mul");
+            case BinaryOperation::Kind::DIVIDE:
+                return builder().CreateSDiv(left, right, "div");
 
-        default:
-            driver_.internal_error("Unhandled binary operator");
-            return nullptr;
-        }
+            case BinaryOperation::Kind::POWER: {
+                // Grab the current function we're inserting into.
+                llvm::Function* current_fn = builder().GetInsertBlock()->getParent();
 
-        // Arithmetic operators
-        if (op.is_arithmetic()) {
-            if (op.to_string() == "^") {
-                // LLVM has no native integer power instruction.
-                // We call the runtime powi or implement it via a loop.
-                // The simplest approach: call llvm.powi.i32 intrinsic.
-                auto* powi = llvm::Intrinsic::getDeclaration(
-                    &module(),
-                    llvm::Intrinsic::powi,
-                    { llvm::Type::getInt32Ty(context()) }
+                // Create the four basic blocks.
+                llvm::BasicBlock* bb_init = builder().GetInsertBlock();
+                llvm::BasicBlock* bb_cond = llvm::BasicBlock::Create(context(), "pow_cond", current_fn);
+                llvm::BasicBlock* bb_body = llvm::BasicBlock::Create(context(), "pow_body", current_fn);
+                llvm::BasicBlock* bb_exit = llvm::BasicBlock::Create(context(), "pow_exit", current_fn);
+
+                llvm::Type* i32 = llvm::Type::getInt32Ty(context());
+
+                // Jump from current block into the loop condition.
+                builder().CreateBr(bb_cond);
+
+                // --- pow_cond ---
+                // PHI nodes pick up values from the two incoming edges:
+                // the first iteration (from bb_init) and back-edges (from bb_body).
+                builder().SetInsertPoint(bb_cond);
+                llvm::PHINode* result_phi = builder().CreatePHI(i32, 2, "result");
+                llvm::PHINode* exp_phi    = builder().CreatePHI(i32, 2, "exp");
+
+                // Seed values from entry: result starts at 1, exp starts at `right`.
+                result_phi->addIncoming(llvm::ConstantInt::get(i32, 1), bb_init);
+                exp_phi->addIncoming(right, bb_init);
+
+                // Loop condition: exp > 0
+                llvm::Value* cond = builder().CreateICmpSGT(
+                    exp_phi, 
+                    llvm::ConstantInt::get(i32, 0), 
+                    "exp_gt_0"
                 );
-                // powi expects (float base, int exp) — only works on floats.
-                // For int32 power, you need a helper or loop instead.
-                // See note below.
-                (void) powi;
-                driver_.internal_error("visit(BinOpExpr): ^ not yet implemented");
-                return nullptr;
+                builder().CreateCondBr(cond, bb_body, bb_exit);
+
+                // --- pow_body ---
+                builder().SetInsertPoint(bb_body);
+
+                llvm::Value* new_result = builder().CreateMul(result_phi, left,  "new_result");
+                llvm::Value* new_exp    = builder().CreateSub(exp_phi,    
+                    llvm::ConstantInt::get(i32, 1), "new_exp"
+                );
+
+                // Back-edge: feed updated values back into the PHI nodes.
+                result_phi->addIncoming(new_result, bb_body);
+                exp_phi->addIncoming(new_exp,    bb_body);
+
+                builder().CreateBr(bb_cond);
+
+                // --- pow_exit ---
+                builder().SetInsertPoint(bb_exit);
+                return result_phi;  // The last value of result_phi is our answer.
             }
-        }
+            
+            case BinaryOperation::Kind::AND:
+                return builder().CreateAnd(left, right, "and");
 
-        // Logical: and
-        if (op.is_logical())
-            return builder().CreateAnd(left, right, "and");
-
-        // Comparison operators
-        if (op.is_comparison()) {
-            if (op.to_string() == "<")
+            case BinaryOperation::Kind::LOWER:
                 return builder().CreateICmpSLT(left, right, "lt");
-            if (op.to_string() == "<=")
+            case BinaryOperation::Kind::LOWER_EQUAL:
                 return builder().CreateICmpSLE(left, right, "le");
+
+            case BinaryOperation::Kind::EQUAL: {
+                const Type& t = node.left()->type();
+
+                if (t.is_int32() || t.is_bool())
+                    return builder().CreateICmpEQ(left, right, "eq");
+
+                // Strings and class instances: pointer equality
+                if (t.is_string() || t.is_custom())
+                    return builder().CreateICmpEQ(left, right, "ptr_eq");
+            }
+
+            default:
+                driver_.internal_error("visit(BinOp): Unhandled binary operator.");
+                return nullptr;
         }
-
-        // Equality: works on int32, bool, string (ptr eq), and class types (ptr eq)
-        if (op.is_equality()) {
-            const Type& t = node.left()->type();
-
-            if (t.is_int32() || t.is_bool())
-                return builder().CreateICmpEQ(left, right, "eq");
-
-            // Strings and class instances: pointer equality
-            if (t.is_string() || t.is_custom())
-                return builder().CreateICmpEQ(left, right, "ptr_eq");
-        }
-
-        driver_.internal_error("visit(BinOpExpr): unhandled binary operator");
-        return nullptr;
     }
     
     Value* CodeGenVisitor::visit(VariableExpr& node) {

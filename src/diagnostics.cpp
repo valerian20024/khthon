@@ -44,12 +44,13 @@ namespace khthon {
 
     const string Diagnostic::header() const {
         switch (level_) {
-        case ErrorLevel::Error:     return as_error("Error: ");
-        case ErrorLevel::Warning:   return as_warning("Warning: ");
-        case ErrorLevel::Note:      return as_note("Note: ");
-        default:
-            cerr << "Error in Diagnostic::header(): No such ErrorLevel.";
-            return "";
+            case ErrorLevel::Error:     return as_error("Error: ");
+            case ErrorLevel::Warning:   return as_warning("Warning: ");
+            case ErrorLevel::Note:      return as_note("Note: ");
+            
+            default:
+                cerr << "Error in Diagnostic::header(): No such ErrorLevel.";
+                return "";
         }
     }
 } // namespace khthon
