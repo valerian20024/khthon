@@ -107,11 +107,10 @@ namespace khthon {
         string decoded;
         decoded.reserve(raw.size());
 
-        /*
         for (size_t i = 0; i < raw.size(); ++i) {
             if (raw[i] == '\\' && i + 1 < raw.size()) {
 
-                switch (raw[i+1]) {
+                switch (raw[i + 1]) {
                     case 'n':  decoded += '\n'; i++; break;
                     case 't':  decoded += '\t'; i++; break;
                     case 'r':  decoded += '\r'; i++; break;
@@ -120,8 +119,8 @@ namespace khthon {
                     case 'x': {
                         // \xNN hex escape
                         if (i + 3 < raw.size()) {
-                            std::string hex = raw.substr(i+2, 2);
-                            decoded += (char) std::stoi(hex, nullptr, 16);
+                            string hex = raw.substr(i + 2, 2);
+                            decoded += (char) stoi(hex, nullptr, 16);
                             i += 3;
                         }
                         break;
@@ -133,9 +132,8 @@ namespace khthon {
                 decoded += raw[i];
             }
         }
-        */
         
-        // CreateGlobalStringPtr adds the null terminator automatically
+        // CreateGlobalStringPtr adds the null terminator \00 automatically
         return builder().CreateGlobalStringPtr(decoded, ".str");
     }
 
