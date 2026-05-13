@@ -187,10 +187,10 @@ namespace khthon {
         const string class_constructor = mangle::ctor(class_name);
 
         StructType* class_struct = class_structs_.at(class_name);
-        llvm::Type* class_ptr = class_struct->getPointerTo();
+        llvm::Type* class_ptr    = class_struct->getPointerTo();
 
-        // Creating the class constructor.
-        auto* signature = FunctionType::get(class_ptr, {}, false);
+        // Creating the class constructor. Signature: () -> Classname*
+        auto* signature   = FunctionType::get(class_ptr, {}, false);
         auto* constructor = Function::Create(
             signature,
             GlobalValue::ExternalLinkage,
@@ -200,48 +200,63 @@ namespace khthon {
 
         functions_[class_constructor] = constructor;
 
-        // Create entry point.
-        BasicBlock* bb = BasicBlock::Create(context_, "entry", constructor);
-        builder_.SetInsertPoint(bb);
-
-        // Compute sizeof(Class) using the standard GEP trick.
-
-        // Create a pointer to the Class pointing to null.
-        auto* null_ptr = ConstantPointerNull::get(
-            cast<PointerType>(class_ptr)
-        );
-        
-        // "If I had an array of these structs starting at address 0, 
-        // what would the address of the element at index 1 be?""
-        // => You get the size of the Class.
-        auto* size_ptr = builder_.CreateConstGEP1_32(
-            class_struct, 
-            null_ptr, 
-            1, 
-            "size_ptr"
+        // Create entry point.        
+        BasicBlock* entry = BasicBlock::Create(
+            context_, 
+            "entry", 
+            constructor
         );
 
-        // Converts the raw address into an integer, representing the number
-        // of bytes needed for allocation.
-        auto* size = builder_.CreatePtrToInt(
-            size_ptr, 
-            llvm::Type::getInt64Ty(context_), 
-            "size"
+        // GEP null by 1 element to get sizeof(ClassName) as a pointer value.
+        auto* size_ptr = GetElementPtrInst::Create(
+            class_struct,                                // pointed type
+            ConstantPointerNull::get(
+                class_struct->getPointerTo()),           // base: null
+            { ConstantInt::get(
+                llvm::Type::getInt32Ty(context_), 1) },  // index 1
+            "size_ptr",                                  // name in the IR
+            entry                                        // insert into block
         );
 
-        // Call mallow and allocate the required memory.
+        // Cast that pointer to i64 to get the byte count.
+        auto* size = CastInst::CreatePointerCast(
+            size_ptr,
+            llvm::Type::getInt64Ty(context_),
+            "size",
+            entry
+        );
+
+        // Calling malloc.
         auto* malloc_fn = module_->getFunction("malloc");
-        auto* raw_mem = builder_.CreateCall(malloc_fn, {size}, "raw_mem");
 
-        // Malloc only returns raw memory. Create a pointer to this Class.
-        auto* obj = builder_.CreateBitCast(raw_mem, class_ptr, "obj");
+        auto* raw_mem = CallInst::Create(
+            malloc_fn->getFunctionType(),
+            malloc_fn,
+            { size },
+            "raw_mem",
+            entry
+        );
 
-        // Call the init method.
-        auto* init_method = module_->getFunction(mangle::init(class_name));
-        auto* initialized_obj = builder_.CreateCall(init_method, {obj});
+        // Cast i8* returned by malloc to ClassName*.
+        auto* obj = CastInst::CreatePointerCast(
+            raw_mem,
+            class_ptr,
+            "obj",
+            entry
+        );
 
-        // Return the initialized object.
-        builder_.CreateRet(initialized_obj);
+        // Calling ___init 
+        auto* init_fn = module_->getFunction(mangle::init(class_name));
+        auto* initialized = CallInst::Create(
+            init_fn->getFunctionType(),
+            init_fn,
+            { obj },
+            "initialized",
+            entry
+        );
+
+        // Return the newly initialized object
+        ReturnInst::Create(context_, initialized, entry);
     }
 
     void CodeGenOrchestrator::create_class_struct(const ClassNode& node) {
