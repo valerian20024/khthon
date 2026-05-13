@@ -18,7 +18,30 @@ class Main {
 
         printInt32(2 ^ 3);
         print("\n");
+
+        printBool(1 <= 2);
+        print("\n");
+
+        printBool(1 < 2);
+        print("\n");
         
+        printBool(4 <= 2);
+        print("\n");
+
+        printBool(4 = 4);
+        print("\n");
+
+        printBool(false = false);
+        print("\n");
+
+        printBool(false = true);
+        print("\n");
+
+        printBool(false = true);
+        print("\n");
+
+        
+
         0
     }
 }

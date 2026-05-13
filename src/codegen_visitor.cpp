@@ -246,7 +246,6 @@ namespace khthon {
 
         const BinaryOperation& op = node.operation();
 
-
         switch (op.kind()) {
             case BinaryOperation::Kind::PLUS:
                 return builder().CreateAdd(left, right, "add");
@@ -256,19 +255,14 @@ namespace khthon {
                 return builder().CreateMul(left, right, "mul");
             case BinaryOperation::Kind::DIVIDE:
                 return builder().CreateSDiv(left, right, "div");
-
-            case BinaryOperation::Kind::POWER: {
+            case BinaryOperation::Kind::POWER:
                 return emit_power(left, right);
-            }
-            
             case BinaryOperation::Kind::AND:
                 return builder().CreateAnd(left, right, "and");
-
             case BinaryOperation::Kind::LOWER:
                 return builder().CreateICmpSLT(left, right, "lt");
             case BinaryOperation::Kind::LOWER_EQUAL:
                 return builder().CreateICmpSLE(left, right, "le");
-
             case BinaryOperation::Kind::EQUAL: {
                 const Type& t = node.left()->type();
 
