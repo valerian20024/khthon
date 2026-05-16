@@ -1,5 +1,9 @@
 #include "ast.hpp"
 
+/**
+ * This file contains the implementation for the Abstract Syntax Tree nodes.
+ */
+
 using namespace std;
 
 namespace khthon {
