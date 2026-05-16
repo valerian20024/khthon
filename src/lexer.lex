@@ -6,21 +6,26 @@
     #include "driver.hpp"
     #include "parser.hpp"
     #include "utils.hpp"
+
+    /**
+     * This file allows to generate the lexer using Flex.
+     */
+
 %}
 
     /* Flex options
-     * - noyywrap: yylex will not call yywrap() function
-     * - nounput: do not generate yyunput() function
-     * - noinput: do not generate yyinput() function
-     * - batch: tell Flex that the lexer will not often be used interactively
+     * - noyywrap:  yylex will not call yywrap() function
+     * - nounput:   do not generate yyunput() function
+     * - noinput:   do not generate yyinput() function
+     * - batch:     tell Flex that the lexer won't often be used interactively
      */
 %option noyywrap nounput noinput batch
 
 %{
-    // Code run each time a pattern is matched.
+    // Code runs each time a pattern is matched.
     #define YY_USER_ACTION  loc.columns(yyleng);
 
-    /* Code to include at the beginning of the lexer file. */
+    // Code to include at the beginning of the lexer file.
     using namespace std;
     using namespace khthon;
     
@@ -32,7 +37,8 @@
     static void debug_stack(std::stack<position> s);
 
     /**
-     * @brief This function simply converts a Bison position to a punctual location.
+     * @brief This function simply converts a Bison position to a punctual 
+     * location.
      */
     inline location point_location(const position& p);
 
@@ -76,7 +82,7 @@ HEX_DIGIT                       [0-9a-fA-F]
 DEC_DIGIT                       [0-9]
 
 INT_LIT_HEX_E_EMPTY             {HEX_PREFIX}
-    /* todo find symbols that can be next to an hex lit and add them here vvv*/
+
 INT_LIT_HEX_E_INVALID           {HEX_PREFIX}{HEX_DIGIT}*[^0-9a-fA-F \t\n\r\f;]
 INT_LIT_HEX                     {HEX_PREFIX}{HEX_DIGIT}+
 
@@ -149,11 +155,11 @@ ASSIGN                          "<-"
 
 %%
 %{
-    /* 
-    Code runs each time yylex is called.
-    Prepares location for new token.
-    It moves loc.begin to where loc.end currently is 
-    */
+    /**
+     * Code runs each time yylex is called.
+     * Prepares location for new token.
+     * It moves loc.begin to where loc.end currently is 
+     */
     loc.step();
 %}
 
@@ -223,7 +229,6 @@ ASSIGN                          "<-"
     {TYPE_IDENTIFIER}       return Parser::make_TYPE_IDENTIFIER(yytext, loc);     
     {OBJECT_IDENTIFIER}     return Parser::make_OBJECT_IDENTIFIER(yytext, loc);
 
-    /*todo think about out range errors and the likes*/
     {INT_LIT_HEX_E_EMPTY} {
         driver.lexical_error(loc, std::string(yytext) + " is an incomplete hexadecimal literal (missing digits)");
         return Parser::make_YYerror(loc);
@@ -304,7 +309,9 @@ ASSIGN                          "<-"
     {ESCAPED_RETURN}        {current_string += "\\x0d";}
     {ESCAPED_QUOTES}        {current_string += "\\x22";}
     {ESCAPED_BACKSLASH}     {current_string += "\\x5c";}
-    {ESCAPED_HEX}           {current_string += khthon::utils::to_printable(yytext);}
+    {ESCAPED_HEX}           {current_string += 
+                                khthon::utils::to_printable(yytext);
+    }
 
     {ESCAPED_E} {
         position tmp = loc.begin;
@@ -313,7 +320,7 @@ ASSIGN                          "<-"
 
         driver.lexical_error(loc, "Unknown escaped sequence.");
 
-        current_string += yytext[1];  // Ignore the \ and add the character to the string
+        current_string += yytext[1];  // Ignore \ and add character to string
 
         loc.begin = tmp;
 
@@ -321,18 +328,27 @@ ASSIGN                          "<-"
     }
 
     {NEWLINE} {
-        driver.lexical_error(point_location(loc.end - 1), "Cannot have a newline inside a string.");
+        driver.lexical_error(
+            point_location(loc.end - 1), 
+            "Cannot have a newline inside a string."
+        );
         return Parser::make_YYerror(loc);
     }
     
     <<EOF>> {
-        driver.lexical_error(point_location(string_start_loc.begin), "Cannot have EOF inside an unclosed string.");
+        driver.lexical_error(
+            point_location(string_start_loc.begin), 
+            "Cannot have EOF inside an unclosed string."
+        );
         BEGIN(INITIAL);
         return Parser::make_YYerror(loc);
     }
 
     . {
-        driver.lexical_error(string_start_loc, "Catched an invalid char in string.");
+        driver.lexical_error(
+            string_start_loc, 
+            "Catched an invalid char in string."
+        );
     }
 }
 
@@ -341,7 +357,9 @@ ASSIGN                          "<-"
     +-------------------------*/
 
 <COMMENT_STATE>{
-    {COMMENT_START} {comments_start_pos.push(loc.begin);}
+    {COMMENT_START} { 
+        comments_start_pos.push(loc.begin); 
+    }
 
     {COMMENT_END} {
         comments_start_pos.pop();
@@ -362,21 +380,27 @@ ASSIGN                          "<-"
         debug_stack(comments_start_pos);
 
         if (!comments_start_pos.empty()) {
-            driver.lexical_error(point_location(comments_start_pos.top()), "Unmatched comment.");
+            driver.lexical_error(
+                point_location(comments_start_pos.top()), 
+                "Unmatched comment."
+            );
             BEGIN(INITIAL);
             return Parser::make_YYerror(loc);
         }
 
-        driver.lexical_error(point_location(comments_start_pos.top()), "EOF cannot happen inside an unclosed comment");
+        driver.lexical_error(
+            point_location(comments_start_pos.top()), 
+            "EOF cannot happen inside an unclosed comment"
+        );
         BEGIN(INITIAL);
         return Parser::make_YYerror(loc);
     }
 }
 
-    /* 
-    Serves as a default case when EOF errors occur in the other
-    states. This catches the EOF and allows the lexer to stop.
-    */
+    /**
+     * Serves as a default case when EOF errors occur in the other
+     * states. This catches the EOF and allows the lexer to stop.
+     */
     <<EOF>>     return Parser::make_YYEOF(loc);
 %%
 
@@ -411,7 +435,7 @@ static void debug_stack(std::stack<position> s) {
             std::cout << s.top() << std::endl;
             s.pop();
         }
-        std::cout << "-----------------------------------------------" << std::endl;
+        std::cout << "-------------------------------------" << std::endl;
     }
 }
 
