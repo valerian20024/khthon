@@ -6,8 +6,8 @@ using namespace std;
 using namespace colors;
 
 /*
-
-*/
+ *
+ */
 
 namespace khthon {
 

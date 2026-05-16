@@ -1,9 +1,13 @@
+/**
+ * This file contains the implementations of the unary and binary operations.
+ */
+
 #include "operators.hpp"
 
 using namespace std;
 
-namespace khthon
-{
+namespace khthon {
+
     vector<Type> UnaryOperation::valid_operand_types() const {
         switch (kind_) {
             case Kind::NOT:
@@ -33,7 +37,6 @@ namespace khthon
                 return Type::Default();
         }
     }
-
 
     string UnaryOperation::to_string() const {
         switch (kind_) {

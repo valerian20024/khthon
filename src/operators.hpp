@@ -1,6 +1,10 @@
 #ifndef OPERATORS_HPP
 #define OPERATORS_HPP
 
+/**
+ * This file contains the interface of the unary and binary operations.
+ */
+
 #include "types.hpp"
 
 #include <vector>

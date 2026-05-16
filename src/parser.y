@@ -1,3 +1,7 @@
+/**
+ * This file contains the code generating the parser, using Bison.
+ */
+
 %skeleton "lalr1.cc"
 %language "c++"
 %require "3.7.5"
@@ -145,12 +149,6 @@
 %type <std::shared_ptr<Expr>>                     while_loop
 
 
-/* 
-UMINUS (unary minus) is only defined to override precedence of binary minus
-?  should have higher precedence than declaring variables 
-?  What does it mean to have highest precedence
-?  Should %nonassoc be %precedence instead?
-*/
 %right      ASSIGN                    // 9
 %nonassoc   LET IN                    
 %nonassoc   WHILE DO
@@ -163,7 +161,7 @@ UMINUS (unary minus) is only defined to override precedence of binary minus
 %left       PLUS MINUS                // 5
 %left       TIMES DIVIDE              // 4
 %right      ISNULL                    // 3 
-//%right    UMINUS                    // 3
+%right      UMINUS                    // 3
 %right      POWER                     // 2
 %left       DOT                       // 1
 
@@ -211,18 +209,6 @@ program
       );
       driver.ast_root = $$;
     }
-  /*
-  | error class_list
-    {
-      ERROR(@1, "top-level construct is not a class. Skipping.");
-      // Produce an empty but valid program so ast_root is never null
-      $$ = std::make_shared<ProgramNode>(
-        @$, 
-        std::vector<std::shared_ptr<ClassNode>>{}
-      );
-      driver.ast_root = $$;
-    }
-  */
   ;
 
 class_list
@@ -266,7 +252,6 @@ class
     }
   ;
 
-
 optional_extends
   : %empty                        
     { 
@@ -284,7 +269,10 @@ optional_extends
   ;
 
 class_body
-  : LEFT_BRACE class_content RIGHT_BRACE    { $$ = $2; }
+  : LEFT_BRACE class_content RIGHT_BRACE    
+    { 
+      $$ = $2; 
+    }
   ;
 
 class_content
@@ -374,14 +362,6 @@ method
       ERROR(@5, "method has no type.");
       $$ = MethodNode::makeDummy(@$, $1);
     }
-  /* Error test 42 : method has no braces */
-  /*! reduce/reduce conflicts 
-  | OBJECT_IDENTIFIER LEFT_PARENTHESIS formals RIGHT_PARENTHESIS COLON type expression
-    {
-      ERROR(@7, "method has no braces");
-      $$ = MethodNode::makeDummy(@$, $1);
-    }
-  */
   ;
 
 formals
@@ -487,8 +467,14 @@ integer_literal
   ;
 
 boolean_literal
-  : TRUE    { $$ = std::make_shared<BoolLiteralExpr>(@$, true); }
-  | FALSE   { $$ = std::make_shared<BoolLiteralExpr>(@$, false); }
+  : TRUE    
+    { 
+      $$ = std::make_shared<BoolLiteralExpr>(@$, true); 
+    }
+  | FALSE   
+    { 
+      $$ = std::make_shared<BoolLiteralExpr>(@$, false); 
+    }
   ;
 
 unit_literal
@@ -608,10 +594,6 @@ enclosed_expr
     }
   ;
 
-/*
-todo  there must be something funny going on with the 'self' keyword
-todo    -> to be checked during semantics
-*/
 variable_expr
   : OBJECT_IDENTIFIER
     {
@@ -686,7 +668,8 @@ while_loop
     ||                  USER CODE                     ||
     ++================================================*/
 
-// Useless for now but is declared by Bison.
+/// @brief This method is declared by Bison so we must give a definition.
+/// @note However, it is not used at all. 
 void khthon::Parser::error(const khthon::location& l, const std::string& m) {
     (void) l;
     (void) m;
