@@ -1,11 +1,11 @@
+/**
+ * This file contains the implementation of the CodeGenVisitor.
+ */
+
 #include "colors.hpp"
 #include "generation.hpp"
 #include "mangling.hpp"
 #include "utils.hpp"
-
-/**
- * This file contains the implementation of the CodeGenVisitor.
- */
 
 using namespace std;
 using namespace colors;

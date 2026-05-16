@@ -1,6 +1,10 @@
 #ifndef AST_HPP
 #define AST_HPP
 
+/**
+ * This file contains the interface for the Abstract Syntax Tree nodes.
+ */
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -11,10 +15,6 @@
 #include "types.hpp"
 #include "operators.hpp"
 #include "llvm_compatibility.hpp"
-
-/**
- * This file contains the interface for the Abstract Syntax Tree nodes.
- */
 
 namespace khthon {
 

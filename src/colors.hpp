@@ -1,13 +1,13 @@
 #ifndef COLORS_HPP
 #define COLORS_HPP
 
-#include "config.hpp"
-#include <string>
-
 /**
  * This file contains the interface and implementation of wrapper functions 
  * for printing in the terminal.
  */
+
+#include "config.hpp"
+#include <string>
 
 /// @brief Contains wrapper functions for printing in the terminal.
 namespace colors {

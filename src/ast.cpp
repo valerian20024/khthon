@@ -1,8 +1,8 @@
-#include "ast.hpp"
-
 /**
  * This file contains the implementation for the Abstract Syntax Tree nodes.
  */
+
+#include "ast.hpp"
 
 using namespace std;
 

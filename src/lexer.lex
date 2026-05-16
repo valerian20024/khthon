@@ -1,4 +1,8 @@
 %{
+    /**
+     * This file allows to generate the lexer using Flex.
+     */
+    
     #include <string>
     #include <stack>
 
@@ -6,11 +10,6 @@
     #include "driver.hpp"
     #include "parser.hpp"
     #include "utils.hpp"
-
-    /**
-     * This file allows to generate the lexer using Flex.
-     */
-
 %}
 
     /* Flex options

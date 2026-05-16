@@ -1,6 +1,13 @@
 #ifndef SEMANTICS_HPP
 #define SEMANTICS_HPP
 
+/**
+ * This file contains the interface of the semantic analysis.
+ * That is, Info classes, the SemanticChecker (which is the
+ * central orchestrator for this phase) and the ClassesVisitor and 
+ * TypesVisitor.
+ */
+
 #include "ast.hpp"
 #include "config.hpp"
 #include "driver.hpp"

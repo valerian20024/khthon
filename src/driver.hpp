@@ -1,6 +1,12 @@
 #ifndef _DRIVER_HPP
 #define _DRIVER_HPP
 
+/**
+ * This file contains the interface of the Driver class.
+ * Driver is the central coordinator of the whole program.
+ * For the time being, it is also responsible in managing diagnostics.
+ */
+
 #include <string>
 #include <vector>
 #include <map>
@@ -9,12 +15,6 @@
 #include "parser.hpp"
 #include "ast.hpp"
 #include "diagnostics.hpp"
-
-/**
- * This file contains the interface of the Driver class.
- * Driver is the central coordinator of the whole program.
- * For the time being, it is also responsible in managing diagnostics.
- */
 
 // Give prototype of yylex() function, then declare it.
 // Passing driver as an argument for error reporting.

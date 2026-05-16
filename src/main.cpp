@@ -1,6 +1,6 @@
-// Adapted from https://www.gnu.org/software/bison/manual/html_node/A-Complete-C_002b_002b-Example.html
-
 /**
+ * Adapted from https://www.gnu.org/software/bison/manual/html_node/A-Complete-C_002b_002b-Example.html
+ * 
  * This file contains the entrypoint of the program.
  * It consists in parsing arguments on the CLI and transfering control
  * to the right method in Driver. 

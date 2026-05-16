@@ -1,9 +1,9 @@
-#include "diagnostics.hpp"
-#include "colors.hpp"
-
 /**
  * This file contains the implementation of Diagnostics.
  */
+
+#include "diagnostics.hpp"
+#include "colors.hpp"
 
 using namespace std;
 using namespace colors;

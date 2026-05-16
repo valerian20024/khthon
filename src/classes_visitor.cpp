@@ -1,8 +1,8 @@
-#include "semantics.hpp"
-
 /**
  * This file contains the implementation of the ClassesVisitor.
  */
+
+#include "semantics.hpp"
 
 namespace khthon {
 
