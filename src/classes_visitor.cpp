@@ -1,5 +1,9 @@
 #include "semantics.hpp"
 
+/**
+ * This file contains the implementation of the ClassesVisitor.
+ */
+
 namespace khthon {
 
     void ClassesVisitor::visit(const ProgramNode& node) const {
