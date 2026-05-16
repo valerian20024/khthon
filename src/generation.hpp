@@ -1,6 +1,11 @@
 #ifndef GENERATION_HPP
 #define GENERATION_HPP
 
+/**
+ * This file contains the interface of the CodeGenOrchestrator class
+ * and the CodeGenVisitor. Both are responsible for code generation.
+ */
+
 #include "llvm_compatibility.hpp"
 #include "config.hpp"
 #include "driver.hpp"
@@ -10,6 +15,10 @@
 
 namespace khthon {
 
+    /// @brief Acts as the central orchestrator for the code generation pass.
+    /// 
+    /// Stores all the necessary information (VTables, classes, slots in 
+    /// VTables, ...) and prepares for the Visitor to emit LLVM for methods.
     class CodeGenOrchestrator {
     private:
         Driver& driver_;
@@ -129,9 +138,7 @@ namespace khthon {
 
     };
 
-    /**
-     * @brief The code generation visitor generates LLVM code for expressions.
-     */
+    /// @brief The code generation visitor generates LLVM code for expressions.
     class CodeGenVisitor : public MutableVisitor<llvm::Value*> {
     private:
         /// @brief Handle to driver.
@@ -189,13 +196,6 @@ namespace khthon {
         /// @note For debugging purposes.
         void print_named_values() const;
 
-        // todo remove the unused visit method, like fieldNode, classNode, etc.
-
-        llvm::Value* visit(ProgramNode& node) override;
-        llvm::Value* visit(ClassNode& node) override;
-        llvm::Value* visit(FormalNode& node) override;
-        llvm::Value* visit(FieldNode& node) override;
-        llvm::Value* visit(MethodNode& node) override;
         llvm::Value* visit(BlockExpr& node) override;
         llvm::Value* visit(IntegerLiteralExpr& node) override;
         llvm::Value* visit(StringLiteralExpr& node) override;

@@ -12,6 +12,8 @@
 
 /**
  * This file contains the interface of the Driver class.
+ * Driver is the central coordinator of the whole program.
+ * For the time being, it is also responsible in managing diagnostics.
  */
 
 // Give prototype of yylex() function, then declare it.

@@ -141,36 +141,6 @@ namespace khthon {
             cout << "[CodeGenVisitor] " << message << endl;
     }
 
-    Value* CodeGenVisitor::visit(ProgramNode& node) {
-        trace("visited a ProgramNode");
-        (void) node;
-        return nullptr;
-    }
-
-    Value* CodeGenVisitor::visit(ClassNode& node) {
-        trace("visited a ClassNode");
-        (void) node;
-        return nullptr;
-    }
-
-    Value* CodeGenVisitor::visit(FormalNode& node) {
-        trace("visited a FormalNode");
-        (void) node;
-        return nullptr;
-    }
-
-    Value* CodeGenVisitor::visit(FieldNode& node) {
-        trace("visited a FieldNode");
-        (void) node;
-        return nullptr;
-    }
-    
-    Value* CodeGenVisitor::visit(MethodNode& node) {
-        trace("visited a MethodNode");
-        (void) node;
-        return nullptr;
-    }
-
     Value* CodeGenVisitor::visit(BlockExpr& node) {
         trace("visited a BlockExpr");
 

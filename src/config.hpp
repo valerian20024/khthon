@@ -1,6 +1,11 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
+/**
+ * This file acts as the central point where configuration variables are set.
+ * Depending on the compilation type (release or debug), Khthon behaves differently.
+ */
+
 namespace khthon {
     
     /// @brief Global logging configuration for debugging.
