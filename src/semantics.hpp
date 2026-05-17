@@ -80,10 +80,17 @@ namespace khthon {
 
         int formals_count() const;
 
-        const std::string& name() const                 { return name_; }
-        const khthon::Type& return_type() const         { return return_type_; }
-        const std::vector<FormalInfo>& formals() const  { return formals_; }
-        const khthon::location& location() const        { return location_; }
+        /// @return The method's name.
+        const std::string& name() const { return name_; }
+
+        /// @return The method's return type.
+        const khthon::Type& return_type() const { return return_type_; }
+
+        /// @return Handle to the method's formals informations.
+        const std::vector<FormalInfo>& formals() const { return formals_; }
+
+        /// @return The method's location.
+        const khthon::location& location() const { return location_; }
     };
 
     /**
@@ -121,11 +128,20 @@ namespace khthon {
 
         std::optional<MethodInfo> get_method(const std::string name) const;
 
-        const std::string& name() const                 { return name_; }
-        const std::string& parent() const               { return parent_; }
-        const khthon::location& location() const        { return location_; }
-        const std::vector<FieldInfo>& fields() const    { return fields_; }
-        const std::vector<MethodInfo>& methods() const  { return methods_; }
+        /// @return The class name.
+        const std::string& name() const { return name_; }
+
+        /// @return The parent class name.
+        const std::string& parent() const { return parent_; }
+
+        /// @return The class location.
+        const khthon::location& location() const { return location_; }
+
+        /// @return Handle to the class fields informations.
+        const std::vector<FieldInfo>& fields() const { return fields_; }
+
+        /// @return Handle to the class methods informations.
+        const std::vector<MethodInfo>& methods() const { return methods_; }
     };
  
 
@@ -241,7 +257,6 @@ namespace khthon {
         ClassManager class_manager_;
         ScopeManager scope_manager_;
 
-        //todo bulky to have this here
         enum class VisitState { Unvisited, Visiting, Visited };
 
         /// @brief Helper function implementing depth-first search for finding cycles.
@@ -398,14 +413,21 @@ namespace khthon {
             const Type& t_right
         ) const;
 
-        //todo 
+        /// @brief Checks conformance of a given method formals. 
+        /// @param method The method.
+        /// @param args The formals.
+        /// @param loc The location. Used to report errors.
         bool check_formals(
             const MethodInfo& method,
             const std::vector<std::shared_ptr<Expr>>& args,
             const khthon::location& loc
         ) const;
 
-        //todo
+        /// @brief Checks whether a given type exists. 
+        ///
+        /// This is useful especially for custom types.
+        /// @param type the type being checked.
+        /// @param loc is used to report the location of the type when something goes wrong.
         bool check_type_exists(
             const Type& type, 
             const khthon::location& loc
