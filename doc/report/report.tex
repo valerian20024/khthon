@@ -33,7 +33,7 @@
 	\begin{minipage}[t]{0.49\textwidth}
 		\begin{flushright} \large
         \textbf{Authors:} \\
-            Valérian WISLEZ s200825
+            Valérian WISLEZ (20200825)
 		\end{flushright}
 	\end{minipage}
     % --- Year ---
@@ -46,24 +46,36 @@
 
 We will first give an overview of the project before moving into more details.
 
-The compiler is named Khthon: derived from the greek $\chi\theta o \nu \iota o \zeta$ ("khthonios"), meaning "from the ground", metaphorically transforming high level language to a more ground-based IR. 
+\paragraph{Name}
 
-The git repository \footnote{\url{https://github.com/valerian20024/khthon}} is also available. There is much more in it than the sole source code and report posted on the submission platform.
+The compiler is named Khthon: derived from the greek $$\chi\theta o \nu \iota o \zeta$$ Pronounced "khthonios", it means "from the ground", metaphorically transforming high level language to a more ground-based IR. We thought it would be fun to make a parallel between the four steps of the compilation process and the four main places describing the underworld in greek mythology \footnote{\url{https://en.wikipedia.org/wiki/Greek\_underworld}}.
 
-A Doxygen documentation is given with the source code, though it might not be complete.
+\paragraph{Repository}
 
-I have attended the course in 2024-2025, which allowed me to get some experience with the 3 first steps. I decided to do the project alone this year because I have had some troubles in my team work last year and I thought I could reuse some parts to have a quick start. 
+You may consult the git repository \footnote{\url{https://github.com/valerian20024/khthon}} to find out more about the project than what has been posted on the submission platform. The content of the submission includes the source code, the report and a Doxygen documentation.
 
-As of \textcolor{red}{10 May 2026}, the project state can be summarized using VSCodeCounter's\footnote{\url{https://marketplace.visualstudio.com/items?itemName=uctakeoff.vscode-counter}} output: \textcolor{red}{23 files,  4257 codes, 639 comments, 1082 blanks, all 5978 lines}
+\paragraph{Participation}
 
-Unfortunately, I cannot state precisely how much time I have passed on the project, but I estimate it to be about $250$ hours, all in all. While that may seem a lot, it is mainly because I have used this project as an experimenting ground for learning C++. I was also quite passionate about it and willing to do it right. I have put some effort into readibility, architecture and correctness. While it may not be perfect since this is still the first actual C++ project I have tackled, I clearly feel I have improved my skills with this project.
+The project has been done alone. Indeed, I have attended the course in 2024-2025, which allowed me to get some experience with the $3$ first steps. As I had had some troubles with team working last year
+
+Unfortunately, I cannot state precisely how much time I have passed on the project, but I estimate it to be about $250$ hours, all in all. While that may seem a lot, it is mainly because I have used this project as an experimenting ground for learning C++. I was also quite passionate about it and willing to do it right. I have put some effort into readibility, architecture and correctness.
+
+\paragraph{Statistics}
+
+As of May 17, 2026, the project state can be summarized as follows: 
+
+\begin{enumerate}
+    \item 29 source code files;
+    \item roughly 7000 lines of code (4906 codes, 846 comments, 1314 blanks);
+\end{enumerate}
 
 \section{Architecture}
 
-\subsection{Development roadmap}
-I started fresh from the Flex/Bison example provided. Reused part of the lexer and parser from last year's project. I could not reuse the Semantic Analysis part because the architecture was completely different and the code was somewhat cursed. Instead, I went for a visitor pattern.
+We will now go over the architecture of the project and explain its main components.
 
-Using Flex, Bison, LLVM C++ API (IRBuilder).
+\paragraph{Overview}
+
+The project is using Flex, Bison and the LLVM C++ API. It follows a visitor pattern. Part of the lexer and the parser from last year have been reused, but we basically started fresh on this project.
 
 
 \section{Capabilities}
@@ -88,24 +100,26 @@ Now that I have more experience both in compiler design and in C++, there are ma
 
 \begin{enumerate}
     \item Change the lexer to only take one keyword token and use a hash table to decide its content.
-    \item Create a dedicated \texttt{ErrorLogger} instead of putting the responsibility of error management to \texttt{Driver}. The errors could be more descriptive as well, copying the line from the source file to indicate the user where it happened. Using Bison's \texttt{location} to clearly highlight the error.
-    \item Create some namespaces. As the code grew, \texttt{khthon::Type} is conflicting with \texttt{llvm::Type}. It would be a good time to start splitting into namespaces.
-    \item Push further the debug mechanics when compiling to have accurate and clean logging of what's happening. For now it's a bit mingled and not standardized.
-    \item More consistent use of C++ features, such as move semantics.
-    \item Clearly separating interface and implementation, even when having trivial methods, for example in \texttt{ast.hpp}.
-    \item \texttt{Driver::print\_diagnostics} should print them in order (line, column) when compiling in release mode and keep the original order when compiling in Debug mode.
-    \item Work on the test script and pipeline its execution using e.g. Github actions.
-    \item Change the order private - public to public then private in every class because it's more idiomatic in C++. Methods could be reordered in a more logical way in many classes.
-    \item There is certainly a more efficient way of including headers to make it faster to compile. I have followed a simple pattern that works but there is surely a bit too much headers to parse that are not always necessary.
+    \item Create a dedicated \texttt{ErrorLogger} class instead of putting the responsibility of error management to \texttt{Driver}. The errors could be more descriptive as well: using Bison's \texttt{location}, we could copy the line from the source file to indicate the user where it happened and clearly highlight the error.
+    \item Creating more namespaces. As the code grew, \texttt{khthon::Type} is conflicting with \texttt{llvm::Type}. It would be a good time to start thinking out to split the code into meaningful namespaces.
+    \item Push further the debugging mechanics when compiling to have accurate and clean logging of what's happening. For now it's a bit mingled and not standardized.
+    \item More consistent use of C++ features, such as move semantics, or the order private and public members (more idiomatic in C++).
+    \item \texttt{Driver::print\_diagnostics} should print them in order (line, column) when compiling in release mode and keep the original order when compiling in Debug mode. This was originaly planned but we didn't have time to make it.
+    \item Work on the test script and pipeline its execution using e.g. Github actions (see the git repository).
+    \item Methods could be reordered in a more logical way in some classes.
     \item In the lexer, I initially planned to check for numbers to be in range for 32 bits, but didn't have the time to do it.
+    \item And many more things ...
 \end{enumerate}
 
 This project will outlive the scope of this course and I shall improve Khthon in my free time.
 
 \section{Course improvements}
-Adding more VSOP example, at least code that covers the whole language. For example, there is no while example.
+We now describe some features we think could improve the project in the future.
 
-Updating the container, adding gdb to debug inside the container. Using more recent version of LLVM and clang.
+\paragraph{VSOP} we think adding a bit more VSOP examples in the PDF statements could help visualize the language, a bit like the linked list example. For example, there is no piece of code with a while loop. We think a bit more examples could help before actually reviewing the tests on the submission platform.
+
+\paragraph{Updates}
+We think updating the reference container by adding gdb to debug inside the container and using a more recent version of LLVM and clang could help students to get acquainted with recent versions of LLVM. It would make it easier to install LLVM on other machines instead of relying on the container.
 
 \section{Use of AI Tools}
 Mainly to help understand LLVM IR, discuss and refine code organization, help with some C++ concepts.
