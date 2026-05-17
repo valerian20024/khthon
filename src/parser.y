@@ -28,7 +28,7 @@
 // Add some assertions.
 %define parse.assert
 
-// Allowing Bison to tell which character it was expecting
+// Allowing Bison to tell which character it expects.
 //%define parse.error detailed
 
 %code requires {
@@ -40,11 +40,11 @@
 
     namespace khthon
     {
-        class Driver;
+        class Driver;  // Forward declaration.
     }
 }
 
-// Add an argument to the parser constructor
+// Add an argument to the parser constructor.
 %parse-param {khthon::Driver &driver}
 
 %lex-param {khthon::Driver &driver}
@@ -53,10 +53,11 @@
     #include "driver.hpp"
     #include "ast.hpp"
     
-    /** Not perfect but rules have access to driver whereas in %code
-     ** blocks it's harder to follow Bison's architecture. This is a 
-     ** clean in-between solution to allow to write less code in the 
-     ** rules.
+    /** 
+     * Not perfect but rules have access to driver whereas in %code
+     * blocks it's harder to follow Bison's architecture. This is a 
+     * clean in-between solution to allow to write less code in the 
+     * rules.
      */ 
     #define ERROR(loc, msg)       driver.syntax_error(loc, msg)
     #define WARNING(loc, msg)     driver.syntax_warning(loc, msg)
@@ -111,7 +112,7 @@
     ASSIGN                          "<-"
 ;
 
-// Some tokens needs to hold a semantic value
+// Some tokens needs to hold a semantic value.
 %token <std::string>  TYPE_IDENTIFIER     "type-identifier"
 %token <std::string>  OBJECT_IDENTIFIER   "object-identifier"
 %token <std::string>  STRING_LITERAL      "string-literal"
@@ -148,6 +149,7 @@
 %type <std::shared_ptr<Expr>>                     let_expr
 %type <std::shared_ptr<Expr>>                     while_loop
 
+// Precedence and associativity.
 
 %right      ASSIGN
 %nonassoc   LET IN

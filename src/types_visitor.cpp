@@ -137,9 +137,7 @@ namespace khthon {
         trace("visited ClassNode");
         
         current_class_name_ = node.name();
-        
-        //todo Have fresh scope for new class
-        
+                
         for (const auto& f : node.fields())
             f->accept(*this);
 
