@@ -1,3 +1,7 @@
+/**
+ * This file contains the implementation of the CodeGenVisitor.
+ */
+
 #include "colors.hpp"
 #include "generation.hpp"
 #include "mangling.hpp"
@@ -135,36 +139,6 @@ namespace khthon {
     void CodeGenVisitor::trace(const string& message) const { 
         if (enable_advanced_logging)
             cout << "[CodeGenVisitor] " << message << endl;
-    }
-
-    Value* CodeGenVisitor::visit(ProgramNode& node) {
-        trace("visited a ProgramNode");
-        (void) node;
-        return nullptr;
-    }
-
-    Value* CodeGenVisitor::visit(ClassNode& node) {
-        trace("visited a ClassNode");
-        (void) node;
-        return nullptr;
-    }
-
-    Value* CodeGenVisitor::visit(FormalNode& node) {
-        trace("visited a FormalNode");
-        (void) node;
-        return nullptr;
-    }
-
-    Value* CodeGenVisitor::visit(FieldNode& node) {
-        trace("visited a FieldNode");
-        (void) node;
-        return nullptr;
-    }
-    
-    Value* CodeGenVisitor::visit(MethodNode& node) {
-        trace("visited a MethodNode");
-        (void) node;
-        return nullptr;
     }
 
     Value* CodeGenVisitor::visit(BlockExpr& node) {

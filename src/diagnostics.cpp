@@ -1,3 +1,7 @@
+/**
+ * This file contains the implementation of Diagnostics.
+ */
+
 #include "diagnostics.hpp"
 #include "colors.hpp"
 

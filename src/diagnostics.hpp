@@ -1,6 +1,11 @@
 #ifndef _DIAGNOSTICS_HPP
 #define _DIAGNOSTICS_HPP
 
+/**
+ * This file contains the interface of Diagnostics, the mecanism used to track
+ * compiling errors.
+ */
+
 #include "parser.hpp"
 
 namespace khthon

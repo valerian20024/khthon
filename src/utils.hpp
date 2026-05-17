@@ -1,9 +1,17 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+/**
+ * This file contains definition of utility functions, that may be used from
+ * anywhere in the program, but do not belong to a particular place. 
+ * For now, it is mainly populated with functions transforming different
+ * string representations in VSOP.
+ */
+
 #include <string>
 #include <iostream>
 
+/// @brief Contains utility functions not belonging to a particular place. 
 namespace khthon::utils {
 
     /**
@@ -70,11 +78,9 @@ namespace khthon::utils {
                 decoded += raw[i];
             }
         }
-
         return decoded;
     }
-
-
+    
 } // namespace khthon::utils
 
 #endif

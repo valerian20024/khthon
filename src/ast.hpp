@@ -1,6 +1,10 @@
 #ifndef AST_HPP
 #define AST_HPP
 
+/**
+ * This file contains the interface for the Abstract Syntax Tree nodes.
+ */
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -11,10 +15,6 @@
 #include "types.hpp"
 #include "operators.hpp"
 #include "llvm_compatibility.hpp"
-
-/**
- * This file contains the interface for the Abstract Syntax Tree nodes.
- */
 
 namespace khthon {
 
@@ -61,11 +61,12 @@ namespace khthon {
         const khthon::Type& type() const { return type_; }
 
         /// @brief Set type of the node.
-        /// @warning Mutates the node even if declared as const.
+        /// @warning Mutates the node.
         void set_type(const khthon::Type& t) { type_ = t; }
     };
 
 
+    /// @brief Node relating to a program.
     class ProgramNode : public Node {
     private:
         NodeList<ClassNode> classes_;
@@ -90,7 +91,7 @@ namespace khthon {
         const NodeList<ClassNode>& classes() const { return classes_; }
     };
 
-
+    /// @brief Node relating to a class.
     class ClassNode : public Node {
     private:
         std::string name_;
@@ -138,7 +139,7 @@ namespace khthon {
         const NodeList<MethodNode>& methods() const { return methods_; }
     };
 
-    
+    /// @brief Node relating to a field.
     class FieldNode : public Node {
     private:
         std::string name_;
@@ -171,19 +172,19 @@ namespace khthon {
         }
 
         /// @return The field name.
-        const std::string& name() const     { return name_; }
+        const std::string& name() const { return name_; }
 
         /// @return The field type.
-        const Type& type() const            { return type_; }
+        const Type& type() const { return type_; }
 
         /// @return Whether the field has an initializer.
-        bool has_init() const               { return initializer_.has_value(); }
+        bool has_init() const { return initializer_.has_value(); }
 
         /// @return The initializer for this field.
-        const auto& initializer() const     { return initializer_; }
+        const auto& initializer() const { return initializer_; }
     };
 
-
+    /// @brief Node relating to a method.
     class MethodNode : public Node {
     private:
         std::string name_;
@@ -219,16 +220,16 @@ namespace khthon {
         }
 
         /// @return The method name.
-        const std::string& name() const             { return name_; }
+        const std::string& name() const { return name_; }
 
         /// @return The method return type.
-        const Type& type() const                    { return type_; }
+        const Type& type() const { return type_; }
 
         /// @return Handle to the formals.
         const NodeList<FormalNode>& formals() const { return formals_; }
 
         /// @return Handle to the body of the method.
-        const std::shared_ptr<Expr>& body() const   { return body_; }
+        const std::shared_ptr<Expr>& body() const { return body_; }
 
         /// @brief Creates a dummy node with no valuable information.
         static std::shared_ptr<MethodNode> makeDummy(
@@ -237,7 +238,7 @@ namespace khthon {
         );
     };
 
-
+    /// @brief Node relating to a method's formal.
     class FormalNode : public Node {
     private:
         std::string name_;
@@ -270,10 +271,10 @@ namespace khthon {
         const std::string& name() const { return name_; }
 
         /// @return The formal class.
-        const Type& type() const        { return type_; }
+        const Type& type() const { return type_; }
     };
 
-
+    /// @brief Node relating to a block.
     class BlockExpr : public Expr {
     private:
         NodeList<Expr> expressions_;
@@ -305,7 +306,7 @@ namespace khthon {
         const std::shared_ptr<Expr>& last_expression() const {return expressions_.back(); }
     };
 
-
+    /// @brief Node relating to a string literal.
     class StringLiteralExpr : public Expr {
     private:
         std::string value_;
@@ -330,7 +331,7 @@ namespace khthon {
         std::string value() const { return value_; }
     };
 
-
+    /// @brief Node relating to an integer literal.
     class IntegerLiteralExpr : public Expr {
     private:
         int value_;
@@ -355,7 +356,7 @@ namespace khthon {
         int value() const { return value_; }
     };
 
-
+    /// @brief Node relating to a boolean literal.
     class BoolLiteralExpr : public Expr {
     private:
         bool value_;
@@ -380,7 +381,7 @@ namespace khthon {
         bool value() const { return value_; }
     };
     
-    
+    /// @brief Node relating to a unit literal.
     class UnitLiteralExpr : public Expr {
     public:
         explicit UnitLiteralExpr(khthon::location l) : Expr(l) {}
@@ -399,7 +400,7 @@ namespace khthon {
         }
     };
     
-
+    /// @brief Node relating to a conditional expression.
     class IfExpr : public Expr {
     private:
         std::shared_ptr<Expr> guardian_;
@@ -433,16 +434,16 @@ namespace khthon {
         }
 
         /// @return Handle to the Expr in the condition.
-        const auto& guardian() const    { return guardian_; }
+        const auto& guardian() const { return guardian_; }
 
         /// @return Handle to the Expr in the "then" case.
-        const auto& consequent() const  { return consequent_; }
+        const auto& consequent() const { return consequent_; }
 
         /// @return Handle to the Expr in the "else" case.
         const auto& alternative() const { return alternative_; }
     };
 
-
+    /// @brief Node relating to an assignment expression.
     class AssignExpr : public Expr {
     private:
         std::string name_;
@@ -478,7 +479,7 @@ namespace khthon {
         const auto& value() const { return value_; }
     };
 
-
+    /// @brief Node relating to an instanciation expression.
     class NewExpr : public Expr {
     private:
         std::string identifier_;
@@ -503,7 +504,7 @@ namespace khthon {
         const std::string& identifier() const { return identifier_; }
     };
 
-    
+    /// @brief Node relating to an unary operation.
     class UnOpExpr : public Expr {
     private:
         UnaryOperation operation_;
@@ -539,7 +540,7 @@ namespace khthon {
         const auto& operand() const { return operand_; }
     };
 
-
+    /// @brief Node relating to a binary operation.
     class BinOpExpr : public Expr {
     private:
         BinaryOperation operation_;
@@ -573,16 +574,16 @@ namespace khthon {
         }
         
         /// @return The binary operation.
-        const BinaryOperation& operation() const    { return operation_; }
+        const BinaryOperation& operation() const { return operation_; }
 
         /// @return The first operand.
-        const auto& left() const                    { return left_; }
+        const auto& left() const { return left_; }
 
         /// @return The second operand.
-        const auto& right() const                   { return right_; }
+        const auto& right() const { return right_; }
     };
 
-
+    /// @brief Node relating to a variable.
     class VariableExpr : public Expr {
     private:
         std::string identifier_;
@@ -607,7 +608,7 @@ namespace khthon {
         const std::string& identifier() const { return identifier_; }
     };
 
-
+    /// @brief Node relating to a call expression.
     class CallExpr : public Expr {
     private:
         std::shared_ptr<Expr> receiver_;
@@ -641,16 +642,16 @@ namespace khthon {
         }
         
         /// @return Handle to the callee.
-        const auto& receiver() const    { return receiver_; }
+        const auto& receiver() const { return receiver_; }
 
         /// @return The name of the method called.
         const std::string& name() const { return method_name_; }
 
         /// @return Handle to the arguments of the method.
-        const auto& args() const        { return arguments_; }
+        const auto& args() const { return arguments_; }
     };
 
-
+    /// @brief Node relating to self.
     class SelfExpr : public Expr {
     public:
         explicit SelfExpr(khthon::location l) : Expr(l) { }
@@ -669,7 +670,7 @@ namespace khthon {
         }
     };
 
-
+    /// @brief Node relating to a local variable definition.
     class LetExpr : public Expr {
     private:
         std::string name_;
@@ -709,19 +710,19 @@ namespace khthon {
         const std::string& name() const { return name_; }
 
         /// @return The type of the variable.
-        const Type& type() const        { return type_; }
+        const Type& type() const { return type_; }
 
         /// @return Whether it has an initializer.
-        bool has_initializer() const    { return initializer_.has_value(); }
+        bool has_initializer() const { return initializer_.has_value(); }
 
         /// @return Handle to the initializer.
         const auto& initializer() const { return initializer_; }
 
         /// @return Handle to the expression in which the variable lives.
-        const auto& scope() const       { return scope_; }
+        const auto& scope() const { return scope_; }
     };
 
-
+    /// @brief Node relating to a loop.
     class WhileExpr : public Expr {
     private:
         std::shared_ptr<Expr> condition_;

@@ -1,21 +1,19 @@
 #ifndef COLORS_HPP
 #define COLORS_HPP
 
+/**
+ * This file contains the interface and implementation of wrapper functions 
+ * for printing in the terminal.
+ */
+
+#include "config.hpp"
 #include <string>
 
-/// @brief Contains methods printing in the terminal.
+/// @brief Contains wrapper functions for printing in the terminal.
 namespace colors {
-
-    inline constexpr bool enable_colors =
-#ifdef DEBUG
-    true;
-#else
-    false;
-#endif
 
     /// @brief Applies ANSI color codes `code` to `text`.
     /// @note Automatically resets colors at the end.
-    /// @note Only does so when DEBUG is set. Otherwise returns the plain text.
     inline std::string with(const std::string code, const std::string& text) {
         if constexpr (enable_colors)
             return code + text + "\033[0m";
@@ -35,6 +33,7 @@ namespace colors {
     inline std::string as_error(const std::string& s)   { return bright_red(bold(s)); }
     inline std::string as_warning(const std::string& s) { return yellow(bold(s)); }
     inline std::string as_note(const std::string& s)    { return cyan(bold(s)); }
+
 
     inline std::string internal_error_banner() {
         return colors::bright_red("\n"

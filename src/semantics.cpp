@@ -1,3 +1,10 @@
+/**
+ * This file contains the implementations of the semantic analysis, 
+ * excluding the visitors. It contains methods from Info classes as
+ * well as the SemanticChecker implementation, which is the central
+ * orchestrator for the semantic analysis phase.
+ */
+
 #include "semantics.hpp"
 
 #include <unordered_set>

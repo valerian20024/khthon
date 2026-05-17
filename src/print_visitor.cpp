@@ -1,13 +1,13 @@
+/*
+ * This file contains the implementation of the PrintVisitor.
+ */
+
 #include "ast.hpp"
 #include "colors.hpp"
 #include "visitors.hpp"
 
 using namespace std;
 using namespace colors;
-
-/*
-
-*/
 
 namespace khthon {
 

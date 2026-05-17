@@ -1,3 +1,10 @@
+/**
+ * This file contains the implementation of the code generation phase.
+ * In particular, it contains the code required to set up the code 
+ * generation: declaring classes, vtables, init and new methods, ...
+ * The methods are parsed and translated to LLVM by the CodeGenVisitor.
+ */
+
 #include "generation.hpp"
 #include "mangling.hpp"
 

@@ -1,3 +1,9 @@
+/**
+ * This file contains the implementation of Driver methods.
+ * Driver is the central coordinator of the whole program.
+ * For the time being, it is also responsible in managing diagnostics.
+ */
+
 #include <filesystem>
 #include <iostream>
 #include <map>
@@ -13,10 +19,6 @@
 
 using namespace std;
 using namespace colors;
-
-/*
-
-*/
 
 namespace khthon {
 
