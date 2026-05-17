@@ -649,11 +649,11 @@ void CodeGenOrchestrator::emit_thunk(
     void CodeGenOrchestrator::comment(const string& text) {
         if (enable_advanced_logging) {
             // Create a function type: void()
-            auto* FTy = llvm::FunctionType::get(builder_.getVoidTy(), false);
+            auto* fn_type = llvm::FunctionType::get(builder_.getVoidTy(), false);
             // Create inline assembly that is just a comment
-            auto* IA = llvm::InlineAsm::get(FTy, "; " + text, "", false);
+            auto* ia = llvm::InlineAsm::get(fn_type, "; " + text, "", false);
             // Call it
-            builder_.CreateCall(IA);
+            builder_.CreateCall(ia);
         }
     }
 

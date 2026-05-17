@@ -17,7 +17,7 @@
 
     % --- Title ---
 	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
-	{\Large \bfseries Compiler Project Report} \\
+	{\Large \bfseries Compilers Report} \\
 	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
 
     % --- Teachers ---
@@ -58,7 +58,7 @@ You may consult the git repository \footnote{\url{https://github.com/valerian200
 
 The project has been done alone. Indeed, I have attended the course in 2024-2025, which allowed me to get some experience with the $3$ first steps.
 
-Unfortunately, I cannot state precisely how much time I have passed on the project, but I estimate it to be about $250$ hours, all in all. It is mainly due to the fact that I have used this project as an experimenting ground for learning C++. I was also quite passionate about it and willing to do it right. I have put some effort into readibility, architecture and correctness.
+Unfortunately, I cannot state precisely how much time I have passed on the project, but I estimate it to be about $250$ hours, all in all. It is mainly due to the fact that I have used this project as an experimenting ground for learning C++. I was also quite passionate about it and willing to do it right. Some effort has been put into readability, architecture and correctness of the code.
 
 \paragraph{Statistics}
 
@@ -75,9 +75,9 @@ We will now go over the architecture of the project and explain its main compone
 
 \paragraph{Overview}
 
-The project is using Flex, Bison and the LLVM C++ API. We have invested into making a visitor pattern because we had already tested an simpler inheritance-based tree for nodes in the past and it was harder to maintain. Part of the lexer and the parser from last year have been reused, but we basically started fresh on this project.
+The project is using Flex, Bison and the LLVM C++ API. We have invested into making a visitor pattern because we had already tested a simpler inheritance-based tree for nodes in the past and it was harder to maintain. Part of the lexer and the parser from last year have been reused, but we basically started fresh on this project.
 
-The entrypoint of the program simply delegates to one of Driver's methods, which will perform the corresponding phase of compilation.
+The entrypoint of the program simply delegates to one of \texttt{Driver}'s methods, which will perform the corresponding phase of compilation.
 
 \paragraph{Lexical Analysis}
 We use Flex's initial states to distinguish between three behaviors when scanning. 
@@ -105,12 +105,12 @@ Finally we call in the \texttt{PrintVisitor} to sweep throught the AST and print
 
 We are using two symbol tables and visitors to populate them. The first symbol table is for classes, their fields and their methods. The second is for variables and their scope. We were motivated by the statement's structure, expliciting the fact that VSOP really seemed to have these two concepts that could live separately.
 
-The first symbol tables uses the 'informations' classes, which are designed to store and retrieve all the required information for further process, thereby forming the classes symbol table. For example, \texttt{ClassInfo} contains the class data and references to its \texttt{FieldInfo}s and \texttt{MethodInfo}s. Each of these class has responsibility for its own data, and implements getters, setters, and helper methods. 
+The first symbol tables uses the 'informations' classes, which are designed to store and retrieve all the required information for further process, thereby forming the classes symbol table. For example, \texttt{ClassInfo} contains the class data and references to its \texttt{FieldInfo}s and \texttt{MethodInfo}s. Each of these classes has responsibility for its own data, and implements getters, setters, and helper methods. 
 We decided to use this approach because it seemed safer to collect as much data as possible and try to stay as general as possible. We also wanted to have the possibility to extend it in the future, for example with metadata.
 
 The main classes are the following:
 \begin{itemize}
-    \item \texttt{SemanticChecker}: used as the main orchestrator: it performs the required semantic checks (presence of Main::main, classes duplicates, cursed classes hierarchy, ...) and logs errors. 
+    \item \texttt{SemanticChecker}: the main orchestrator, which performs the required semantic checks (presence of \texttt{Main::main}, classes duplicates, cursed classes hierarchy, ...) and logs errors. 
     \item \texttt{ClassManager}: has ownership of the class symbol tables and can perform operations on it.
     \item \texttt{ScopeManager}: has ownership of the variables symbol table and can perform operations on it.
     \item \texttt{ClassesVisitor}: visits the classes in the AST to populate the first symbol table.
@@ -136,9 +136,9 @@ For this step, we need to find which methods and fields belong to a given class,
 
 We begin the phase by emitting the LLVM IR related to the runtime, that is, Object's class, VTable, and methods. The linker will be responsible for finding their definition in the runtime when creating the executable.
 
-Then we declare each class and its VTable, followed by declaring fields (in the class struct) and methods (in the VTable). Then we declare the \texttt{init} and \texttt{new} method for each of the class.
+Then we declare each class and its VTable, followed by declaring fields (in the class struct) and methods (in the VTable). Then we declare the \texttt{init} and \texttt{new} methods for each class.
 
-Only then can we move on to the emission of the methods bodies. We call in the \texttt{CodeGenVisitor} which visits each method and emits the corresponding IR. This part is far from complete, but some instructions are parsed, ensuring it's possible to continue.
+Only then can we move on to the emission of the methods bodies. We call in the \texttt{CodeGenVisitor} which visits each method and emits the corresponding IR. This part is far from complete, but some instructions are parsed, ensuring it is possible to go further.
 
 We also generate thunks for inherited methods to handle dynamic dispatch cleanly. These are small wrapper methods acting as intermediary when calling a parent's method. Their responsibility is to bitcast \texttt{self} to the specific parent's type which is expected by the implementation.
 We have adopted this strategy instead of manually bitcasting at every call site because it made the IR impossible to read, and it did not feel like the right way to do. 
@@ -163,11 +163,11 @@ Here is a review of what the code is capable of doing as well as its limitations
 \begin{itemize}
     \item Lexical Analysis: 39/39 tests passed. No further comment.
     \item Syntax Analysis: 50/55 tests passed. A few errors are not handled as we have had some troubles to understand and use Bison's error recovery system.
-    \item Semantic Analysis: 67/79 and 126/151 tests passed. We did not have time to finish but we haven't encountered actual problems. It could be fulfilled with more time.
+    \item Semantic Analysis: 67/79 and 126/151 tests passed. We did not have time to finish but we have not encountered actual problems. It could be fulfilled with more time.
     \item Code Generation: 6/38 tests passed. Khthon can produce an executable, link with the runtime and output some IR. It can print in the terminal, instanciate objects, call methods. However, further constructs are unfortunately not compiled. We have found this part particularly difficult to tackle, and have only started building it lately, thereby leaving many tests failed. We believe we could finish it with more time, now that everything has been set up. 
 \end{itemize}
 
-We believe that the project as a whole has a strong base and could be greatly improved in the future without rewriting everything. We have tried to do it the right way and have spent much time in designing, documenting and deploying it. However, we do recognize that in the current state, it is not complete, especially the code generation step. 
+We believe that the project as a whole has a strong base and could be greatly improved in the future without rewriting everything. We have put some effort in designing and documenting the project. However, we do recognize that in the current state, it is not complete, especially the code generation step. 
 
 \section{Project improvements}
 With more experience both in compiler design and in C++, there are many things to be improved, most notably:
@@ -176,17 +176,14 @@ With more experience both in compiler design and in C++, there are many things t
     \item Change the lexer to only take one keyword token and use a hash table to decide its content.
     \item Create a dedicated \texttt{ErrorLogger} class instead of putting the responsibility of error management to \texttt{Driver}. The errors could be more descriptive as well: using Bison's \texttt{location}, we could copy the line from the source file to indicate the user where it happened and clearly highlight the error.
     \item Creating more namespaces. As the code grew, \texttt{khthon::Type} is conflicting with \texttt{llvm::Type}. It would be a good time to start thinking out to split the code into meaningful namespaces.
-    \item Push further the debugging mechanics when compiling to have accurate and clean logging of what's happening. For now it's a bit mingled and not standardized.
+    \item Push further the debugging mechanics when compiling to have accurate and clean logging of what is happening. For now it is a bit mingled and not standardized.
     \item More consistent use of C++ features, such as move semantics, or the order private and public members (more idiomatic in C++).
-    \item \texttt{Driver::print\_diagnostics} should print them in order (line, column) when compiling in release mode and keep the original order when compiling in Debug mode. This was originaly planned but we didn't have time to make it.
+    \item \texttt{Driver::print\_diagnostics} should print them in order (line, column) when compiling in release mode and keep the original order when compiling in Debug mode. This was originaly planned but we did not have time to make it.
     \item Work on the test script and pipeline its execution using e.g. Github actions (see the git repository).
     \item Methods could be reordered in a more logical way in some classes.
-    \item In the lexer, I initially planned to check for numbers to be in range for 32 bits, but didn't have the time to do it.
+    \item In the lexer, I initially planned to check for numbers to be in range for 32 bits, but did not have the time to do it.
     \item In the parser, add more 'dummy' factory methods to create actual dummies instead of relying on C++'s default initialization.
-    \item And many more ...
 \end{itemize}
-
-This project will outlive the scope of this course and I shall improve Khthon in my free time.
 
 \section{Course improvements}
 We now describe some features we think could improve the project in the future.
