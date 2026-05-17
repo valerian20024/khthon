@@ -149,21 +149,20 @@
 %type <std::shared_ptr<Expr>>                     while_loop
 
 
-%right      ASSIGN                    // 9
-%nonassoc   LET IN                    
+%right      ASSIGN
+%nonassoc   LET IN
 %nonassoc   WHILE DO
 %nonassoc   IF
-%nonassoc   THEN                      
-%nonassoc   ELSE                      
-%left       AND                       // 8
-%right      NOT                       // 7
-%nonassoc   LOWER LOWER_EQUAL EQUAL   // 6
-%left       PLUS MINUS                // 5
-%left       TIMES DIVIDE              // 4
-%right      ISNULL                    // 3 
-%right      UMINUS                    // 3
-%right      POWER                     // 2
-%left       DOT                       // 1
+%nonassoc   THEN
+%nonassoc   ELSE
+%left       AND
+%right      NOT
+%nonassoc   LOWER LOWER_EQUAL EQUAL
+%left       PLUS MINUS
+%left       TIMES DIVIDE
+%right      ISNULL
+%right      POWER
+%left       DOT
 
 %%
 
