@@ -253,7 +253,7 @@ namespace khthon {
         ReturnInst::Create(context_, initialized, entry);
     }
 
-    void CodeGenOrchestrator::create_class_struct(const ClassNode& node) {
+    void CodeGenOrchestrator::declare_class(const ClassNode& node) {
         const string class_name = node.name();
 
         StructType* class_struct = StructType::create(context_, class_name);
@@ -261,7 +261,7 @@ namespace khthon {
         class_structs_[class_name] = class_struct;
     }
 
-    void CodeGenOrchestrator::create_class_vtable(const ClassNode& node) {
+    void CodeGenOrchestrator::declare_vtable(const ClassNode& node) {
         const string class_name = node.name();
 
         StructType* vtable_struct = StructType::create(
@@ -625,8 +625,8 @@ void CodeGenOrchestrator::emit_thunk(
     void CodeGenOrchestrator::generate(const shared_ptr<ProgramNode>& root) {
         emit_runtime_declarations();
         
-        for (const auto& c : root->classes())   create_class_vtable(*c);
-        for (const auto& c : root->classes())   create_class_struct(*c);
+        for (const auto& c : root->classes())   declare_vtable(*c);
+        for (const auto& c : root->classes())   declare_class(*c);
         for (const auto& c : root->classes())   finalize_class_vtable(*c);
         for (const auto& c : root->classes())   finalize_class_struct(*c);
 

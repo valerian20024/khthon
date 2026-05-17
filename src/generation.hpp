@@ -60,10 +60,10 @@ namespace khthon {
         void emit_class_new(const ClassNode& node);
 
         /// @brief Create an opaque structure for the class structure.
-        void create_class_struct(const ClassNode& node);
+        void declare_class(const ClassNode& node);
 
         /// @brief Create an opaque structure for the class vtable.
-        void create_class_vtable(const ClassNode& node);
+        void declare_vtable(const ClassNode& node);
 
         /// @brief Fill in the vtable body with methods signatures.
         void finalize_class_vtable(const ClassNode& node);
@@ -183,7 +183,7 @@ namespace khthon {
     public:
         CodeGenVisitor(Driver& d, CodeGenOrchestrator& cgo) : 
             driver_(d), orchestrator_(cgo) { 
-                (void) driver_;
+                (void) driver_;  // not used for now.
             }
 
         /// @brief Binds a named llvm::Value* to its name.
