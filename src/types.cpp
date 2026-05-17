@@ -1,3 +1,7 @@
+/**
+ * This file contains the implementation of Type.
+ */
+
 #include "types.hpp"
 
 #include <string>
@@ -5,8 +9,8 @@
 
 using namespace std;
 
-namespace khthon
-{
+namespace khthon {
+    
     bool Type::operator==(const Type& other) const {
         if (kind_ != other.kind_)
             return false;

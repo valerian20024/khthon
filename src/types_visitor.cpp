@@ -1,3 +1,8 @@
+/**
+ * This file contains the implementation of TypesVisitor.
+ * Both helper methods and visit methods.
+ */
+
 #include "semantics.hpp"
 
 using namespace std;

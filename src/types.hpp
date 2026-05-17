@@ -1,6 +1,13 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
 
+/**
+ * This file contains the interface of Type. This class is primarily used
+ * to represent a VSOP type but has grown to handle much of the work
+ * related to types, including generating types via factory methods, 
+ * comparing them, representing them as strings, etc.
+ */
+
 #include <string>
 
 namespace khthon {

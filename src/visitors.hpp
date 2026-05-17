@@ -8,8 +8,8 @@
 #include <memory>
 
 /**
- * This file contains the interface of the visitors abstract classes
- * and their specialization as well as the interface of PrintVisitor.
+ * This file contains the interface of the visitors abstract classes,
+ * their specialization as well as the interface of PrintVisitor.
  */
 
 using namespace std;
