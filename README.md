@@ -2,7 +2,13 @@
 
 Khthon is a toy compiler frontend for the VSOP language, a small OOP language designed to be compiled easily. It outputs LLVM IR and can generate an executable.
 
-This project is held by Valérian Wislez in the scope of the course *2025-2026 / INFO0085-1 Compilers* by Pascal Fontaine at ULiège.
+This project has been developed by Valérian Wislez in the scope of the course *2025-2026 / INFO0085-1 Compilers* by Pascal Fontaine at ULiège. It is now publicly available.
+
+## License
+
+This project is licensed under the **PolyForm Noncommercial License 1.0.0**. 
+You are free to view, modify, and distribute this software for non-commercial purposes. 
+Commercial use requires a separate commercial license from the author.
 
 ## Prerequisites
 
